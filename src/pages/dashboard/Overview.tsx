@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartContainer, LineChart } from "@/components/ui/chart";
+import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Users, CreditCard, Calendar, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
 const Overview = () => {
   const navigate = useNavigate();
@@ -194,17 +195,24 @@ const Overview = () => {
           </CardHeader>
           <CardContent className="px-2">
             <div className="h-[300px]">
-              <ChartContainer>
-                <LineChart 
+              <ResponsiveContainer width="100%" height="100%">
+                <RechartsLineChart
                   data={mockData[timeframe as keyof typeof mockData]}
-                  categories={["value"]}
-                  index="name"
-                  colors={["#F472B6"]}
-                  valueFormatter={(value) => `${value}K`}
-                  showAnimation
-                  showLegend={false}
-                />
-              </ChartContainer>
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line
+                    type="monotone"
+                    dataKey="value"
+                    stroke="#F472B6"
+                    strokeWidth={2}
+                    activeDot={{ r: 8 }}
+                  />
+                </RechartsLineChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
