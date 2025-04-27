@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,7 +10,7 @@ import { CreditPackages } from "@/components/credits/CreditPackages";
 const PricingPage = () => {
   const navigate = useNavigate();
   const { isAuthenticated } = useAuth();
-  const { freeCredits } = useCredits();
+  const { freeCredits, hasPremiumPlan } = useCredits();
   
   const plans = [
     {
@@ -120,7 +120,7 @@ const PricingPage = () => {
     if (isEnterprise) {
       navigate("/contact");
     } else {
-      navigate("/dashboard/payment");
+      navigate(`/dashboard/subscription?plan=${plan.toLowerCase()}`);
     }
   };
 
@@ -144,7 +144,7 @@ const PricingPage = () => {
         {plans.map((plan, index) => (
           <Card 
             key={index} 
-            className={`relative ${plan.highlight ? 'border-brand-pink shadow-lg' : ''} ${plan.isFreeTier ? 'lg:col-span-1' : ''}`}
+            className={`relative ${plan.highlight ? 'border-brand-pink shadow-lg' : ''}`}
           >
             {plan.highlight && (
               <div className="absolute -top-4 left-1/2 -translate-x-1/2">
@@ -172,14 +172,15 @@ const PricingPage = () => {
                   </li>
                 ))}
               </ul>
-              <Button 
-                className={`w-full ${plan.highlight ? 'bg-brand-pink hover:bg-brand-pink/90' : plan.isFreeTier ? 'bg-secondary text-foreground hover:bg-secondary/90' : ''}`}
-                onClick={() => !plan.isFreeTier && handlePlanSelection(plan.name, plan.isEnterprise)}
-                variant={plan.isFreeTier ? "secondary" : "default"}
-                disabled={plan.isFreeTier}
-              >
-                {plan.isFreeTier ? 'Current Free Tier' : plan.isEnterprise ? 'Contact Sales' : 'Get Started'}
-              </Button>
+              <CardFooter>
+                <Button
+                  className={`w-full ${plan.highlight ? 'bg-brand-pink hover:bg-brand-pink/90' : ''}`}
+                  variant={plan.highlight ? 'default' : 'outline'}
+                  onClick={() => handlePlanSelection(plan.name, plan.isEnterprise)}
+                >
+                  {hasPremiumPlan ? 'Change Plan' : 'Get Started'}
+                </Button>
+              </CardFooter>
             </CardContent>
           </Card>
         ))}

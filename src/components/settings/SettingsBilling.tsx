@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 import { Button } from "@/components/ui/button";
@@ -10,26 +9,11 @@ export const SettingsBilling = () => {
   const navigate = useNavigate();
   const { hasPremiumPlan, premiumCredits } = useCredits();
 
-  const handleSubscriptionAction = (action: 'upgrade' | 'downgrade' | 'cancel') => {
-    switch (action) {
-      case 'upgrade':
-        toast.info("Redirecting to upgrade options...");
-        navigate('/dashboard/subscription');
-        break;
-      case 'downgrade':
-        toast.info("Redirecting to plan options...");
-        navigate('/dashboard/subscription');
-        break;
-      case 'cancel':
-        toast.info("Please contact customer support to cancel your subscription.", {
-          description: "Our team will assist you with the cancellation process.",
-          action: {
-            label: "Contact Support",
-            onClick: () => navigate('/contact')
-          }
-        });
-        break;
-    }
+  const handleSubscriptionAction = (action: 'cancel') => {
+    toast.info("Cancelling your subscription...", {
+      description: "Your subscription will remain active until the end of your billing period."
+    });
+    navigate('/dashboard/subscription?action=cancel');
   };
 
   return (
@@ -63,18 +47,10 @@ export const SettingsBilling = () => {
                 <>
                   <Button 
                     variant="outline"
-                    onClick={() => handleSubscriptionAction('upgrade')}
+                    onClick={() => navigate('/dashboard/subscription')}
                     className="justify-between"
                   >
-                    <span>Upgrade Plan</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => handleSubscriptionAction('downgrade')}
-                    className="justify-between"
-                  >
-                    <span>Downgrade Plan</span>
+                    <span>Change Plan</span>
                     <ChevronRight className="h-4 w-4" />
                   </Button>
                   <Button 

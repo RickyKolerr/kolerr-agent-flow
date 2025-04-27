@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, AlertCircle, CreditCard, Info } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 
 interface Plan {
@@ -29,6 +29,19 @@ const SubscriptionPage = () => {
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { hasPremiumPlan, premiumCredits } = useCredits();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const actionParam = searchParams.get('action');
+  const planParam = searchParams.get('plan');
+
+  useEffect(() => {
+    if (planParam) {
+      setSelectedPlan(planParam);
+    }
+    if (actionParam === 'cancel') {
+      handleCancelSubscription();
+    }
+  }, [planParam, actionParam]);
 
   const currentPlan = {
     id: hasPremiumPlan ? "growth" : "free",
@@ -123,7 +136,8 @@ const SubscriptionPage = () => {
 
   const handlePlanChange = () => {
     if (selectedPlan) {
-      toast.success(`You've selected the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
+      const action = hasPremiumPlan ? 'changed' : 'selected';
+      toast.success(`You've ${action} the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
         description: "You'll be redirected to complete the payment process.",
       });
       navigate("/dashboard/payment");
@@ -131,13 +145,10 @@ const SubscriptionPage = () => {
   };
 
   const handleCancelSubscription = () => {
-    toast.info("Please contact customer support to cancel your subscription.", {
-      description: "Our team will assist you with the cancellation process.",
-      action: {
-        label: "Contact Support",
-        onClick: () => navigate('/contact')
-      }
+    toast.success("Your subscription has been cancelled", {
+      description: "Your subscription will remain active until the end of your billing period."
     });
+    navigate('/dashboard/settings');
   };
 
   return (
