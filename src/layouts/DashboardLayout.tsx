@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -86,6 +85,9 @@ const DashboardLayout = () => {
 
   const handleNavigation = (path: string) => {
     navigate(path);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const toggleSidebar = () => {
@@ -106,7 +108,7 @@ const DashboardLayout = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={toggleSidebar}
+          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
           className="fixed top-4 right-4 z-50 md:hidden"
         >
           {isSidebarOpen ? <X className="h-5 w-5"/> : <Menu className="h-5 w-5"/>}
