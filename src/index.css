@@ -5,48 +5,44 @@
 
 @layer base {
   :root {
-    --background: 223 47% 11%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
-    --card: 224 47% 11%;
+    --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 224 47% 11%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    /* Updated primary color to match logo's magenta */
-    --primary: 315 90% 70%;
+    --primary: 329 86% 70%;
     --primary-foreground: 0 0% 100%;
 
-    /* Updated secondary color to match logo's cyan */
-    --secondary: 180 90% 50%;
-    --secondary-foreground: 0 0% 100%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 223 47% 11%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
 
-    /* Updated accent color to match logo's blue */
-    --accent: 217 91% 60%;
+    --accent: 24 94% 53%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 217 32.6% 17.5%;
-    --input: 217 32.6% 17.5%;
-    --ring: 224 71.4% 4.1%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
 
     --radius: 0.75rem;
 
-    /* Updated sidebar theme */
-    --sidebar-background: 315 90% 70%;
+    --sidebar-background: 225 73% 33%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 180 90% 50%;
+    --sidebar-primary: 329 86% 70%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 315 80% 60%;
+    --sidebar-accent: 225 73% 28%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 315 80% 60%;
-    --sidebar-ring: 180 90% 50%;
+    --sidebar-border: 225 73% 28%;
+    --sidebar-ring: 329 86% 70%;
   }
 }
 
@@ -66,14 +62,5 @@
   
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
-  }
-
-  /* Add gradient utility based on the logo */
-  .brand-gradient {
-    @apply bg-gradient-to-br from-[#FF1B6B] via-[#45CAFF] to-[#9C42F5];
-  }
-  
-  .brand-gradient-text {
-    @apply bg-gradient-to-br from-[#FF1B6B] via-[#45CAFF] to-[#9C42F5] bg-clip-text text-transparent;
   }
 }
