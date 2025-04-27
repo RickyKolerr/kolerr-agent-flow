@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +20,7 @@ import {
   Mail,
   BellRing,
   AlertCircle,
+  Search
 } from "lucide-react";
 
 const Settings = () => {
@@ -40,7 +40,7 @@ const Settings = () => {
       </div>
 
       <Tabs defaultValue="profile" className="space-y-4" onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-2 md:grid-cols-5 lg:w-[600px]">
+        <TabsList className="grid grid-cols-2 md:grid-cols-6 lg:w-[600px]">
           <TabsTrigger value="profile" className="flex items-center gap-2">
             <User className="h-4 w-4" />
             <span className="hidden md:inline">Profile</span>
@@ -57,8 +57,16 @@ const Settings = () => {
             <Palette className="h-4 w-4" />
             <span className="hidden md:inline">Appearance</span>
           </TabsTrigger>
+          <TabsTrigger value="search" className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            <span className="hidden md:inline">Search</span>
+          </TabsTrigger>
+          <TabsTrigger value="credits" className="flex items-center gap-2">
+            <Bell className="h-4 w-4" />
+            <span className="hidden md:inline">Credits</span>
+          </TabsTrigger>
           <TabsTrigger value="api" className="flex items-center gap-2">
-            <Globe className="h-4 w-4" />
+            <User className="h-4 w-4" />
             <span className="hidden md:inline">API</span>
           </TabsTrigger>
         </TabsList>
@@ -425,107 +433,17 @@ const Settings = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="api" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>API Settings</CardTitle>
-              <CardDescription>
-                Manage your API keys and authentication for integration.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="font-medium">API Keys</h3>
-                <div className="space-y-4">
-                  <div className="flex flex-wrap justify-between gap-2">
-                    <div className="space-y-0.5">
-                      <p className="font-medium">Production Key</p>
-                      <p className="font-mono text-sm bg-muted px-3 py-1 rounded">
-                        ••••••••••••••••••••••••4c7a
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Copy</Button>
-                      <Button variant="outline" size="sm">Regenerate</Button>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap justify-between gap-2">
-                    <div className="space-y-0.5">
-                      <p className="font-medium">Development Key</p>
-                      <p className="font-mono text-sm bg-muted px-3 py-1 rounded">
-                        ••••••••••••••••••••••••9f3b
-                      </p>
-                    </div>
-                    <div className="flex space-x-2">
-                      <Button variant="outline" size="sm">Copy</Button>
-                      <Button variant="outline" size="sm">Regenerate</Button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="font-medium">Webhooks</h3>
-                <div className="space-y-2">
-                  <Label htmlFor="webhook_url">Webhook URL</Label>
-                  <div className="flex space-x-2">
-                    <Input id="webhook_url" placeholder="https://your-app.com/webhooks/kolerr" />
-                    <Button>Save</Button>
-                  </div>
-                  <p className="text-sm text-muted-foreground">
-                    We'll send POST requests to this URL when events happen in your account.
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <p className="font-medium">Webhook Events</p>
-                  <div className="space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="event_campaign" className="rounded" defaultChecked />
-                      <Label htmlFor="event_campaign">Campaign updates</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="event_booking" className="rounded" defaultChecked />
-                      <Label htmlFor="event_booking">Booking confirmations</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="event_contract" className="rounded" defaultChecked />
-                      <Label htmlFor="event_contract">Contract signings</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <input type="checkbox" id="event_payment" className="rounded" />
-                      <Label htmlFor="event_payment">Payment events</Label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <Separator />
-              
-              <div className="space-y-4">
-                <h3 className="font-medium">Rate Limits</h3>
-                <div className="bg-secondary/50 p-4 rounded-lg">
-                  <div className="flex flex-col sm:flex-row justify-between gap-2">
-                    <div>
-                      <p className="font-medium">API Rate Limit</p>
-                      <p className="text-sm text-muted-foreground">Current plan: 100 requests per minute</p>
-                    </div>
-                    <Button variant="outline">Upgrade Plan</Button>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex justify-end">
-                <Button onClick={handleSave}>
-                  <Save className="mr-2 h-4 w-4" />
-                  Save API Settings
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="search" className="space-y-6">
+          <SearchPreferences />
+          <SavedSearches />
+        </TabsContent>
+
+        <TabsContent value="credits" className="space-y-6">
+          <CreditAlertSettings />
+        </TabsContent>
+
+        <TabsContent value="api" className="space-y-6">
+          <APIPortal />
         </TabsContent>
       </Tabs>
     </div>
