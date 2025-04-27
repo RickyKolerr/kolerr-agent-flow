@@ -1,44 +1,26 @@
-
 import { Link } from "react-router-dom";
 import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 export const MainNav = () => {
-  const { user, isAuthenticated, logout } = useAuth();
-
+  const {
+    user,
+    isAuthenticated,
+    logout
+  } = useAuth();
   const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map(part => part[0])
-      .join("")
-      .toUpperCase();
+    return name.split(" ").map(part => part[0]).join("").toUpperCase();
   };
-
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black">
+  return <header className="fixed top-0 left-0 right-0 z-50 bg-black">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
-              <span className="font-bold text-white">K</span>
-            </div>
-            <span className="font-bold text-xl text-white">Kolerr</span>
+            
+            
           </Link>
 
           {/* Desktop Navigation */}
@@ -62,8 +44,7 @@ export const MainNav = () => {
 
           {/* Desktop Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            {isAuthenticated ? (
-              <DropdownMenu>
+            {isAuthenticated ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
@@ -96,20 +77,14 @@ export const MainNav = () => {
                     Log out
                   </DropdownMenuItem>
                 </DropdownMenuContent>
-              </DropdownMenu>
-            ) : (
-              <>
+              </DropdownMenu> : <>
                 <Link to="/login" className="text-sm font-medium hover:text-brand-pink transition-colors">
                   Log In
                 </Link>
-                <Link
-                  to="/signup"
-                  className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors"
-                >
+                <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors">
                   Sign Up
                 </Link>
-              </>
-            )}
+              </>}
           </div>
 
           {/* Mobile Navigation */}
@@ -138,8 +113,7 @@ export const MainNav = () => {
                   Contact
                 </Link>
                 <div className="flex flex-col space-y-4 pt-6 border-t border-gray-800">
-                  {isAuthenticated ? (
-                    <>
+                  {isAuthenticated ? <>
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={user?.avatar} alt={user?.name} />
@@ -150,50 +124,31 @@ export const MainNav = () => {
                           <p className="text-sm text-muted-foreground">{user?.email}</p>
                         </div>
                       </div>
-                      <Link 
-                        to="/dashboard" 
-                        className="text-lg font-medium hover:text-brand-pink transition-colors"
-                      >
+                      <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors">
                         Dashboard
                       </Link>
-                      <Link
-                        to="/dashboard/profile"
-                        className="text-lg font-medium hover:text-brand-pink transition-colors"
-                      >
+                      <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors">
                         Profile
                       </Link>
-                      <Link
-                        to="/dashboard/settings"
-                        className="text-lg font-medium hover:text-brand-pink transition-colors"
-                      >
+                      <Link to="/dashboard/settings" className="text-lg font-medium hover:text-brand-pink transition-colors">
                         Settings
                       </Link>
-                      <button
-                        onClick={logout}
-                        className="text-lg font-medium hover:text-brand-pink transition-colors text-left"
-                      >
+                      <button onClick={logout} className="text-lg font-medium hover:text-brand-pink transition-colors text-left">
                         Log out
                       </button>
-                    </>
-                  ) : (
-                    <>
+                    </> : <>
                       <Link to="/login" className="text-lg font-medium hover:text-brand-pink transition-colors">
                         Log In
                       </Link>
-                      <Link
-                        to="/signup"
-                        className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center"
-                      >
+                      <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center">
                         Sign Up
                       </Link>
-                    </>
-                  )}
+                    </>}
                 </div>
               </nav>
             </SheetContent>
           </Sheet>
         </div>
       </div>
-    </header>
-  );
+    </header>;
 };
