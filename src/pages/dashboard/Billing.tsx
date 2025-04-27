@@ -6,7 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   CreditCard,
   Download,
-  Plus as PlusIcon,
+  Plus,
   Receipt,
   ChevronDown,
   CheckCircle2
@@ -257,7 +257,7 @@ const Billing = () => {
                   <CardDescription>Manage your payment methods.</CardDescription>
                 </div>
                 <Button className="flex items-center gap-1">
-                  <PlusIcon className="h-4 w-4" /> Add Method
+                  <Plus className="h-4 w-4" /> Add Method
                 </Button>
               </div>
             </CardHeader>

@@ -169,29 +169,31 @@ const Overview = () => {
             <CardDescription>
               Engagement metrics across your active campaigns
             </CardDescription>
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger
-                value="day"
-                onClick={() => setTimeframe("day")}
-                className={timeframe === "day" ? "data-[state=active]:bg-brand-pink" : ""}
-              >
-                Day
-              </TabsTrigger>
-              <TabsTrigger
-                value="week"
-                onClick={() => setTimeframe("week")}
-                className={timeframe === "week" ? "data-[state=active]:bg-brand-pink" : ""}
-              >
-                Week
-              </TabsTrigger>
-              <TabsTrigger
-                value="month"
-                onClick={() => setTimeframe("month")}
-                className={timeframe === "month" ? "data-[state=active]:bg-brand-pink" : ""}
-              >
-                Month
-              </TabsTrigger>
-            </TabsList>
+            <Tabs defaultValue="month"> {/* Added proper Tabs wrapper */}
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger
+                  value="day"
+                  onClick={() => setTimeframe("day")}
+                  className={timeframe === "day" ? "data-[state=active]:bg-brand-pink" : ""}
+                >
+                  Day
+                </TabsTrigger>
+                <TabsTrigger
+                  value="week"
+                  onClick={() => setTimeframe("week")}
+                  className={timeframe === "week" ? "data-[state=active]:bg-brand-pink" : ""}
+                >
+                  Week
+                </TabsTrigger>
+                <TabsTrigger
+                  value="month"
+                  onClick={() => setTimeframe("month")}
+                  className={timeframe === "month" ? "data-[state=active]:bg-brand-pink" : ""}
+                >
+                  Month
+                </TabsTrigger>
+              </TabsList>
+            </Tabs>
           </CardHeader>
           <CardContent className="px-2">
             <div className="h-[300px]">
