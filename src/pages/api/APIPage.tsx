@@ -1,6 +1,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileCode, Database, ApiIcon } from "lucide-react";
+import { FileCode, Database, Api } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const APIPage = () => {
@@ -59,7 +59,7 @@ const APIPage = () => {
               <CardContent className="pt-6">
                 <div className="prose prose-gray max-w-none">
                   <div className="flex items-center gap-3 mb-6">
-                    <ApiIcon className="w-6 h-6 text-brand-pink" />
+                    <Api className="w-6 h-6 text-brand-pink" />
                     <h2 className="text-2xl font-semibold m-0">Getting Started</h2>
                   </div>
                   <p className="text-muted-foreground mb-4">
