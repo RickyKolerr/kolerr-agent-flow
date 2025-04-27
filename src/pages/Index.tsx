@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -70,11 +69,6 @@ const Index = () => {
         <div className="max-w-3xl mx-auto text-center space-y-8">
           {/* Hero Section */}
           <div className="space-y-6 animate-fade-in">
-            <img 
-              src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
-              alt="Kolerr Logo" 
-              className="h-20 w-auto mx-auto mb-8 drop-shadow-2xl"
-            />
             <h1 className="text-4xl md:text-7xl font-bold tracking-tighter">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-500">
                 Discover Your
