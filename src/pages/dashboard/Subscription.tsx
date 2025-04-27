@@ -8,7 +8,6 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 
-// Type for subscription plans
 interface Plan {
   id: string;
   name: string;
@@ -31,7 +30,6 @@ const SubscriptionPage = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { hasPremiumPlan, premiumCredits } = useCredits();
 
-  // Current plan (using context data)
   const currentPlan = {
     id: hasPremiumPlan ? "growth" : "free",
     name: hasPremiumPlan ? "Growth" : "Free",
@@ -39,7 +37,6 @@ const SubscriptionPage = () => {
     nextRenewal: "May 1, 2023"
   };
 
-  // Plans data - matching with Pricing page
   const plans: Plan[] = [
     {
       id: "free",
@@ -126,13 +123,21 @@ const SubscriptionPage = () => {
 
   const handlePlanChange = () => {
     if (selectedPlan) {
-      toast.success(`You've selected the ${plans.find(p => p.id === selectedPlan)?.name} plan!`);
+      toast.success(`You've selected the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
+        description: "You'll be redirected to complete the payment process.",
+      });
       navigate("/dashboard/payment");
     }
   };
 
   const handleCancelSubscription = () => {
-    toast.info("Please contact customer support to cancel your subscription.");
+    toast.info("Please contact customer support to cancel your subscription.", {
+      description: "Our team will assist you with the cancellation process.",
+      action: {
+        label: "Contact Support",
+        onClick: () => navigate('/contact')
+      }
+    });
   };
 
   return (
@@ -141,7 +146,6 @@ const SubscriptionPage = () => {
         <h1 className="text-3xl font-bold tracking-tight">Subscription Plans</h1>
       </div>
 
-      {/* Current subscription info */}
       <Card className="bg-muted/30">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -175,7 +179,6 @@ const SubscriptionPage = () => {
         </CardContent>
       </Card>
 
-      {/* Select billing period */}
       <div className="flex justify-center">
         <Tabs
           defaultValue="monthly"
@@ -195,7 +198,6 @@ const SubscriptionPage = () => {
         </Tabs>
       </div>
 
-      {/* Plans */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <Card 
@@ -272,7 +274,6 @@ const SubscriptionPage = () => {
         ))}
       </div>
 
-      {/* Proceed with plan change */}
       {selectedPlan && selectedPlan !== currentPlan.id && selectedPlan !== 'free' && (
         <div className="flex justify-center mt-8">
           <Card className="w-full max-w-2xl">
