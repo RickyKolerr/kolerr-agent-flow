@@ -8,19 +8,41 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { CreditCard, Lock } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useCredits } from "@/contexts/CreditContext";
 
 const PaymentPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isProcessing, setIsProcessing] = useState(false);
+  const { hasPremiumPlan } = useCredits();
 
-  // Mock plans data - this would come from previous page selection
-  const selectedPlan = {
-    name: "Professional",
-    price: 99,
-    period: "monthly",
-    credits: 500
+  // Plans data
+  const plans = {
+    starter: {
+      name: "Starter",
+      price: 100,
+      period: "monthly",
+      credits: 100
+    },
+    growth: {
+      name: "Growth",
+      price: 200,
+      period: "monthly",
+      credits: 500
+    },
+    pro: {
+      name: "Pro",
+      price: 400,
+      period: "monthly",
+      credits: 2000
+    }
   };
+
+  // Get selected plan from location state or default to Growth
+  const searchParams = new URLSearchParams(location.search);
+  const selectedPlanId = searchParams.get('plan') || (hasPremiumPlan ? "growth" : "starter");
+  const selectedPlan = plans[selectedPlanId] || plans.growth;
 
   // Month and year options
   const currentYear = new Date().getFullYear();
@@ -50,11 +72,11 @@ const PaymentPage = () => {
     // Start processing animation
     setIsProcessing(true);
     
-    // Simulate payment processing
+    // Simulate payment processing with Stripe
     setTimeout(() => {
       setIsProcessing(false);
-      toast.success("Payment successful!");
-      navigate("/dashboard/billing");
+      // Redirect to success page with different messages depending on the plan
+      navigate(`/dashboard/payment/success/subscription?plan=${selectedPlanId}`);
     }, 2000);
   };
 
@@ -106,7 +128,7 @@ const PaymentPage = () => {
           <div className="flex justify-between items-center pb-4 border-b border-border">
             <div>
               <p className="font-medium">{selectedPlan.name} Plan ({selectedPlan.period})</p>
-              <p className="text-sm text-muted-foreground">{selectedPlan.credits} credits per month</p>
+              <p className="text-sm text-muted-foreground">{selectedPlan.credits} search credits per month</p>
             </div>
             <p className="font-medium">${selectedPlan.price}</p>
           </div>
@@ -235,14 +257,14 @@ const PaymentPage = () => {
               className="bg-brand-pink hover:bg-brand-pink/90"
               disabled={isProcessing}
             >
-              {isProcessing ? "Processing..." : "Complete Payment"}
+              {isProcessing ? "Processing..." : `Pay $${selectedPlan.price}`}
             </Button>
           </CardFooter>
         </form>
       </Card>
 
       <div className="mt-6 text-center text-sm text-muted-foreground">
-        By proceeding with payment, you agree to our <a href="#" className="underline">Terms of Service</a> and <a href="#" className="underline">Privacy Policy</a>.
+        By proceeding with payment, you agree to our <a href="/terms" className="underline">Terms of Service</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
       </div>
     </div>
   );

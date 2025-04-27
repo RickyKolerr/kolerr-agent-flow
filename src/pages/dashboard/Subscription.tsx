@@ -29,97 +29,97 @@ interface Plan {
 const SubscriptionPage = () => {
   const navigate = useNavigate();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const [selectedPlan, setSelectedPlan] = useState<string | null>("pro");
+  const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
   const { hasPremiumPlan, premiumCredits } = useCredits();
 
-  // Current plan (mock data)
+  // Current plan (using context data)
   const currentPlan = {
-    id: hasPremiumPlan || "free",
-    name: hasPremiumPlan ? "Professional" : "Free",
+    id: hasPremiumPlan ? "growth" : "free",
+    name: hasPremiumPlan ? "Growth" : "Free",
     billing: "monthly",
-    nextRenewal: "July 1, 2023"
+    nextRenewal: "May 1, 2023"
   };
 
-  // Plans data
+  // Plans data - matching with Pricing page
   const plans: Plan[] = [
     {
       id: "free",
       name: "Free",
-      description: "Limited access with daily credits",
+      description: "Basic access for everyone",
       price: {
         monthly: 0,
         yearly: 0
       },
       features: [
-        { text: "5 free credits daily", included: true },
-        { text: "Basic search functionality", included: true },
-        { text: "Limited creator profiles", included: true },
+        { text: "5 AI-Matchmaking searches per day", included: true },
+        { text: "Basic creator profiles", included: true },
+        { text: "Limited analytics", included: true },
         { text: "Community support", included: true },
+        { text: "Basic search filters", included: true },
         { text: "Advanced analytics", included: false },
         { text: "Contract templates", included: false },
         { text: "Campaign management", included: false },
-        { text: "Priority booking slots", included: false },
       ],
       credits: 5
     },
     {
       id: "starter",
       name: "Starter",
-      description: "Perfect for individuals and small projects",
+      description: "Perfect for small brands starting with influencer marketing",
       price: {
-        monthly: 49,
-        yearly: 39
+        monthly: 100,
+        yearly: 80
       },
       features: [
-        { text: "100 Credits per month", included: true },
-        { text: "5 Active campaigns", included: true },
-        { text: "10 KOL searches per day", included: true },
-        { text: "Basic analytics", included: true },
+        { text: "100 Premium credits per month", included: true },
+        { text: "Up to 3 active campaigns", included: true },
+        { text: "Basic contract templates", included: true },
         { text: "Email support", included: true },
-        { text: "Contract templates", included: false },
+        { text: "Basic analytics dashboard", included: true },
+        { text: "Advanced search filters", included: true },
         { text: "Campaign reporting", included: false },
-        { text: "Priority booking slots", included: false },
+        { text: "Team collaboration", included: false },
       ],
       credits: 100
     },
     {
-      id: "pro",
-      name: "Professional",
-      description: "For growing businesses and marketing teams",
+      id: "growth",
+      name: "Growth",
+      description: "For growing brands scaling their influencer programs",
       price: {
-        monthly: 99,
-        yearly: 79
+        monthly: 200,
+        yearly: 160
       },
       features: [
-        { text: "500 Credits per month", included: true },
-        { text: "15 Active campaigns", included: true },
-        { text: "Unlimited KOL searches", included: true },
-        { text: "Advanced analytics", included: true },
+        { text: "500 Premium credits per month", included: true },
+        { text: "Up to 10 active campaigns", included: true },
+        { text: "Advanced contract templates", included: true },
         { text: "Priority email support", included: true },
-        { text: "Contract templates", included: true },
-        { text: "Campaign reporting", included: true },
-        { text: "Priority booking slots", included: false },
+        { text: "Campaign performance tracking", included: true },
+        { text: "Automated outreach tools", included: true },
+        { text: "ROI analytics", included: true },
+        { text: "Team collaboration", included: false },
       ],
       popular: true,
       credits: 500
     },
     {
-      id: "enterprise",
-      name: "Enterprise",
-      description: "For large organizations with extensive needs",
+      id: "pro",
+      name: "Pro",
+      description: "For professional agencies and established brands",
       price: {
-        monthly: 249,
-        yearly: 199
+        monthly: 400,
+        yearly: 320
       },
       features: [
-        { text: "2000 Credits per month", included: true },
-        { text: "Unlimited campaigns", included: true },
-        { text: "Unlimited KOL searches", included: true },
-        { text: "Custom analytics dashboard", included: true },
-        { text: "Dedicated account manager", included: true },
-        { text: "Custom contract templates", included: true },
-        { text: "Advanced campaign reporting", included: true },
-        { text: "Priority booking slots", included: true },
+        { text: "2000 Premium credits per month", included: true },
+        { text: "Unlimited active campaigns", included: true },
+        { text: "Custom contract builder", included: true },
+        { text: "24/7 priority support", included: true },
+        { text: "Advanced campaign automation", included: true },
+        { text: "Team collaboration tools", included: true },
+        { text: "Custom reporting", included: true },
+        { text: "API access", included: true },
       ],
       credits: 2000
     }
@@ -159,7 +159,7 @@ const SubscriptionPage = () => {
                 </p>
               ) : (
                 <p className="text-muted-foreground text-sm">
-                  Free tier • 5 daily credits • Resets at 7:00 AM daily
+                  Free tier • 5 daily searches • Resets at 7:00 AM daily
                 </p>
               )}
             </div>
@@ -201,11 +201,16 @@ const SubscriptionPage = () => {
         {plans.map((plan) => (
           <Card 
             key={plan.id}
-            className={`relative ${plan.popular ? 'border-brand-pink' : ''}`}
+            className={`relative ${plan.id === currentPlan.id ? 'border-brand-pink' : ''} ${plan.popular ? 'border-brand-pink' : ''}`}
           >
-            {plan.popular && (
+            {plan.popular && plan.id !== currentPlan.id && (
               <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <Badge className="bg-brand-pink text-white">Most Popular</Badge>
+              </div>
+            )}
+            {plan.id === currentPlan.id && (
+              <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/2">
+                <Badge className="bg-brand-pink text-white">Current</Badge>
               </div>
             )}
             <CardHeader>
@@ -244,7 +249,7 @@ const SubscriptionPage = () => {
                 <div className="flex items-center">
                   <CreditCard className="h-5 w-5 mr-2" />
                   <span className="font-medium">
-                    {plan.id === 'free' ? `${plan.credits} daily free credits` : `${plan.credits} Premium credits monthly`}
+                    {plan.id === 'free' ? `${plan.credits} daily free searches` : `${plan.credits} Premium credits monthly`}
                   </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
@@ -257,7 +262,7 @@ const SubscriptionPage = () => {
                 className={`w-full ${plan.id === currentPlan.id ? 'bg-muted hover:bg-muted' : plan.id === 'free' ? '' : 'bg-brand-pink hover:bg-brand-pink/90'}`}
                 disabled={plan.id === currentPlan.id || plan.id === 'free'}
                 onClick={() => plan.id !== 'free' && setSelectedPlan(plan.id)}
-                variant={plan.id === selectedPlan ? 'default' : 'outline'}
+                variant={plan.id === selectedPlan && plan.id !== currentPlan.id ? 'default' : 'outline'}
               >
                 {plan.id === currentPlan.id ? 'Current Plan' : 
                  plan.id === 'free' ? 'Free Plan' :

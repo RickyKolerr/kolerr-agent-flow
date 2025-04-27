@@ -9,56 +9,87 @@ import {
   Plus,
   Receipt,
   ChevronDown,
-  CheckCircle2
+  CheckCircle2,
+  Info
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useCredits } from "@/contexts/CreditContext";
+import { toast } from "sonner";
 
 const Billing = () => {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
+  const { hasPremiumPlan, premiumCredits } = useCredits();
 
-  // Mock data for billing plans
+  // Mock data for billing plans - matching with Pricing page
   const plans = [
+    {
+      id: "free",
+      name: "Free",
+      description: "Basic access for everyone",
+      price: "$0",
+      period: "forever",
+      features: [
+        "5 AI-Matchmaking searches per day",
+        "Basic creator profiles",
+        "Limited analytics",
+        "Community support",
+        "Basic search filters"
+      ],
+      current: !hasPremiumPlan
+    },
     {
       id: "starter",
       name: "Starter",
-      description: "Perfect for small brands just getting started with influencer marketing.",
-      price: "$49",
+      price: "$100",
+      period: "per month",
+      description: "Perfect for small brands starting with influencer marketing",
       features: [
-        "10 KOL searches per month",
-        "5 outreach campaigns",
-        "Basic analytics",
-        "Email support"
+        "100 Premium credits per month",
+        "Up to 3 active campaigns",
+        "Basic contract templates",
+        "Email support",
+        "Basic analytics dashboard",
+        "Advanced search filters"
       ],
-      current: false
+      current: hasPremiumPlan && premiumCredits <= 100
+    },
+    {
+      id: "growth",
+      name: "Growth",
+      price: "$200",
+      period: "per month",
+      description: "For growing brands scaling their influencer programs",
+      features: [
+        "500 Premium credits per month",
+        "Up to 10 active campaigns",
+        "Advanced contract templates",
+        "Priority email support",
+        "Campaign performance tracking",
+        "Automated outreach tools",
+        "ROI analytics"
+      ],
+      current: hasPremiumPlan && premiumCredits > 100 && premiumCredits <= 500,
+      popular: true
     },
     {
       id: "pro",
       name: "Pro",
-      description: "For growing brands with active influencer marketing programs.",
-      price: "$149",
+      price: "$400",
+      period: "per month",
+      description: "For professional agencies and established brands",
       features: [
-        "50 KOL searches per month",
-        "Unlimited campaigns",
-        "Advanced analytics & reporting",
-        "Priority support",
-        "Contract templates"
-      ],
-      current: true
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise",
-      description: "For established brands with extensive influencer partnerships.",
-      price: "$499",
-      features: [
-        "Unlimited KOL searches",
-        "Unlimited campaigns",
-        "Custom analytics",
-        "Dedicated account manager",
-        "Custom contract creation",
+        "2000 Premium credits per month",
+        "Unlimited active campaigns",
+        "Custom contract builder",
+        "24/7 priority support",
+        "Advanced campaign automation",
+        "Team collaboration tools",
+        "Custom reporting",
         "API access"
       ],
-      current: false
+      current: hasPremiumPlan && premiumCredits > 500
     }
   ];
 
@@ -83,32 +114,41 @@ const Billing = () => {
     {
       id: "INV-001",
       date: "Apr 1, 2023",
-      amount: "$149.00",
+      amount: "$200.00",
       status: "Paid",
-      description: "Pro Plan - Monthly"
+      description: "Growth Plan - Monthly"
     },
     {
       id: "INV-002",
       date: "Mar 1, 2023",
-      amount: "$149.00",
+      amount: "$200.00",
       status: "Paid",
-      description: "Pro Plan - Monthly"
+      description: "Growth Plan - Monthly"
     },
     {
       id: "INV-003",
       date: "Feb 1, 2023",
-      amount: "$149.00",
-      status: "Paid",
-      description: "Pro Plan - Monthly"
-    },
-    {
-      id: "INV-004",
-      date: "Jan 1, 2023",
-      amount: "$49.00",
+      amount: "$100.00",
       status: "Paid",
       description: "Starter Plan - Monthly"
     }
   ];
+
+  const handleViewPlanDetails = () => {
+    navigate("/dashboard/subscription");
+  };
+
+  const handleChangePlan = () => {
+    navigate("/dashboard/subscription");
+  };
+
+  const handleCancelSubscription = () => {
+    toast.info("Please contact customer support to cancel your subscription.");
+  };
+
+  const handleSelectPlan = (planId) => {
+    navigate("/dashboard/subscription");
+  };
 
   return (
     <div className="space-y-6">
@@ -138,14 +178,23 @@ const Billing = () => {
             <CardContent className="space-y-6">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div>
-                  <h3 className="font-semibold text-lg">Pro Plan</h3>
-                  <p className="text-muted-foreground">$149/month, billed monthly</p>
+                  <h3 className="font-semibold text-lg">
+                    {hasPremiumPlan ? "Growth Plan" : "Free Plan"}
+                  </h3>
+                  <p className="text-muted-foreground">
+                    {hasPremiumPlan ? "$200/month, billed monthly" : "Free forever"}
+                  </p>
                 </div>
                 <div className="flex flex-col xs:flex-row gap-2">
-                  <Button variant="outline">Change Plan</Button>
-                  <Button variant="outline" className="text-red-500 hover:text-red-700">
-                    Cancel Subscription
-                  </Button>
+                  <Button variant="outline" onClick={handleViewPlanDetails}>View Details</Button>
+                  {hasPremiumPlan && (
+                    <Button variant="outline" onClick={handleChangePlan}>Change Plan</Button>
+                  )}
+                  {hasPremiumPlan && (
+                    <Button variant="outline" className="text-red-500 hover:text-red-700" onClick={handleCancelSubscription}>
+                      Cancel Subscription
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -153,31 +202,31 @@ const Billing = () => {
                 <h4 className="font-medium">Your usage this month</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">KOL searches</span>
-                    <span>23 / 50</span>
+                    <span className="text-muted-foreground">AI Search Credits</span>
+                    <span>{hasPremiumPlan ? `${500 - premiumCredits} / 500 used` : `5 daily searches`}</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
-                    <div className="h-2 bg-brand-pink rounded-full w-[46%]"></div>
+                    <div 
+                      className="h-2 bg-brand-pink rounded-full" 
+                      style={{ width: hasPremiumPlan ? `${((500 - premiumCredits) / 500) * 100}%` : "0%" }}
+                    ></div>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">Active campaigns</span>
-                    <span>4 / Unlimited</span>
+                    <span>{hasPremiumPlan ? "4 / 10" : "0 / 0"}</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
                     <div className="h-2 bg-brand-pink rounded-full w-[40%]"></div>
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Credits</span>
-                    <span>720 remaining</span>
+                {hasPremiumPlan && (
+                  <div className="pt-2 flex items-center text-sm">
+                    <Info className="h-4 w-4 mr-2 text-brand-pink" />
+                    <span>You have {premiumCredits} premium credits remaining</span>
                   </div>
-                  <div className="h-2 bg-secondary rounded-full">
-                    <div className="h-2 bg-brand-pink rounded-full w-[72%]"></div>
-                  </div>
-                </div>
+                )}
               </div>
 
               <div className="border rounded-lg p-4">
@@ -189,14 +238,14 @@ const Billing = () => {
                     </p>
                     <p className="flex items-center gap-2">
                       <CreditCard className="h-4 w-4" /> 
-                      Visa ending in 4242
+                      {hasPremiumPlan ? "Visa ending in 4242" : "None"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm font-medium text-muted-foreground">
                       Next billing date
                     </p>
-                    <p>May 1, 2023</p>
+                    <p>{hasPremiumPlan ? "May 1, 2023" : "N/A"}</p>
                   </div>
                 </div>
               </div>
@@ -205,16 +254,23 @@ const Billing = () => {
         </TabsContent>
 
         <TabsContent value="plans" className="space-y-4">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {plans.map((plan) => (
               <Card 
                 key={plan.id} 
-                className={`relative ${plan.current ? "border-brand-pink shadow-lg" : ""}`}
+                className={`relative ${plan.current ? "border-brand-pink shadow-lg" : ""} ${plan.popular ? "border-brand-pink shadow-lg" : ""}`}
               >
                 {plan.current && (
                   <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
                     <span className="bg-brand-pink text-white text-xs font-medium px-2 py-1 rounded-full">
                       Current
+                    </span>
+                  </div>
+                )}
+                {plan.popular && !plan.current && (
+                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/4">
+                    <span className="bg-brand-pink text-white text-xs font-medium px-2 py-1 rounded-full">
+                      Most Popular
                     </span>
                   </div>
                 )}
@@ -225,7 +281,7 @@ const Billing = () => {
                 <CardContent className="space-y-4">
                   <div>
                     <span className="text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
+                    <span className="text-muted-foreground">{plan.period}</span>
                   </div>
                   <ul className="space-y-2">
                     {plan.features.map((feature, i) => (
@@ -238,9 +294,10 @@ const Billing = () => {
                   <Button 
                     className={`w-full ${plan.current ? "bg-brand-pink hover:bg-brand-pink/90" : ""}`}
                     variant={plan.current ? "default" : "outline"}
-                    disabled={plan.current}
+                    disabled={plan.current || plan.id === "free"}
+                    onClick={() => handleSelectPlan(plan.id)}
                   >
-                    {plan.current ? "Current Plan" : "Select Plan"}
+                    {plan.current ? "Current Plan" : plan.id === "free" ? "Free Plan" : "Select Plan"}
                   </Button>
                 </CardContent>
               </Card>
