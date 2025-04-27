@@ -2,13 +2,16 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, User, MessageCircle, Figma, Paperclip } from "lucide-react";
-import { useSearchCredits } from "@/hooks/useSearchCredits";
+import { Search, User, MessageCircle, Lock } from "lucide-react";
+import { useUserAccess } from "@/hooks/useUserAccess";
+import { toast } from "sonner";
+
 interface Message {
   id: string;
   type: "user" | "bot";
   content: string;
 }
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -19,27 +22,49 @@ const HomePage = () => {
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const {
-    creditsLeft,
-    useCredit
-  } = useSearchCredits();
+  const { isAuthenticated, canAccessFeature, getRedirectPath, creditsLeft } = useUserAccess();
+
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({
-        behavior: "smooth"
-      });
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
   const handleSendMessage = () => {
+    if (!canAccessFeature("search")) {
+      if (!isAuthenticated) {
+        toast.info("Please sign in to continue", {
+          action: {
+            label: "Sign In",
+            onClick: () => navigate("/login")
+          }
+        });
+        return;
+      }
+      
+      if (creditsLeft === 0) {
+        toast.error("Out of free searches", {
+          description: "Upgrade your plan to continue searching",
+          action: {
+            label: "Upgrade",
+            onClick: () => navigate("/pricing")
+          }
+        });
+        return;
+      }
+    }
+
     if (inputValue.trim() === "") return;
-    if (!useCredit()) return;
+
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: inputValue
     };
+    
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+
     setTimeout(() => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -49,24 +74,59 @@ const HomePage = () => {
       setMessages(prev => [...prev, botResponse]);
     }, 1000);
   };
+
   const handleSearch = () => {
+    if (!canAccessFeature("search")) {
+      if (!isAuthenticated) {
+        toast.info("Please sign in to continue", {
+          action: {
+            label: "Sign In",
+            onClick: () => navigate("/login")
+          }
+        });
+        return;
+      }
+      
+      if (creditsLeft === 0) {
+        toast.error("Out of free searches", {
+          description: "Upgrade your plan to continue searching",
+          action: {
+            label: "Upgrade",
+            onClick: () => navigate("/pricing")
+          }
+        });
+        return;
+      }
+    }
+
     if (searchQuery.trim() === "") return;
-    if (!useCredit()) return;
+
     const searchMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: `Search for: ${searchQuery}`
     };
+    
     setMessages(prev => [...prev, searchMessage]);
+
     setTimeout(() => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: "bot",
-        content: `I found several TikTok creators matching "${searchQuery}". To see detailed analytics and book them, please sign in.`
+        content: isAuthenticated 
+          ? `I found several TikTok creators matching "${searchQuery}". Let me analyze their profiles.`
+          : "To see detailed analytics and book these creators, please sign in."
       };
       setMessages(prev => [...prev, botResponse]);
+
+      if (!isAuthenticated) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 2000);
+      }
     }, 1000);
   };
+
   const getResponse = (message: string) => {
     const lowerMsg = message.toLowerCase();
     if (lowerMsg.includes("hello") || lowerMsg.includes("hi ")) {
@@ -81,7 +141,9 @@ const HomePage = () => {
       return "I'd love to help you with that! To access our full platform features including KOL search, campaign management, and analytics, please sign in or create an account.";
     }
   };
-  return <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
+
+  return (
+    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
       <div className="container mx-auto px-4 py-16 flex-1 flex lg:flex-row flex-col gap-8 relative z-10">
         <div className="lg:w-2/3 w-full flex flex-col">
           <div className="text-center lg:text-left mb-8">
@@ -103,10 +165,23 @@ const HomePage = () => {
                 <div>
                   <h2 className="font-semibold text-lg">AI KOL Discovery Agent</h2>
                   <p className="text-sm text-muted-foreground">
-                    {creditsLeft > 0 ? `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` : 'Out of free searches today'}
+                    {creditsLeft > 0 
+                      ? `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` 
+                      : 'Out of free searches today'}
                   </p>
                 </div>
               </div>
+              {!isAuthenticated && (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="text-brand-pink hover:text-brand-pink/90"
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  Sign in for full access
+                </Button>
+              )}
             </div>
 
             <div className="bg-black/40 p-4 border-b border-white/10">
@@ -179,6 +254,8 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-    </div>;
+    </div>
+  );
 };
+
 export default HomePage;
