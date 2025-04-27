@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Card,
@@ -34,6 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 import {
   Search,
   SlidersHorizontal,
@@ -60,14 +60,12 @@ const AdvancedSearch = () => {
   const [locationFilter, setLocationFilter] = useState("");
   const [searchCost, setSearchCost] = useState(3);
   
-  // Common niches for selection
   const niches = [
     "Fashion", "Beauty", "Fitness", "Gaming", "Technology", "Food", "Travel", 
     "Lifestyle", "Comedy", "Education", "Finance", "Music", "Art", "Sports", 
     "Business", "Health", "Home Decor", "Parenting", "Pets"
   ];
   
-  // Add custom niche
   const handleAddCustomNiche = () => {
     if (customNiche && !selectedNiches.includes(customNiche)) {
       setSelectedNiches([...selectedNiches, customNiche]);
@@ -76,12 +74,10 @@ const AdvancedSearch = () => {
     }
   };
   
-  // Remove a selected niche
   const handleRemoveNiche = (niche: string) => {
     setSelectedNiches(selectedNiches.filter(n => n !== niche));
   };
   
-  // Toggle a niche selection
   const handleToggleNiche = (niche: string) => {
     if (selectedNiches.includes(niche)) {
       handleRemoveNiche(niche);
@@ -90,7 +86,6 @@ const AdvancedSearch = () => {
     }
   };
   
-  // Format follower count
   const formatFollowerCount = (value: number) => {
     if (value >= 1000000) {
       return `${(value / 1000000).toFixed(1)}M`;
@@ -100,35 +95,27 @@ const AdvancedSearch = () => {
     return value.toString();
   };
   
-  // Update search cost based on selections
   useEffect(() => {
-    let cost = 1; // Base cost
+    let cost = 1;
     
-    // Additional costs based on complexity
     if (selectedNiches.length > 0) cost += 1;
     if (locationFilter) cost += 1;
     
-    // If using audience insights, higher cost
     if (searchType === "audience") cost = 5;
     
     setSearchCost(cost);
   }, [selectedNiches, locationFilter, searchType]);
   
-  // Execute the search
   const handleSearch = () => {
-    // Check if user has enough credits
     if (hasPremiumPlan && premiumCredits >= searchCost) {
-      // Use premium credits
       usePremiumCredit(searchCost);
       executeSearch();
     } else if (freeCredits >= searchCost) {
-      // Use free credits
       for (let i = 0; i < searchCost; i++) {
         useFreeCredit();
       }
       executeSearch();
     } else {
-      // Not enough credits
       toast.error("Not enough search credits", {
         description: `This search requires ${searchCost} credits. You need more credits to continue.`,
         action: {
@@ -141,7 +128,6 @@ const AdvancedSearch = () => {
   };
   
   const executeSearch = () => {
-    // Build search parameters
     const params = new URLSearchParams();
     
     if (searchQuery) {
@@ -168,7 +154,6 @@ const AdvancedSearch = () => {
     
     params.set("searchType", searchType);
     
-    // Navigate to search results with our parameters
     navigate(`/search?${params.toString()}`);
     
     toast.success(
@@ -252,7 +237,6 @@ const AdvancedSearch = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              {/* Basic search query */}
               <div className="space-y-2">
                 <Label htmlFor="search-query">Search Terms</Label>
                 <div className="relative">
@@ -267,7 +251,6 @@ const AdvancedSearch = () => {
                 </div>
               </div>
               
-              {/* Creator niches */}
               <div className="space-y-2">
                 <Label>Creator Niches</Label>
                 
@@ -317,7 +300,6 @@ const AdvancedSearch = () => {
                 <AccordionItem value="additional-filters">
                   <AccordionTrigger>Additional Filters</AccordionTrigger>
                   <AccordionContent className="space-y-6">
-                    {/* Followers range */}
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <Label>Follower Count</Label>
@@ -333,7 +315,6 @@ const AdvancedSearch = () => {
                       />
                     </div>
                     
-                    {/* Engagement rate */}
                     <div className="space-y-2">
                       <div className="flex justify-between">
                         <Label>Engagement Rate (%)</Label>
@@ -349,7 +330,6 @@ const AdvancedSearch = () => {
                       />
                     </div>
                     
-                    {/* Verified only */}
                     <div className="flex items-center space-x-2">
                       <Checkbox 
                         id="verified" 
@@ -359,7 +339,6 @@ const AdvancedSearch = () => {
                       <Label htmlFor="verified">Verified creators only</Label>
                     </div>
                     
-                    {/* Location filter */}
                     <div className="space-y-2">
                       <Label htmlFor="location">Creator Location</Label>
                       <Select 
