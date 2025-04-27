@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, BarChart, Calendar, CreditCard, 
-  User, Settings, FileText, LogOut, Menu, X 
+  Settings, FileText, LogOut, Menu, X 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -63,18 +63,6 @@ const DashboardLayout = () => {
   ];
   
   const userItems = [
-    { 
-      icon: User, 
-      name: "Profile", 
-      path: "/dashboard/profile",
-      description: "Manage your profile"
-    },
-    { 
-      icon: CreditCard, 
-      name: "Billing", 
-      path: "/dashboard/billing",
-      description: "Billing and subscription details"
-    },
     { 
       icon: Settings, 
       name: "Settings", 
