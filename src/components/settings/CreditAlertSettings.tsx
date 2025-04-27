@@ -34,8 +34,8 @@ export const CreditAlertSettings = () => {
         </div>
         
         {emailAlerts && (
-          <div className="flex items-center space-x-4">
-            <div className="space-y-1 flex-1">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4">
+            <div className="space-y-1 mb-2 sm:mb-0">
               <Label htmlFor="threshold">Alert Threshold (%)</Label>
               <div className="flex items-center">
                 <Input
@@ -50,7 +50,7 @@ export const CreditAlertSettings = () => {
                 <span className="text-sm text-muted-foreground">%</span>
               </div>
             </div>
-            <div className="text-sm text-muted-foreground hidden sm:block max-w-[60%]">
+            <div className="text-sm text-muted-foreground mt-2 sm:mt-0">
               You'll be notified when your credits fall below {threshold}% of your total allocation
             </div>
           </div>
