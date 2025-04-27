@@ -14,15 +14,18 @@
     --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 329 86% 70%;
+    /* Updated primary color to match logo's magenta */
+    --primary: 315 90% 70%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 240 3.7% 15.9%;
-    --secondary-foreground: 0 0% 98%;
+    /* Updated secondary color to match logo's cyan */
+    --secondary: 180 90% 50%;
+    --secondary-foreground: 0 0% 100%;
 
     --muted: 240 3.7% 15.9%;
     --muted-foreground: 240 5% 64.9%;
 
+    /* Updated accent color to match logo's orange */
     --accent: 24 94% 53%;
     --accent-foreground: 0 0% 100%;
 
@@ -35,14 +38,15 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 225 73% 33%;
+    /* Updated sidebar theme */
+    --sidebar-background: 315 90% 70%;
     --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 329 86% 70%;
+    --sidebar-primary: 180 90% 50%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 225 73% 28%;
+    --sidebar-accent: 315 80% 60%;
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 225 73% 28%;
-    --sidebar-ring: 329 86% 70%;
+    --sidebar-border: 315 80% 60%;
+    --sidebar-ring: 180 90% 50%;
   }
 }
 
@@ -62,5 +66,14 @@
   
   .hover-scale {
     @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  /* Add gradient utility based on the logo */
+  .brand-gradient {
+    @apply bg-gradient-to-br from-[#FF1B6B] via-[#45CAFF] to-[#9C42F5];
+  }
+  
+  .brand-gradient-text {
+    @apply bg-gradient-to-br from-[#FF1B6B] via-[#45CAFF] to-[#9C42F5] bg-clip-text text-transparent;
   }
 }
