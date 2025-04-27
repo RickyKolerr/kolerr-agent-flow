@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -46,6 +47,13 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 
+// Search pages
+import Index from "@/pages/Index";
+import SearchResults from "@/pages/search/SearchResults";
+import AdvancedSearch from "@/pages/search/AdvancedSearch";
+import SearchHistory from "@/pages/search/SearchHistory";
+import CreatorProfile from "@/pages/creators/CreatorProfile";
+
 // Components
 import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
@@ -81,7 +89,8 @@ const App = () => {
               <Layout>
                 <Routes>
                   {/* Public routes */}
-                  <Route path="/" element={<HomePage />} />
+                  <Route path="/" element={<Index />} />
+                  <Route path="/home" element={<HomePage />} />
                   <Route path="/about" element={<AboutPage />} />
                   <Route path="/features" element={<FeaturesPage />} />
                   <Route path="/pricing" element={<PricingPage />} />
@@ -91,6 +100,12 @@ const App = () => {
                   <Route path="/help" element={<HelpCenter />} />
                   <Route path="/contact" element={<ContactPage />} />
                   <Route path="/partners" element={<PartnersPage />} />
+                  
+                  {/* Search routes */}
+                  <Route path="/search" element={<SearchResults />} />
+                  <Route path="/search/advanced" element={<AdvancedSearch />} />
+                  <Route path="/search/history" element={<SearchHistory />} />
+                  <Route path="/creators/:creatorId" element={<CreatorProfile />} />
                   
                   {/* Legal routes */}
                   <Route path="/terms" element={<TermsPage />} />
