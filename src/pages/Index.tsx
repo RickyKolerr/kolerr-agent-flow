@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -5,11 +6,13 @@ import { Sparkles, Rocket, Star, Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
+  const { t } = useLanguage();
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -71,14 +74,14 @@ const Index = () => {
           <div className="space-y-6 animate-fade-in">
             <h1 className="text-4xl md:text-7xl font-bold tracking-tighter">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-500">
-                Discover Your
+                {t('index.heroTitle')}
               </span>
               <br />
-              <span className="text-white">Perfect KOL</span>
+              <span className="text-white">{t('index.heroSubtitle')}</span>
             </h1>
             
             <p className="text-lg md:text-xl text-gray-300 max-w-xl mx-auto">
-              Connect with TikTok creators that elevate your brand
+              {t('index.heroDescription')}
             </p>
           </div>
 
@@ -88,7 +91,7 @@ const Index = () => {
               <div className="relative">
                 <Input 
                   className="w-full bg-black/50 text-lg p-6 pl-12 rounded-xl border-white/10"
-                  placeholder="Find your next TikTok star..."
+                  placeholder={t('index.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
@@ -105,7 +108,7 @@ const Index = () => {
                     onClick={() => handleCategorySearch("top")}
                   >
                     <Star className="h-4 w-4 mr-2" />
-                    Top Creators
+                    {t('index.topCreators')}
                   </Button>
                   <Button 
                     variant="ghost" 
@@ -114,7 +117,7 @@ const Index = () => {
                     onClick={() => handleCategorySearch("trending")}
                   >
                     <Rocket className="h-4 w-4 mr-2" />
-                    Trending
+                    {t('index.trending')}
                   </Button>
                 </div>
                 <Button 
@@ -122,7 +125,7 @@ const Index = () => {
                   onClick={handleSearch}
                 >
                   <Search className="h-4 w-4 mr-2" />
-                  Start Discovering
+                  {t('index.startDiscovering')}
                 </Button>
               </div>
             </div>

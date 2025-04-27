@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,6 +9,7 @@ import { useState } from "react";
 // Context providers
 import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
 import { CreditProvider } from "@/contexts/CreditContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 
 // Pages
 import HomePage from "@/pages/HomePage";
@@ -81,78 +83,80 @@ const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
       <HashRouter>
-        <AuthProvider>
-          <CreditProvider>
-            <TooltipProvider>
-              <Toaster />
-              <Sonner />
-              <Layout>
-                <Routes>
-                  {/* Public routes */}
-                  <Route path="/" element={<Index />} />
-                  <Route path="/home" element={<HomePage />} />
-                  <Route path="/about" element={<AboutPage />} />
-                  <Route path="/features" element={<FeaturesPage />} />
-                  <Route path="/pricing" element={<PricingPage />} />
-                  <Route path="/docs" element={<DocsPage />} />
-                  <Route path="/api" element={<APIPage />} />
-                  <Route path="/blog" element={<BlogPage />} />
-                  <Route path="/help" element={<HelpCenter />} />
-                  <Route path="/contact" element={<ContactPage />} />
-                  <Route path="/partners" element={<PartnersPage />} />
-                  
-                  {/* Search routes */}
-                  <Route path="/search" element={<SearchResults />} />
-                  <Route path="/search/advanced" element={<AdvancedSearch />} />
-                  <Route path="/search/history" element={<SearchHistory />} />
-                  <Route path="/creators/:creatorId" element={<CreatorProfile />} />
-                  
-                  {/* Legal routes */}
-                  <Route path="/terms" element={<TermsPage />} />
-                  <Route path="/privacy" element={<PrivacyPage />} />
-                  <Route path="/security" element={<SecurityPage />} />
-                  
-                  {/* Auth routes */}
-                  <Route path="/login" element={<LoginPage />} />
-                  <Route path="/signup" element={<SignupPage />} />
-                  <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                  
-                  {/* Onboarding routes */}
-                  <Route path="/onboarding/brand" element={
-                    <ProtectedRoute>
-                      <OnboardingBrand />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="/onboarding/kol" element={
-                    <ProtectedRoute>
-                      <OnboardingKOL />
-                    </ProtectedRoute>
-                  } />
-                  
-                  {/* Protected dashboard routes */}
-                  <Route path="/dashboard" element={<DashboardLayout />}>
-                    <Route index element={<Navigate to="/dashboard/overview" replace />} />
-                    <Route path="overview" element={<Overview />} />
-                    <Route path="kols" element={<KOLsPage />} />
-                    <Route path="campaigns/create" element={<CreateCampaign />} />
-                    <Route path="campaigns" element={<CampaignsPage />} />
-                    <Route path="bookings" element={<BookingsPage />} />
-                    <Route path="credits" element={<CreditsPage />} />
-                    <Route path="profile" element={<ProfilePage />} />
-                    <Route path="billing" element={<BillingPage />} />
-                    <Route path="subscription" element={<SubscriptionPage />} />
-                    <Route path="contracts" element={<ContractsPage />} />
-                    <Route path="settings" element={<SettingsPage />} />
-                    <Route path="payment" element={<PaymentPage />} />
-                  </Route>
-                  
-                  {/* Catch all route */}
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Layout>
-            </TooltipProvider>
-          </CreditProvider>
-        </AuthProvider>
+        <LanguageProvider>
+          <AuthProvider>
+            <CreditProvider>
+              <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <Layout>
+                  <Routes>
+                    {/* Public routes */}
+                    <Route path="/" element={<Index />} />
+                    <Route path="/home" element={<HomePage />} />
+                    <Route path="/about" element={<AboutPage />} />
+                    <Route path="/features" element={<FeaturesPage />} />
+                    <Route path="/pricing" element={<PricingPage />} />
+                    <Route path="/docs" element={<DocsPage />} />
+                    <Route path="/api" element={<APIPage />} />
+                    <Route path="/blog" element={<BlogPage />} />
+                    <Route path="/help" element={<HelpCenter />} />
+                    <Route path="/contact" element={<ContactPage />} />
+                    <Route path="/partners" element={<PartnersPage />} />
+                    
+                    {/* Search routes */}
+                    <Route path="/search" element={<SearchResults />} />
+                    <Route path="/search/advanced" element={<AdvancedSearch />} />
+                    <Route path="/search/history" element={<SearchHistory />} />
+                    <Route path="/creators/:creatorId" element={<CreatorProfile />} />
+                    
+                    {/* Legal routes */}
+                    <Route path="/terms" element={<TermsPage />} />
+                    <Route path="/privacy" element={<PrivacyPage />} />
+                    <Route path="/security" element={<SecurityPage />} />
+                    
+                    {/* Auth routes */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    
+                    {/* Onboarding routes */}
+                    <Route path="/onboarding/brand" element={
+                      <ProtectedRoute>
+                        <OnboardingBrand />
+                      </ProtectedRoute>
+                    } />
+                    <Route path="/onboarding/kol" element={
+                      <ProtectedRoute>
+                        <OnboardingKOL />
+                      </ProtectedRoute>
+                    } />
+                    
+                    {/* Protected dashboard routes */}
+                    <Route path="/dashboard" element={<DashboardLayout />}>
+                      <Route index element={<Navigate to="/dashboard/overview" replace />} />
+                      <Route path="overview" element={<Overview />} />
+                      <Route path="kols" element={<KOLsPage />} />
+                      <Route path="campaigns/create" element={<CreateCampaign />} />
+                      <Route path="campaigns" element={<CampaignsPage />} />
+                      <Route path="bookings" element={<BookingsPage />} />
+                      <Route path="credits" element={<CreditsPage />} />
+                      <Route path="profile" element={<ProfilePage />} />
+                      <Route path="billing" element={<BillingPage />} />
+                      <Route path="subscription" element={<SubscriptionPage />} />
+                      <Route path="contracts" element={<ContractsPage />} />
+                      <Route path="settings" element={<SettingsPage />} />
+                      <Route path="payment" element={<PaymentPage />} />
+                    </Route>
+                    
+                    {/* Catch all route */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Layout>
+              </TooltipProvider>
+            </CreditProvider>
+          </AuthProvider>
+        </LanguageProvider>
       </HashRouter>
     </QueryClientProvider>
   );

@@ -1,12 +1,14 @@
 
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
-import { Menu, User } from "lucide-react";
+import { Menu, User, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 export const MainNav = () => {
   const {
@@ -14,6 +16,8 @@ export const MainNav = () => {
     isAuthenticated,
     logout
   } = useAuth();
+
+  const { t } = useLanguage();
 
   // Add state for controlling sheet visibility
   const [isOpen, setIsOpen] = useState(false);
@@ -36,31 +40,32 @@ export const MainNav = () => {
             <img 
               src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
               alt="Kolerr Logo" 
-              className="h-16 w-auto" // Increased from h-12 to h-16
+              className="h-16 w-auto" 
             />
           </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             <Link to="/about" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              About
+              {t('mainNav.about')}
             </Link>
             <Link to="/features" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Features
+              {t('mainNav.features')}
             </Link>
             <Link to="/pricing" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Pricing
+              {t('mainNav.pricing')}
             </Link>
             <Link to="/docs" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Docs
+              {t('mainNav.docs')}
             </Link>
             <Link to="/contact" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Contact
+              {t('mainNav.contact')}
             </Link>
           </nav>
 
-          {/* Desktop Auth Buttons */}
+          {/* Desktop Auth Buttons and Language Toggle */}
           <div className="hidden md:flex items-center space-x-4">
+            <LanguageToggle />
             {isAuthenticated ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -81,25 +86,25 @@ export const MainNav = () => {
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard">Dashboard</Link>
+                    <Link to="/dashboard">{t('mainNav.dashboard')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard/profile">Profile</Link>
+                    <Link to="/dashboard/profile">{t('mainNav.profile')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to="/dashboard/settings">Settings</Link>
+                    <Link to="/dashboard/settings">{t('mainNav.settings')}</Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logout}>
-                    Log out
+                    {t('mainNav.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu> : <>
                 <Link to="/login" className="text-sm font-medium hover:text-brand-pink transition-colors">
-                  Log In
+                  {t('mainNav.login')}
                 </Link>
                 <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors">
-                  Sign Up
+                  {t('mainNav.signup')}
                 </Link>
               </>}
           </div>
@@ -115,20 +120,35 @@ export const MainNav = () => {
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
                 <Link to="/about" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  About
+                  {t('mainNav.about')}
                 </Link>
                 <Link to="/features" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  Features
+                  {t('mainNav.features')}
                 </Link>
                 <Link to="/pricing" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  Pricing
+                  {t('mainNav.pricing')}
                 </Link>
                 <Link to="/docs" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  Docs
+                  {t('mainNav.docs')}
                 </Link>
                 <Link to="/contact" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  Contact
+                  {t('mainNav.contact')}
                 </Link>
+                <div className="flex items-center space-x-2">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-lg font-medium hover:text-brand-pink transition-colors"
+                    onClick={() => {
+                      const { language, setLanguage } = useLanguage();
+                      setLanguage(language === 'en' ? 'vi' : 'en');
+                      handleMobileNavClick();
+                    }}
+                  >
+                    <Languages className="h-5 w-5 mr-2" />
+                    {language === 'en' ? 'Tiếng Việt' : 'English'}
+                  </Button>
+                </div>
                 <div className="flex flex-col space-y-4 pt-6 border-t border-gray-800">
                   {isAuthenticated ? (
                     <>
@@ -143,25 +163,25 @@ export const MainNav = () => {
                         </div>
                       </div>
                       <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                        Dashboard
+                        {t('mainNav.dashboard')}
                       </Link>
                       <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                        Profile
+                        {t('mainNav.profile')}
                       </Link>
                       <Link to="/dashboard/settings" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                        Settings
+                        {t('mainNav.settings')}
                       </Link>
                       <button onClick={() => { logout(); handleMobileNavClick(); }} className="text-lg font-medium hover:text-brand-pink transition-colors text-left">
-                        Log out
+                        {t('mainNav.logout')}
                       </button>
                     </>
                   ) : (
                     <>
                       <Link to="/login" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                        Log In
+                        {t('mainNav.login')}
                       </Link>
                       <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center" onClick={handleMobileNavClick}>
-                        Sign Up
+                        {t('mainNav.signup')}
                       </Link>
                     </>
                   )}

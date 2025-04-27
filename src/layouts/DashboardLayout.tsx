@@ -1,8 +1,9 @@
+
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, BarChart, Calendar, CreditCard, 
-  Settings, FileText, LogOut, Menu, X 
+  Settings, FileText, LogOut, Menu, X, Languages 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -10,6 +11,7 @@ import { ProtectedRoute } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/contexts/LanguageContext";
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +21,7 @@ import {
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -28,37 +31,37 @@ const DashboardLayout = () => {
       icon: LayoutDashboard, 
       name: "Overview", 
       path: "/dashboard/overview",
-      description: "Dashboard overview and key metrics"
+      description: t('dashboard.overview')
     },
     { 
       icon: Users, 
       name: "KOLs", 
       path: "/dashboard/kols",
-      description: "Browse and manage KOL profiles"
+      description: t('dashboard.kols')
     },
     {
       icon: BarChart,
       name: "Analytics",
       path: "/dashboard/analytics",
-      description: "Performance metrics, ROI tracking, and credit usage insights"
+      description: t('dashboard.analytics')
     },
     { 
       icon: Calendar, 
       name: "Bookings", 
       path: "/dashboard/bookings",
-      description: "Manage your KOL bookings"
+      description: t('dashboard.bookings')
     },
     { 
       icon: CreditCard, 
       name: "Credits", 
       path: "/dashboard/credits",
-      description: "Search credit balance and history"
+      description: t('dashboard.credits')
     },
     { 
       icon: FileText, 
       name: "Contracts", 
       path: "/dashboard/contracts",
-      description: "Campaign contracts and agreements"
+      description: t('dashboard.contracts')
     },
   ];
   
@@ -67,7 +70,7 @@ const DashboardLayout = () => {
       icon: Settings, 
       name: "Settings", 
       path: "/dashboard/settings",
-      description: "Account preferences"
+      description: t('dashboard.settings')
     },
   ];
 
@@ -90,6 +93,10 @@ const DashboardLayout = () => {
       .toUpperCase();
   };
 
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'vi' : 'en');
+  };
+
   return (
     <ProtectedRoute>
       <div className="flex h-screen bg-background">
@@ -110,7 +117,7 @@ const DashboardLayout = () => {
             "md:translate-x-0"
           )}
         >
-          <div className="h-16 flex items-center px-6 border-b border-white/10">
+          <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
             <button 
               onClick={() => handleNavigation('/')} 
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
@@ -124,6 +131,15 @@ const DashboardLayout = () => {
                 Kolerr
               </span>
             </button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleLanguage} 
+              className="text-white/70 hover:text-white hover:bg-white/10"
+              title={language === 'en' ? t('language.vi') : t('language.en')}
+            >
+              <Languages className="h-5 w-5" />
+            </Button>
           </div>
 
           <TooltipProvider>
@@ -181,7 +197,7 @@ const DashboardLayout = () => {
                   className="flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3 text-white/70 hover:text-white hover:bg-white/10"
                 >
                   <LogOut className="h-5 w-5" />
-                  <span>Logout</span>
+                  <span>{t('mainNav.logout')}</span>
                 </button>
               </div>
             </nav>
