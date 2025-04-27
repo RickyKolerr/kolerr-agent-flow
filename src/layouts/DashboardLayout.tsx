@@ -128,11 +128,11 @@ const DashboardLayout = () => {
               className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
             >
               <img 
-                src="/lovable-uploads/24be9cce-35ba-4568-9efb-436abe513e26.png" 
+                src="/lovable-uploads/d4572dc9-629c-46f5-9256-41590c40e030.png" 
                 alt="Kolerr Logo" 
-                className="h-10 w-10 rounded-xl"
+                className="h-10 w-10"
               />
-              <span className="font-bold text-2xl bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
+              <span className="font-bold text-2xl bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to bg-clip-text text-transparent">
                 Kolerr
               </span>
             </button>
@@ -149,7 +149,7 @@ const DashboardLayout = () => {
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
                           location.pathname === item.path
-                            ? "bg-brand-pink text-white font-medium shadow-lg shadow-brand-pink/20"
+                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
@@ -175,7 +175,7 @@ const DashboardLayout = () => {
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
                           location.pathname === item.path
-                            ? "bg-brand-pink text-white font-medium shadow-lg shadow-brand-pink/20"
+                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
@@ -201,9 +201,9 @@ const DashboardLayout = () => {
 
           <div className="absolute bottom-0 w-full p-4 border-t border-white/10 bg-black/20">
             <div className="flex items-center gap-3">
-              <Avatar className="h-10 w-10 border-2 border-brand-pink">
+              <Avatar className="h-10 w-10 border-2 border-brand-gradient-via">
                 <AvatarImage src={user?.avatar} />
-                <AvatarFallback className="bg-brand-pink text-white">
+                <AvatarFallback className="bg-brand-gradient-via text-white">
                   {user?.name ? getInitials(user.name) : "U"}
                 </AvatarFallback>
               </Avatar>
