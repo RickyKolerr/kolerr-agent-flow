@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,6 +5,7 @@ import { Check, Info } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
+import { CreditPackages } from "@/components/credits/CreditPackages";
 
 const PricingPage = () => {
   const navigate = useNavigate();
@@ -127,6 +127,7 @@ const PricingPage = () => {
 
   return (
     <div className="container mx-auto py-12 px-4">
+      {/* Existing header section */}
       <div className="max-w-3xl mx-auto text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
         <p className="text-lg text-muted-foreground">
@@ -141,6 +142,7 @@ const PricingPage = () => {
         )}
       </div>
       
+      {/* Subscription plans grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
         {plans.map((plan, index) => (
           <Card 
@@ -186,11 +188,19 @@ const PricingPage = () => {
         ))}
       </div>
 
-      <div className="mt-12 text-center text-sm text-muted-foreground">
-        <p>All plans include our core features. Premium plans are billed monthly.</p>
-        <p className="mt-2">Need help choosing? <button onClick={() => navigate("/contact")} className="text-brand-pink underline">Contact our sales team</button></p>
+      {/* Credits Packages Section */}
+      <div className="mt-24 mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">One-Time Credit Packages</h2>
+          <p className="text-lg text-muted-foreground">
+            Need more flexibility? Purchase search credits without committing to a subscription.
+            Credits never expire and can be used anytime.
+          </p>
+        </div>
+        <CreditPackages />
       </div>
-      
+
+      {/* FAQ section */}
       <div className="mt-12 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Common Questions</h2>
         <div className="grid md:grid-cols-2 gap-6">
