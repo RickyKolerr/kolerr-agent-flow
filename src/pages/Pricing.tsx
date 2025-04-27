@@ -3,9 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
 
 const PricingPage = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   
   const plans = [
     {
@@ -79,6 +82,18 @@ const PricingPage = () => {
   ];
 
   const handlePlanSelection = (plan: string, isEnterprise: boolean) => {
+    if (!isAuthenticated) {
+      // Redirect to signup if not authenticated
+      toast.info("Create an account to continue", {
+        description: `Get started with our ${plan} plan.`,
+        action: {
+          label: "Sign up",
+          onClick: () => navigate("/signup"),
+        },
+      });
+      return;
+    }
+
     if (isEnterprise) {
       navigate("/contact");
     } else {

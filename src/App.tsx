@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,6 +26,10 @@ import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import NotFound from "@/pages/NotFound";
 
+// Onboarding pages
+import OnboardingBrand from "@/pages/auth/OnboardingBrand";
+import OnboardingKOL from "@/pages/auth/OnboardingKOL";
+
 // Dashboard pages
 import Overview from "@/pages/dashboard/Overview";
 import KOLsPage from "@/pages/dashboard/KOLs";
@@ -43,13 +48,13 @@ import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
 
 // Context
-import { AuthProvider } from "@/contexts/AuthContext";
+import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
 
 // Helper component to conditionally render MainNav and Footer
 const Layout = ({ children }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
-  const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
+  const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/onboarding');
   
   return (
     <div className="min-h-screen flex flex-col">
@@ -67,11 +72,11 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <BrowserRouter>
+        <AuthProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
             <Layout>
               <Routes>
                 {/* Public routes */}
@@ -90,6 +95,23 @@ const App = () => {
                 <Route path="/terms" element={<TermsPage />} />
                 <Route path="/privacy" element={<PrivacyPage />} />
                 <Route path="/security" element={<SecurityPage />} />
+                
+                {/* Auth routes */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/signup" element={<SignupPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                
+                {/* Onboarding routes */}
+                <Route path="/onboarding/brand" element={
+                  <ProtectedRoute>
+                    <OnboardingBrand />
+                  </ProtectedRoute>
+                } />
+                <Route path="/onboarding/kol" element={
+                  <ProtectedRoute>
+                    <OnboardingKOL />
+                  </ProtectedRoute>
+                } />
                 
                 {/* Protected dashboard routes */}
                 <Route path="/dashboard" element={<DashboardLayout />}>
@@ -111,9 +133,9 @@ const App = () => {
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Layout>
-          </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
+          </TooltipProvider>
+        </AuthProvider>
+      </BrowserRouter>
     </QueryClientProvider>
   );
 };
