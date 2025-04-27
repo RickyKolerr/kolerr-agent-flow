@@ -48,14 +48,15 @@ import { AuthProvider } from "@/contexts/AuthContext";
 const Layout = ({ children }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
+  const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
   
   return (
     <>
-      {!isDashboardRoute && <MainNav />}
-      <main className={!isDashboardRoute ? "pt-16" : ""}>
+      {!isDashboardRoute && !isAuthRoute && <MainNav />}
+      <main className={!isDashboardRoute && !isAuthRoute ? "pt-16" : ""}>
         {children}
       </main>
-      {!isDashboardRoute && <Footer />}
+      {!isDashboardRoute && !isAuthRoute && <Footer />}
     </>
   );
 };
