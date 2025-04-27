@@ -1,5 +1,6 @@
 
 import { Link } from "react-router-dom";
+import React, { useState } from "react";
 import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -173,4 +174,3 @@ export const MainNav = () => {
     </header>
   );
 };
-
