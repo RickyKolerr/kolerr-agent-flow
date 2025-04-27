@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -45,6 +46,7 @@ import SubscriptionPage from "@/pages/dashboard/Subscription";
 import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
+import CheckoutPage from "@/pages/dashboard/CheckoutPage";
 
 // Components
 import { MainNav } from "@/components/MainNav";
@@ -128,6 +130,7 @@ const App = () => {
                     <Route path="contracts" element={<ContractsPage />} />
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="payment" element={<PaymentPage />} />
+                    <Route path="checkout" element={<CheckoutPage />} />
                   </Route>
                   
                   {/* Catch all route */}

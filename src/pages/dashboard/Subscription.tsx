@@ -34,7 +34,7 @@ const SubscriptionPage = () => {
 
   // Current plan (mock data)
   const currentPlan = {
-    id: hasPremiumPlan || "free",
+    id: hasPremiumPlan ? "pro" : "free",
     name: hasPremiumPlan ? "Professional" : "Free",
     billing: "monthly",
     nextRenewal: "July 1, 2023"
@@ -127,8 +127,20 @@ const SubscriptionPage = () => {
 
   const handlePlanChange = () => {
     if (selectedPlan) {
-      toast.success(`You've selected the ${plans.find(p => p.id === selectedPlan)?.name} plan!`);
-      navigate("/dashboard/payment");
+      const selectedPlanObj = plans.find(p => p.id === selectedPlan);
+      if (selectedPlanObj) {
+        const planData = {
+          name: selectedPlanObj.name,
+          price: billingPeriod === 'monthly' ? selectedPlanObj.price.monthly : selectedPlanObj.price.yearly,
+          period: billingPeriod,
+          credits: selectedPlanObj.credits
+        };
+        
+        // Pass plan data as state to payment page
+        navigate("/dashboard/payment", { state: { plan: planData } });
+      } else {
+        toast.error("Could not find selected plan");
+      }
     }
   };
 

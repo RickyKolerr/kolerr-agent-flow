@@ -28,7 +28,8 @@ const PricingPage = () => {
       highlight: false,
       isEnterprise: false,
       isPremium: false,
-      isFreeTier: true
+      isFreeTier: true,
+      id: "free"
     },
     {
       name: "Starter",
@@ -45,7 +46,8 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      id: "starter"
     },
     {
       name: "Growth",
@@ -63,7 +65,8 @@ const PricingPage = () => {
       ],
       highlight: true,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      id: "pro"
     },
     {
       name: "Pro",
@@ -82,7 +85,8 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      id: "enterprise"
     },
     {
       name: "Enterprise",
@@ -101,15 +105,16 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: true,
-      isPremium: true
+      isPremium: true,
+      id: "custom"
     }
   ];
 
-  const handlePlanSelection = (plan: string, isEnterprise: boolean) => {
+  const handlePlanSelection = (planId: string, isEnterprise: boolean) => {
     if (!isAuthenticated) {
       // Redirect to signup if not authenticated
       toast.info("Create an account to continue", {
-        description: `Get started with our ${plan} plan.`,
+        description: `Get started with our ${planId} plan.`,
         action: {
           label: "Sign up",
           onClick: () => navigate("/signup"),
@@ -120,8 +125,11 @@ const PricingPage = () => {
 
     if (isEnterprise) {
       navigate("/contact");
+    } else if (planId === "free") {
+      toast.info("You're already on the free plan");
     } else {
-      navigate("/dashboard/payment");
+      // Redirect to subscription page with the selected plan
+      navigate(`/dashboard/subscription?plan=${planId}`);
     }
   };
 
