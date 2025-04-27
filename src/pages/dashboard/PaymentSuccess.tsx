@@ -1,74 +1,104 @@
 
-import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle2 } from "lucide-react";
+import { FileCheck, CreditCard } from "lucide-react";
+import { toast } from "sonner";
+import { useCredits } from "@/contexts/CreditContext";
 
-interface PaymentSuccessProps {
-  title?: string;
-  description?: string;
-  redirectPath?: string;
-  redirectText?: string;
-}
-
-const PaymentSuccess = ({
-  title = "Payment Successful!",
-  description = "Your payment has been processed successfully.",
-  redirectPath = "/dashboard/billing",
-  redirectText = "Return to Billing"
-}: PaymentSuccessProps) => {
+const PaymentSuccessPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [countdown, setCountdown] = useState(5);
+  const [searchParams] = useSearchParams();
+  const planId = searchParams.get('plan');
+  const { hasPremiumPlan } = useCredits();
 
-  // Auto-redirect after countdown
   useEffect(() => {
-    const timer = setTimeout(() => {
-      if (countdown > 1) {
-        setCountdown(countdown - 1);
-      } else {
-        navigate(redirectPath);
-      }
-    }, 1000);
+    toast.success("Payment successful!", {
+      description: "Your credits have been added to your account."
+    });
+  }, []);
 
-    return () => clearTimeout(timer);
-  }, [countdown, navigate, redirectPath]);
+  const plans = {
+    starter: {
+      name: "Starter",
+      credits: 100
+    },
+    growth: {
+      name: "Growth",
+      credits: 500
+    },
+    pro: {
+      name: "Pro",
+      credits: 2000
+    }
+  };
 
-  // Extract any URL parameters (can be used for session_id or transaction details)
-  const queryParams = new URLSearchParams(location.search);
+  const selectedPlan = plans[planId as keyof typeof plans] || plans.growth;
 
   return (
-    <div className="max-w-md mx-auto my-12">
-      <Card className="border-green-500 shadow-md">
+    <div className="max-w-2xl mx-auto pt-8">
+      <Card className="border-green-500">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle2 className="h-10 w-10 text-green-500" />
+          <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+            <FileCheck className="w-6 h-6 text-green-600" />
           </div>
-          <CardTitle className="text-2xl">{title}</CardTitle>
-          <CardDescription>{description}</CardDescription>
+          <CardTitle className="text-2xl text-green-600">Payment Successful!</CardTitle>
         </CardHeader>
-        <CardContent className="text-center">
-          {queryParams.get("session_id") && (
-            <p className="text-sm text-muted-foreground">
-              Transaction ID: {queryParams.get("session_id")}
+        <CardContent className="space-y-6">
+          <div className="text-center space-y-2">
+            <p className="text-lg">
+              Thank you for your purchase of the {selectedPlan.name} plan
             </p>
-          )}
-          <p className="mt-6 text-muted-foreground">
-            You will be redirected in {countdown} seconds...
-          </p>
+            <p className="text-muted-foreground">
+              {selectedPlan.credits} credits have been added to your account
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-4 bg-secondary/50">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center">
+                <span>Plan</span>
+                <span className="font-medium">{selectedPlan.name}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Credits</span>
+                <span className="font-medium">{selectedPlan.credits}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Status</span>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Completed
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col space-y-3">
+            <Button 
+              onClick={() => navigate('/dashboard/credits')}
+              className="bg-brand-pink hover:bg-brand-pink/90"
+            >
+              View My Credits
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard')}
+            >
+              Return to Dashboard
+            </Button>
+          </div>
+
+          <div className="text-center text-sm text-muted-foreground">
+            <p>A receipt has been sent to your email address.</p>
+            <p className="mt-1">
+              Need help? <a href="/contact" className="text-brand-pink hover:underline">Contact support</a>
+            </p>
+          </div>
         </CardContent>
-        <CardFooter className="flex justify-center">
-          <Button 
-            onClick={() => navigate(redirectPath)} 
-            className="bg-brand-pink hover:bg-brand-pink/90"
-          >
-            {redirectText}
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
 };
 
-export default PaymentSuccess;
+export default PaymentSuccessPage;
