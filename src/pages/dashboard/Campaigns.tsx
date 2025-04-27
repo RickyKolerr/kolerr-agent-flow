@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Plus, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Filter, Calendar, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { Campaign } from "@/types/campaign";
+import { CampaignFilters } from "@/components/campaigns/CampaignFilters";
+import { CampaignListItem } from "@/components/campaigns/CampaignListItem";
 
 interface Campaign {
   id: string;
@@ -23,7 +23,37 @@ interface Campaign {
 const CampaignsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const [sortBy, setSortBy] = useState("date-desc");
   const navigate = useNavigate();
+
+  const handleCreateCampaign = () => {
+    navigate("/dashboard/campaigns/create");
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: '2-digit',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const sortCampaigns = (campaigns: Campaign[]) => {
+    return [...campaigns].sort((a, b) => {
+      switch (sortBy) {
+        case 'date-desc':
+          return new Date(b.startDate).getTime() - new Date(a.startDate).getTime();
+        case 'date-asc':
+          return new Date(a.startDate).getTime() - new Date(b.startDate).getTime();
+        case 'budget-desc':
+          return b.budget - a.budget;
+        case 'budget-asc':
+          return a.budget - b.budget;
+        default:
+          return 0;
+      }
+    });
+  };
 
   const mockCampaigns: Campaign[] = [
     {
@@ -83,54 +113,32 @@ const CampaignsPage = () => {
     }
   ];
 
-  const filteredCampaigns = mockCampaigns
-    .filter(campaign => 
-      campaign.title.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredCampaigns = sortCampaigns(
+    mockCampaigns.filter(campaign => 
+      campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) &&
+      (activeTab === "all" || campaign.status === activeTab)
     )
-    .filter(campaign => {
-      if (activeTab === "all") return true;
-      return campaign.status === activeTab;
-    });
+  );
 
-  const handleCreateCampaign = () => {
-    navigate("/dashboard/campaigns/create");
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: '2-digit',
-      month: 'short',
-      day: 'numeric'
-    });
+  const handleCampaignClick = (id: string) => {
+    toast.info(`Viewing campaign details for ${id}`);
   };
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Campaigns</h1>
-        <Button onClick={handleCreateCampaign} className="bg-brand-pink hover:bg-brand-pink/90">
+        <Button onClick={handleCreateCampaign}>
           <Plus className="mr-2 h-4 w-4" /> Create Campaign
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
-            <div className="flex items-center space-x-2 flex-1">
-              <Search className="h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search campaigns..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="flex-1"
-              />
-            </div>
-            <Button variant="outline" size="icon">
-              <Filter className="h-4 w-4" />
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <CampaignFilters
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        sortBy={sortBy}
+        onSortChange={setSortBy}
+      />
 
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
@@ -147,19 +155,39 @@ const CampaignsPage = () => {
         </div>
 
         <TabsContent value="all" className="mt-6">
-          <CampaignsList campaigns={filteredCampaigns} formatDate={formatDate} />
+          <CampaignsList 
+            campaigns={filteredCampaigns}
+            onCampaignClick={handleCampaignClick}
+            formatDate={formatDate}
+          />
         </TabsContent>
         <TabsContent value="active" className="mt-6">
-          <CampaignsList campaigns={filteredCampaigns} formatDate={formatDate} />
+          <CampaignsList 
+            campaigns={filteredCampaigns}
+            onCampaignClick={handleCampaignClick}
+            formatDate={formatDate}
+          />
         </TabsContent>
         <TabsContent value="draft" className="mt-6">
-          <CampaignsList campaigns={filteredCampaigns} formatDate={formatDate} />
+          <CampaignsList 
+            campaigns={filteredCampaigns}
+            onCampaignClick={handleCampaignClick}
+            formatDate={formatDate}
+          />
         </TabsContent>
         <TabsContent value="completed" className="mt-6">
-          <CampaignsList campaigns={filteredCampaigns} formatDate={formatDate} />
+          <CampaignsList 
+            campaigns={filteredCampaigns}
+            onCampaignClick={handleCampaignClick}
+            formatDate={formatDate}
+          />
         </TabsContent>
         <TabsContent value="paused" className="mt-6">
-          <CampaignsList campaigns={filteredCampaigns} formatDate={formatDate} />
+          <CampaignsList 
+            campaigns={filteredCampaigns}
+            onCampaignClick={handleCampaignClick}
+            formatDate={formatDate}
+          />
         </TabsContent>
       </Tabs>
     </div>
@@ -168,86 +196,33 @@ const CampaignsPage = () => {
 
 interface CampaignsListProps {
   campaigns: Campaign[];
+  onCampaignClick: (id: string) => void;
   formatDate: (date: string) => string;
 }
 
-const CampaignsList = ({ campaigns, formatDate }: CampaignsListProps) => {
-  const getStatusColor = (status: Campaign['status']) => {
-    switch(status) {
-      case 'active': return 'bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20';
-      case 'draft': return 'bg-gray-500/10 text-gray-500 hover:bg-gray-500/20 border-gray-500/20';
-      case 'completed': return 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20';
-      case 'paused': return 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/20';
-    }
-  };
-
-  const handleCampaignClick = (id: string) => {
-    toast.info(`Viewing campaign details for ${id}`);
-  };
+const CampaignsList = ({ campaigns, onCampaignClick, formatDate }: CampaignsListProps) => {
+  if (campaigns.length === 0) {
+    return (
+      <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center">
+        <Search className="h-10 w-10 text-muted-foreground mb-4" />
+        <h3 className="text-lg font-medium">No campaigns found</h3>
+        <p className="text-muted-foreground mt-1">
+          No campaigns match your current search or filter criteria.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid gap-4 md:grid-cols-2">
-      {campaigns.length > 0 ? (
-        campaigns.map((campaign) => (
-          <Card 
-            key={campaign.id} 
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => handleCampaignClick(campaign.id)}
-          >
-            <CardHeader className="pb-2">
-              <div className="flex justify-between items-start">
-                <CardTitle className="text-lg font-medium">
-                  {campaign.title}
-                </CardTitle>
-                <Badge variant="outline" className={getStatusColor(campaign.status)}>
-                  {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Budget</span>
-                  <span className="font-medium">${campaign.budget.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Target Audience</span>
-                  <span className="font-medium">{campaign.audience}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">KOLs</span>
-                  <span className="font-medium">{campaign.kols}</span>
-                </div>
-                {campaign.status !== 'draft' && (
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Avg. Engagement</span>
-                    <span className="font-medium">{campaign.engagement}%</span>
-                  </div>
-                )}
-                <div className="flex justify-between items-center pt-2 border-t border-border">
-                  <div className="flex items-center text-xs text-muted-foreground">
-                    <Calendar className="mr-1 h-3 w-3" />
-                    <span>
-                      {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
-                    </span>
-                  </div>
-                  <Button variant="ghost" size="sm" className="text-brand-pink">
-                    Details <ArrowUpRight className="ml-1 h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))
-      ) : (
-        <div className="col-span-2 flex flex-col items-center justify-center p-12 text-center">
-          <Search className="h-10 w-10 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No campaigns found</h3>
-          <p className="text-muted-foreground mt-1">
-            No campaigns match your current search or filter criteria.
-          </p>
-        </div>
-      )}
+      {campaigns.map((campaign) => (
+        <CampaignListItem
+          key={campaign.id}
+          campaign={campaign}
+          onCampaignClick={onCampaignClick}
+          formatDate={formatDate}
+        />
+      ))}
     </div>
   );
 };
