@@ -19,7 +19,7 @@ const PricingPage = () => {
       period: "forever",
       description: "Basic access for everyone",
       features: [
-        "5 AI-powered searches per day",
+        "5 AI-Matchmaking searches per day",
         "Basic creator profiles",
         "Limited analytics",
         "Community support",
@@ -28,8 +28,7 @@ const PricingPage = () => {
       highlight: false,
       isEnterprise: false,
       isPremium: false,
-      isFreeTier: true,
-      id: "free"
+      isFreeTier: true
     },
     {
       name: "Starter",
@@ -37,7 +36,7 @@ const PricingPage = () => {
       period: "per month",
       description: "Perfect for small brands starting with influencer marketing",
       features: [
-        "100 Search credits per month",
+        "100 Premium credits per month",
         "Up to 3 active campaigns",
         "Basic contract templates",
         "Email support",
@@ -46,8 +45,7 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true,
-      id: "starter"
+      isPremium: true
     },
     {
       name: "Growth",
@@ -55,7 +53,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "500 Search credits per month",
+        "500 Premium credits per month",
         "Up to 10 active campaigns",
         "Advanced contract templates",
         "Priority email support",
@@ -65,8 +63,7 @@ const PricingPage = () => {
       ],
       highlight: true,
       isEnterprise: false,
-      isPremium: true,
-      id: "pro"
+      isPremium: true
     },
     {
       name: "Pro",
@@ -74,7 +71,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "2000 Search credits per month",
+        "2000 Premium credits per month",
         "Unlimited active campaigns",
         "Custom contract builder",
         "24/7 priority support",
@@ -85,8 +82,7 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true,
-      id: "enterprise"
+      isPremium: true
     },
     {
       name: "Enterprise",
@@ -105,16 +101,15 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: true,
-      isPremium: true,
-      id: "custom"
+      isPremium: true
     }
   ];
 
-  const handlePlanSelection = (planId: string, isEnterprise: boolean) => {
+  const handlePlanSelection = (plan: string, isEnterprise: boolean) => {
     if (!isAuthenticated) {
       // Redirect to signup if not authenticated
       toast.info("Create an account to continue", {
-        description: `Get started with our ${planId} plan.`,
+        description: `Get started with our ${plan} plan.`,
         action: {
           label: "Sign up",
           onClick: () => navigate("/signup"),
@@ -125,11 +120,8 @@ const PricingPage = () => {
 
     if (isEnterprise) {
       navigate("/contact");
-    } else if (planId === "free") {
-      toast.info("You're already on the free plan");
     } else {
-      // Redirect to subscription page with the selected plan
-      navigate(`/dashboard/subscription?plan=${planId}`);
+      navigate("/dashboard/payment");
     }
   };
 

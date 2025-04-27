@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +9,7 @@ import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 
+// Type for subscription plans
 interface Plan {
   id: string;
   name: string;
@@ -30,13 +32,15 @@ const SubscriptionPage = () => {
   const [selectedPlan, setSelectedPlan] = useState<string | null>("pro");
   const { hasPremiumPlan, premiumCredits } = useCredits();
 
+  // Current plan (mock data)
   const currentPlan = {
-    id: hasPremiumPlan ? "pro" : "free",
+    id: hasPremiumPlan || "free",
     name: hasPremiumPlan ? "Professional" : "Free",
     billing: "monthly",
     nextRenewal: "July 1, 2023"
   };
 
+  // Plans data
   const plans: Plan[] = [
     {
       id: "free",
@@ -47,14 +51,14 @@ const SubscriptionPage = () => {
         yearly: 0
       },
       features: [
-        { text: "5 free searches daily", included: true },
+        { text: "5 free credits daily", included: true },
         { text: "Basic search functionality", included: true },
         { text: "Limited creator profiles", included: true },
         { text: "Community support", included: true },
         { text: "Advanced analytics", included: false },
         { text: "Contract templates", included: false },
         { text: "Campaign management", included: false },
-        { text: "Priority search access", included: false },
+        { text: "Priority booking slots", included: false },
       ],
       credits: 5
     },
@@ -67,14 +71,14 @@ const SubscriptionPage = () => {
         yearly: 39
       },
       features: [
-        { text: "100 Search credits per month", included: true },
+        { text: "100 Credits per month", included: true },
         { text: "5 Active campaigns", included: true },
         { text: "10 KOL searches per day", included: true },
         { text: "Basic analytics", included: true },
         { text: "Email support", included: true },
         { text: "Contract templates", included: false },
         { text: "Campaign reporting", included: false },
-        { text: "Priority search access", included: false },
+        { text: "Priority booking slots", included: false },
       ],
       credits: 100
     },
@@ -87,14 +91,14 @@ const SubscriptionPage = () => {
         yearly: 79
       },
       features: [
-        { text: "500 Search credits per month", included: true },
+        { text: "500 Credits per month", included: true },
         { text: "15 Active campaigns", included: true },
         { text: "Unlimited KOL searches", included: true },
         { text: "Advanced analytics", included: true },
         { text: "Priority email support", included: true },
         { text: "Contract templates", included: true },
         { text: "Campaign reporting", included: true },
-        { text: "Priority search access", included: false },
+        { text: "Priority booking slots", included: false },
       ],
       popular: true,
       credits: 500
@@ -108,14 +112,14 @@ const SubscriptionPage = () => {
         yearly: 199
       },
       features: [
-        { text: "2000 Search credits per month", included: true },
+        { text: "2000 Credits per month", included: true },
         { text: "Unlimited campaigns", included: true },
         { text: "Unlimited KOL searches", included: true },
         { text: "Custom analytics dashboard", included: true },
         { text: "Dedicated account manager", included: true },
         { text: "Custom contract templates", included: true },
         { text: "Advanced campaign reporting", included: true },
-        { text: "Priority search access", included: true },
+        { text: "Priority booking slots", included: true },
       ],
       credits: 2000
     }
@@ -123,19 +127,8 @@ const SubscriptionPage = () => {
 
   const handlePlanChange = () => {
     if (selectedPlan) {
-      const selectedPlanObj = plans.find(p => p.id === selectedPlan);
-      if (selectedPlanObj) {
-        const planData = {
-          name: selectedPlanObj.name,
-          price: billingPeriod === 'monthly' ? selectedPlanObj.price.monthly : selectedPlanObj.price.yearly,
-          period: billingPeriod,
-          credits: selectedPlanObj.credits
-        };
-        
-        navigate("/dashboard/payment", { state: { plan: planData } });
-      } else {
-        toast.error("Could not find selected plan");
-      }
+      toast.success(`You've selected the ${plans.find(p => p.id === selectedPlan)?.name} plan!`);
+      navigate("/dashboard/payment");
     }
   };
 
@@ -149,6 +142,7 @@ const SubscriptionPage = () => {
         <h1 className="text-3xl font-bold tracking-tight">Subscription Plans</h1>
       </div>
 
+      {/* Current subscription info */}
       <Card className="bg-muted/30">
         <CardContent className="p-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
@@ -182,6 +176,7 @@ const SubscriptionPage = () => {
         </CardContent>
       </Card>
 
+      {/* Select billing period */}
       <div className="flex justify-center">
         <Tabs
           defaultValue="monthly"
@@ -201,6 +196,7 @@ const SubscriptionPage = () => {
         </Tabs>
       </div>
 
+      {/* Plans */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <Card 
@@ -272,6 +268,7 @@ const SubscriptionPage = () => {
         ))}
       </div>
 
+      {/* Proceed with plan change */}
       {selectedPlan && selectedPlan !== currentPlan.id && selectedPlan !== 'free' && (
         <div className="flex justify-center mt-8">
           <Card className="w-full max-w-2xl">
