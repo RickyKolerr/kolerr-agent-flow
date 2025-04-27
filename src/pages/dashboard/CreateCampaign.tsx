@@ -48,6 +48,7 @@ export default function CreateCampaign() {
   function onSubmit(data: CampaignFormValues) {
     const campaign: Partial<Campaign> = {
       ...data,
+      budget: parseFloat(data.budget), // Convert budget string to number
       metrics: {
         views: 0,
         engagement: 0,
