@@ -7,6 +7,7 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
   NavigationMenuContent,
+  navigationMenuTriggerStyle
 } from "@/components/ui/navigation-menu";
 
 export const MainNav = () => {

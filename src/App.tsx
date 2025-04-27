@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +22,20 @@ import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
 import DashboardLayout from "@/layouts/DashboardLayout";
+import NotFound from "@/pages/NotFound";
+
+// Dashboard pages
+import Overview from "@/pages/dashboard/Overview";
+import KOLsPage from "@/pages/dashboard/KOLs";
+import CampaignsPage from "@/pages/dashboard/Campaigns";
+import BookingsPage from "@/pages/dashboard/Bookings";
+import CreditsPage from "@/pages/dashboard/Credits";
+import ProfilePage from "@/pages/dashboard/Profile";
+import BillingPage from "@/pages/dashboard/Billing";
+import SubscriptionPage from "@/pages/dashboard/Subscription";
+import ContractsPage from "@/pages/dashboard/Contracts";
+import SettingsPage from "@/pages/dashboard/Settings";
+import PaymentPage from "@/pages/dashboard/Payment";
 
 // Components
 import { MainNav } from "@/components/MainNav";
@@ -64,7 +79,7 @@ const App = () => {
                   {/* Protected dashboard routes */}
                   <Route path="/dashboard" element={<DashboardLayout />}>
                     <Route index element={<Navigate to="/dashboard/overview" replace />} />
-                    <Route path="overview" element={<DashboardOverview />} />
+                    <Route path="overview" element={<Overview />} />
                     <Route path="kols" element={<KOLsPage />} />
                     <Route path="campaigns" element={<CampaignsPage />} />
                     <Route path="bookings" element={<BookingsPage />} />
