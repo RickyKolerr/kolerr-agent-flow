@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +9,7 @@ import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { CreditPackages } from "@/components/credits/CreditPackages";
 
 // Credit transaction type definition
 interface CreditTransaction {
@@ -182,7 +182,10 @@ const CreditsPage = () => {
         </Card>
       </div>
 
-      {/* Search Credit Usage */}
+      {/* Credit Packages Section */}
+      <CreditPackages />
+
+      {/* Search Credit Usage section */}
       <Card>
         <CardHeader>
           <CardTitle>Search Credit Usage</CardTitle>
