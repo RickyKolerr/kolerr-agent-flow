@@ -123,14 +123,19 @@ const DashboardLayout = () => {
           )}
         >
           <div className="h-16 flex items-center px-6 border-b border-white/10">
-            <div className="flex items-center space-x-2">
-              <div className="h-10 w-10 rounded-xl bg-brand-pink flex items-center justify-center">
-                <span className="font-bold text-white text-xl">K</span>
-              </div>
+            <button 
+              onClick={() => handleNavigation('/')} 
+              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+            >
+              <img 
+                src="/lovable-uploads/24be9cce-35ba-4568-9efb-436abe513e26.png" 
+                alt="Kolerr Logo" 
+                className="h-10 w-10 rounded-xl"
+              />
               <span className="font-bold text-2xl bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
                 Kolerr
               </span>
-            </div>
+            </button>
           </div>
 
           <TooltipProvider>
