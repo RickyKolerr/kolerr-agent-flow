@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Menu, User } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -35,10 +35,11 @@ export const MainNav = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
-              <span className="font-bold text-white">K</span>
-            </div>
-            <span className="font-bold text-xl text-white">Kolerr</span>
+            <img 
+              src="/lovable-uploads/b20c9036-b03c-45c9-85b0-ecd039f276e9.png"
+              alt="Business Logo"
+              className="h-8 w-auto hover:opacity-90 transition-opacity"
+            />
           </Link>
 
           {/* Desktop Navigation */}
