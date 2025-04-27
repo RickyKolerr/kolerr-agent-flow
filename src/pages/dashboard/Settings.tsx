@@ -119,18 +119,16 @@ const Settings = () => {
   };
 
   const renderMobileSettingsNav = () => {
-    const activeIcon = sections.find(s => s.id === activeSection)?.icon;
-    const activeTitle = sections.find(s => s.id === activeSection)?.title;
-    
+    const activeSection = sections.find(s => s.id === activeSection);
+    const ActiveIcon = activeSection?.icon;
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
             <span className="flex items-center gap-2">
-              {activeIcon && (
-                <activeIcon className="h-4 w-4" />
-              )}
-              {activeTitle}
+              {ActiveIcon && <ActiveIcon className="h-4 w-4" />}
+              {activeSection?.title}
             </span>
             <ChevronRight className="h-4 w-4" />
           </Button>
