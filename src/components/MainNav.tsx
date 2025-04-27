@@ -5,22 +5,29 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+
 export const MainNav = () => {
   const {
     user,
     isAuthenticated,
     logout
   } = useAuth();
+
   const getInitials = (name: string) => {
     return name.split(" ").map(part => part[0]).join("").toUpperCase();
   };
-  return <header className="fixed top-0 left-0 right-0 z-50 bg-black">
+
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            
-            
+            <img 
+              src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
+              alt="Kolerr Logo" 
+              className="h-8 w-auto"
+            />
           </Link>
 
           {/* Desktop Navigation */}
@@ -150,5 +157,6 @@ export const MainNav = () => {
           </Sheet>
         </div>
       </div>
-    </header>;
+    </header>
+  );
 };

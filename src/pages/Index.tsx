@@ -58,49 +58,56 @@ const Index = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden flex items-center justify-center">
-      {/* Background Effects */}
-      <div className="absolute inset-0 hero-gradient -z-10"></div>
-      <div className="absolute inset-0 bg-dot-pattern opacity-20"></div>
+      {/* Enhanced Background Effects */}
+      <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
       
       {/* Animated Gradient Orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-brand-pink/30 rounded-full blur-3xl animate-pulse"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-accent/30 rounded-full blur-3xl animate-pulse delay-700"></div>
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
 
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 py-12 md:py-0">
         <div className="max-w-3xl mx-auto text-center space-y-8">
           {/* Hero Section */}
-          <div className="space-y-4 animate-fade-in">
-            <h1 className="text-6xl md:text-8xl font-bold tracking-tighter">
-              <span className="text-gradient">Discover Your</span>
+          <div className="space-y-6 animate-fade-in">
+            <img 
+              src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
+              alt="Kolerr Logo" 
+              className="h-20 w-auto mx-auto mb-8 drop-shadow-2xl"
+            />
+            <h1 className="text-4xl md:text-7xl font-bold tracking-tighter">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-cyan-500">
+                Discover Your
+              </span>
               <br />
-              <span className="text-brand-pink">Perfect KOL</span>
+              <span className="text-white">Perfect KOL</span>
             </h1>
             
-            <p className="text-xl md:text-2xl text-muted-foreground/80 max-w-xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-300 max-w-xl mx-auto">
               Connect with TikTok creators that elevate your brand
             </p>
           </div>
 
           {/* Search Section */}
           <div className="relative mt-8">
-            <div className="glass-panel p-2 hover:border-brand-pink/50 transition-colors duration-300">
+            <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-4 rounded-2xl hover:border-pink-500/50 transition-colors duration-300 shadow-2xl">
               <div className="relative">
                 <Input 
-                  className="w-full bg-background/50 text-lg p-6 pl-12 rounded-md"
+                  className="w-full bg-black/50 text-lg p-6 pl-12 rounded-xl border-white/10"
                   placeholder="Find your next TikTok star..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
                 />
-                <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-pink" />
+                <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-pink-500" />
               </div>
               
-              <div className="flex items-center justify-between mt-4 px-2">
-                <div className="flex gap-2">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-4 px-2">
+                <div className="flex flex-wrap gap-2 justify-center md:justify-start">
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-brand-pink hover:text-brand-pink/80"
+                    className="text-pink-500 hover:text-pink-400 hover:bg-pink-500/10"
                     onClick={() => handleCategorySearch("top")}
                   >
                     <Star className="h-4 w-4 mr-2" />
@@ -109,7 +116,7 @@ const Index = () => {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="text-brand-pink hover:text-brand-pink/80"
+                    className="text-pink-500 hover:text-pink-400 hover:bg-pink-500/10"
                     onClick={() => handleCategorySearch("trending")}
                   >
                     <Rocket className="h-4 w-4 mr-2" />
@@ -117,7 +124,7 @@ const Index = () => {
                   </Button>
                 </div>
                 <Button 
-                  className="bg-brand-pink hover:bg-brand-pink/90"
+                  className="w-full md:w-auto bg-gradient-to-r from-pink-500 to-purple-600 hover:opacity-90 border-0"
                   onClick={handleSearch}
                 >
                   <Search className="h-4 w-4 mr-2" />
