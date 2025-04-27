@@ -40,7 +40,7 @@ const DashboardLayout = () => {
       icon: BarChart,
       name: "Analytics",
       path: "/dashboard/analytics",
-      description: "Campaign performance analytics"
+      description: "Performance metrics, ROI tracking, and credit usage insights"
     },
     { 
       icon: Calendar, 
