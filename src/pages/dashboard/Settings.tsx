@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -525,15 +524,6 @@ const Settings = () => {
           {renderActiveSection()}
         </div>
       </div>
-      
-      {isMobile && (
-        <div className="fixed bottom-4 right-4 z-10">
-          <Button onClick={handleSave} size="lg" variant="gradient" className="shadow-lg">
-            <Save className="mr-2 h-4 w-4" />
-            Save All Changes
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
