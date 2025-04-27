@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,7 @@ const HomePage = () => {
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
-    const userMessage = {
+    const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: inputValue
@@ -38,7 +39,7 @@ const HomePage = () => {
     setInputValue("");
 
     setTimeout(() => {
-      const botResponse = {
+      const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: "bot",
         content: getResponse(inputValue)
@@ -49,7 +50,7 @@ const HomePage = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
-    const searchMessage = {
+    const searchMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: `Search for: ${searchQuery}`
@@ -57,7 +58,7 @@ const HomePage = () => {
     setMessages(prev => [...prev, searchMessage]);
 
     setTimeout(() => {
-      const botResponse = {
+      const botResponse: Message = {
         id: (Date.now() + 1).toString(),
         type: "bot",
         content: `I found several TikTok creators matching "${searchQuery}". To see detailed analytics and book them, please sign in.`
