@@ -10,7 +10,7 @@ import {
 
 export const MainNav = () => {
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border/50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -94,6 +94,6 @@ export const MainNav = () => {
           </Sheet>
         </div>
       </div>
-    </div>
+    </header>
   );
 };

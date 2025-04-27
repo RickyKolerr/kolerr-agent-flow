@@ -50,13 +50,13 @@ const Layout = ({ children }) => {
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   
   return (
-    <div className="flex min-h-screen flex-col">
+    <>
       {!isDashboardRoute && <MainNav />}
-      <main className="flex-1">
+      <main className={!isDashboardRoute ? "pt-16" : ""}>
         {children}
       </main>
       {!isDashboardRoute && <Footer />}
-    </div>
+    </>
   );
 };
 
