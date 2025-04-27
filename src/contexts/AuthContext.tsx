@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -9,6 +8,16 @@ export type UserRole = "brand" | "kol" | "admin";
 // Define onboarding status
 export type OnboardingStatus = "incomplete" | "complete";
 
+// Define subscription plan types
+export type SubscriptionPlan = "free" | "starter" | "growth" | "pro" | "enterprise";
+
+// Define subscription interface
+export interface Subscription {
+  plan: SubscriptionPlan;
+  status: "active" | "canceled" | "expired";
+  renewalDate?: string;
+}
+
 interface User {
   id: string;
   email: string;
@@ -16,6 +25,7 @@ interface User {
   avatar?: string;
   role: UserRole;
   onboardingStatus: OnboardingStatus;
+  subscription?: Subscription;
 }
 
 interface AuthContextType {

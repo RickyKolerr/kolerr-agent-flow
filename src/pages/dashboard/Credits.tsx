@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -22,6 +21,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 
@@ -40,16 +40,22 @@ const CreditsPage = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("overview");
   const { freeCredits, premiumCredits, totalCredits, timeUntilReset, hasPremiumPlan } = useCredits();
+  const { user } = useAuth();
+  
+  // Get the premium plan credit allocation
+  const getPremiumCreditAllocation = () => {
+    const plan = user?.subscription?.plan;
+    if (plan === "pro") return 500;
+    if (plan === "growth") return 200;
+    if (plan === "enterprise") return 2000;
+    return 0;
+  };
   
   // Mock credit data
   const creditData = {
     available: premiumCredits,
-    total: hasPremiumPlan ? 
-      (hasPremiumPlan === "pro" ? 500 : hasPremiumPlan === "growth" ? 200 : 2000) : 0,
-    used: hasPremiumPlan ? 
-      (hasPremiumPlan === "pro" ? 500 - premiumCredits : 
-       hasPremiumPlan === "growth" ? 200 - premiumCredits : 
-       2000 - premiumCredits) : 0,
+    total: hasPremiumPlan ? getPremiumCreditAllocation() : 0,
+    used: hasPremiumPlan ? (getPremiumCreditAllocation() - premiumCredits) : 0,
     expires: "End of billing period",
   };
 
