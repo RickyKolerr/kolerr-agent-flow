@@ -5,7 +5,8 @@ import {
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  navigationMenuTriggerStyle,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
 } from "@/components/ui/navigation-menu";
 
 export const MainNav = () => {
@@ -27,18 +28,54 @@ export const MainNav = () => {
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/features" className={navigationMenuTriggerStyle()}>
-                Features
-              </Link>
+              <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <li>
+                    <Link to="/features" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Features</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Discover our platform's capabilities
+                      </p>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/pricing" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Pricing</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Choose the right plan for your needs
+                      </p>
+                    </Link>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/pricing" className={navigationMenuTriggerStyle()}>
-                Pricing
-              </Link>
+              <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <li>
+                    <Link to="/docs" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Documentation</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Detailed guides and tutorials
+                      </p>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/api" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">API</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Integration documentation
+                      </p>
+                    </Link>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Link to="/docs" className={navigationMenuTriggerStyle()}>
-                Docs
+              <Link to="/partners" className={navigationMenuTriggerStyle()}>
+                Partners
               </Link>
             </NavigationMenuItem>
             <NavigationMenuItem>
