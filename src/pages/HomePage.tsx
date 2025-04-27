@@ -2,9 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, User, MessageCircle } from "lucide-react";
+import { Search, User, MessageCircle, Figma, Paperclip } from "lucide-react";
 import { useSearchCredits } from "@/hooks/useSearchCredits";
-import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -91,11 +90,21 @@ const HomePage = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 flex-1 flex lg:flex-row flex-col gap-8">
+    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
+      <div className="container mx-auto px-4 py-16 flex-1 flex lg:flex-row flex-col gap-8 relative z-10">
         <div className="lg:w-2/3 w-full flex flex-col">
-          <div className="rounded-xl border border-border overflow-hidden glass-panel shadow-lg flex flex-col h-[800px]">
-            <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
+          <div className="text-center lg:text-left mb-8">
+            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gradient mb-4">
+              Discover your perfect
+              <span className="text-brand-pink"> KOL match</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground">
+              Connect with TikTok creators that align with your brand
+            </p>
+          </div>
+
+          <div className="rounded-xl overflow-hidden glass-panel shadow-lg flex flex-col flex-1">
+            <div className="bg-black/60 p-4 border-b border-white/10 flex justify-between items-center">
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
                   <MessageCircle className="h-5 w-5 text-white" />
@@ -110,20 +119,22 @@ const HomePage = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-secondary/50 p-4 border-b border-border">
+
+            <div className="bg-black/40 p-4 border-b border-white/10">
               <div className="flex gap-2">
                 <Input 
                   placeholder="Quick search for TikTok creators..." 
                   value={searchQuery} 
                   onChange={e => setSearchQuery(e.target.value)}
-                  className="bg-background"
+                  className="bg-black/60"
                 />
-                <Button size="icon" onClick={handleSearch}>
+                <Button size="icon" variant="secondary">
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="flex-1 p-6 overflow-y-auto bg-background/30">
+
+            <div className="flex-1 p-6 overflow-y-auto bg-black/20">
               {messages.map(message => (
                 <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                   {message.type === "bot" && (
@@ -143,26 +154,34 @@ const HomePage = () => {
               ))}
               <div ref={messagesEndRef} />
             </div>
-            <div className="p-4 border-t border-border bg-background">
+
+            <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
                 <Input
                   placeholder="Ask about specific creator types, niches, or requirements..."
                   value={inputValue}
                   onChange={e => setInputValue(e.target.value)}
-                  onKeyPress={e => {
-                    if (e.key === "Enter") {
-                      handleSendMessage();
-                    }
-                  }}
-                  className="bg-secondary"
+                  onKeyPress={e => e.key === "Enter" && handleSendMessage()}
+                  className="bg-black/60"
                 />
                 <Button onClick={handleSendMessage}>Send</Button>
+              </div>
+              <div className="flex items-center gap-4 mt-3">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Paperclip className="h-4 w-4 mr-2" />
+                  Attach
+                </Button>
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Figma className="h-4 w-4 mr-2" />
+                  Import Figma
+                </Button>
               </div>
             </div>
           </div>
         </div>
+
         <div className="lg:w-1/3 w-full">
-          <div className="rounded-xl border border-border p-6 glass-panel">
+          <div className="rounded-xl glass-panel p-6">
             <h2 className="text-2xl font-bold mb-6">Discover TikTok Creators</h2>
             <div className="space-y-4">
               <p className="text-muted-foreground">
