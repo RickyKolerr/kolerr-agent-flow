@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, CreditCard } from "lucide-react";
@@ -15,25 +14,25 @@ interface CreditPackage {
 
 const creditPackages: CreditPackage[] = [
   {
-    id: "basic",
+    id: "starter-pack",
     name: "Starter Pack",
-    credits: 50,
-    price: 25,
-    description: "Perfect for trying out our search features"
+    credits: 100,
+    price: 100,
+    description: "Perfect for trying out our premium features"
   },
   {
-    id: "pro",
-    name: "Pro Pack",
-    credits: 200,
-    price: 75,
-    description: "Most popular choice for regular users",
+    id: "growth-pack",
+    name: "Growth Pack",
+    credits: 500,
+    price: 400,
+    description: "Most popular choice for growing brands",
     popular: true
   },
   {
-    id: "elite",
-    name: "Elite Pack",
-    credits: 500,
-    price: 150,
+    id: "pro-pack",
+    name: "Pro Pack",
+    credits: 2000,
+    price: 1500,
     description: "Best value for power users"
   }
 ];

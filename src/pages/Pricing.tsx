@@ -107,7 +107,6 @@ const PricingPage = () => {
 
   const handlePlanSelection = (plan: string, isEnterprise: boolean) => {
     if (!isAuthenticated) {
-      // Redirect to signup if not authenticated
       toast.info("Create an account to continue", {
         description: `Get started with our ${plan} plan.`,
         action: {
@@ -127,7 +126,6 @@ const PricingPage = () => {
 
   return (
     <div className="container mx-auto py-12 px-4">
-      {/* Existing header section */}
       <div className="max-w-3xl mx-auto text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
         <p className="text-lg text-muted-foreground">
@@ -142,7 +140,6 @@ const PricingPage = () => {
         )}
       </div>
       
-      {/* Subscription plans grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
         {plans.map((plan, index) => (
           <Card 
@@ -188,7 +185,6 @@ const PricingPage = () => {
         ))}
       </div>
 
-      {/* Credits Packages Section */}
       <div className="mt-24 mb-16">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">One-Time Credit Packages</h2>
@@ -200,7 +196,6 @@ const PricingPage = () => {
         <CreditPackages />
       </div>
 
-      {/* FAQ section */}
       <div className="mt-12 max-w-4xl mx-auto">
         <h2 className="text-2xl font-bold mb-6 text-center">Common Questions</h2>
         <div className="grid md:grid-cols-2 gap-6">
