@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -68,7 +67,7 @@ const DashboardLayout = () => {
   const userItems = [
     { 
       icon: Settings, 
-      name: "Settings", 
+      name: "Settings & Billing", 
       path: "/dashboard/settings",
       description: t('dashboard.settings')
     },
