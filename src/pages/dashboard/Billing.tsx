@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,12 +8,28 @@ import {
   Plus,
   Receipt,
   ChevronDown,
-  CheckCircle2
+  CheckCircle2,
+  Info,
+  ArrowRight
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { useNavigate } from "react-router-dom";
+import { useCredits } from "@/contexts/CreditContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Billing = () => {
   const [activeTab, setActiveTab] = useState("overview");
+  const navigate = useNavigate();
+  const { hasPremiumPlan, premiumCredits } = useCredits();
+  const { user } = useAuth();
+
+  const handleUpgrade = () => {
+    navigate("/dashboard/subscription");
+  };
+
+  const handleBuyCredits = () => {
+    navigate("/dashboard/checkout");
+  };
 
   // Mock data for billing plans
   const plans = [
@@ -122,7 +137,6 @@ const Billing = () => {
       <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList>
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="plans">Plans</TabsTrigger>
           <TabsTrigger value="payment">Payment Methods</TabsTrigger>
           <TabsTrigger value="history">Billing History</TabsTrigger>
         </TabsList>
@@ -136,116 +150,75 @@ const Billing = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 border rounded-lg">
                 <div>
-                  <h3 className="font-semibold text-lg">Pro Plan</h3>
-                  <p className="text-muted-foreground">$149/month, billed monthly</p>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-lg">
+                      {hasPremiumPlan ? "Premium Plan" : "Free Plan"}
+                    </h3>
+                    {hasPremiumPlan && (
+                      <Badge className="bg-green-500/10 text-green-500 hover:bg-green-500/20">
+                        Active
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-muted-foreground">
+                    {hasPremiumPlan 
+                      ? "Premium features and credits" 
+                      : "Basic features with limited credits"}
+                  </p>
                 </div>
                 <div className="flex flex-col xs:flex-row gap-2">
-                  <Button variant="outline">Change Plan</Button>
-                  <Button variant="outline" className="text-red-500 hover:text-red-700">
-                    Cancel Subscription
+                  {!hasPremiumPlan && (
+                    <Button 
+                      onClick={handleUpgrade}
+                      className="bg-brand-pink hover:bg-brand-pink/90"
+                    >
+                      Upgrade Plan <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  )}
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBuyCredits}
+                  >
+                    Buy Credits
                   </Button>
                 </div>
               </div>
 
               <div className="border rounded-lg p-4 space-y-4">
-                <h4 className="font-medium">Your usage this month</h4>
+                <h4 className="font-medium">Your credits usage</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">KOL searches</span>
-                    <span>23 / 50</span>
+                    <span className="text-muted-foreground">Available credits</span>
+                    <span>{premiumCredits} credits</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
-                    <div className="h-2 bg-brand-pink rounded-full w-[46%]"></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Active campaigns</span>
-                    <span>4 / Unlimited</span>
-                  </div>
-                  <div className="h-2 bg-secondary rounded-full">
-                    <div className="h-2 bg-brand-pink rounded-full w-[40%]"></div>
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Credits</span>
-                    <span>720 remaining</span>
-                  </div>
-                  <div className="h-2 bg-secondary rounded-full">
-                    <div className="h-2 bg-brand-pink rounded-full w-[72%]"></div>
+                    <div 
+                      className="h-2 bg-brand-pink rounded-full" 
+                      style={{ width: `${Math.min((premiumCredits / 1000) * 100, 100)}%` }}
+                    ></div>
                   </div>
                 </div>
               </div>
 
-              <div className="border rounded-lg p-4">
-                <h4 className="font-medium mb-2">Billing information</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Payment method
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <CreditCard className="h-4 w-4" /> 
-                      Visa ending in 4242
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Next billing date
-                    </p>
-                    <p>May 1, 2023</p>
+              {user?.email && (
+                <div className="border rounded-lg p-4">
+                  <h4 className="font-medium mb-2">Billing information</h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        Receipt email
+                      </p>
+                      <p className="flex items-center gap-2">
+                        {user.email}
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
-        </TabsContent>
-
-        <TabsContent value="plans" className="space-y-4">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {plans.map((plan) => (
-              <Card 
-                key={plan.id} 
-                className={`relative ${plan.current ? "border-brand-pink shadow-lg" : ""}`}
-              >
-                {plan.current && (
-                  <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
-                    <span className="bg-brand-pink text-white text-xs font-medium px-2 py-1 rounded-full">
-                      Current
-                    </span>
-                  </div>
-                )}
-                <CardHeader>
-                  <CardTitle>{plan.name}</CardTitle>
-                  <CardDescription>{plan.description}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <span className="text-3xl font-bold">{plan.price}</span>
-                    <span className="text-muted-foreground">/month</span>
-                  </div>
-                  <ul className="space-y-2">
-                    {plan.features.map((feature, i) => (
-                      <li key={i} className="flex items-center gap-2">
-                        <CheckCircle2 className="h-4 w-4 text-green-500" />
-                        <span>{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className={`w-full ${plan.current ? "bg-brand-pink hover:bg-brand-pink/90" : ""}`}
-                    variant={plan.current ? "default" : "outline"}
-                    disabled={plan.current}
-                  >
-                    {plan.current ? "Current Plan" : "Select Plan"}
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
         </TabsContent>
 
         <TabsContent value="payment" className="space-y-4">

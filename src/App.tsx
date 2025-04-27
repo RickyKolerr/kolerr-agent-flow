@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,6 +46,7 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 import CheckoutPage from "@/pages/dashboard/CheckoutPage";
+import PaymentSuccess from "@/pages/dashboard/PaymentSuccess";
 
 // Components
 import { MainNav } from "@/components/MainNav";
@@ -131,6 +131,15 @@ const App = () => {
                     <Route path="settings" element={<SettingsPage />} />
                     <Route path="payment" element={<PaymentPage />} />
                     <Route path="checkout" element={<CheckoutPage />} />
+                    <Route path="payment/success" element={<PaymentSuccess />} />
+                    <Route path="payment/success/subscription" element={
+                      <PaymentSuccess 
+                        title="Subscription Activated!"
+                        description="Your subscription has been successfully activated. You now have access to premium features."
+                        redirectPath="/dashboard/subscription"
+                        redirectText="View Subscription Details"
+                      />
+                    } />
                   </Route>
                   
                   {/* Catch all route */}
