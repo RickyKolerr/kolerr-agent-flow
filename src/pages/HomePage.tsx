@@ -4,13 +4,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, User, MessageCircle, Figma, Paperclip } from "lucide-react";
 import { useSearchCredits } from "@/hooks/useSearchCredits";
-
 interface Message {
   id: string;
   type: "user" | "bot";
   content: string;
 }
-
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
@@ -21,19 +19,20 @@ const HomePage = () => {
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { creditsLeft, useCredit } = useSearchCredits();
-
+  const {
+    creditsLeft,
+    useCredit
+  } = useSearchCredits();
   useEffect(() => {
     if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      messagesEndRef.current.scrollIntoView({
+        behavior: "smooth"
+      });
     }
   }, [messages]);
-
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
-    
     if (!useCredit()) return;
-    
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
@@ -41,7 +40,6 @@ const HomePage = () => {
     };
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
-
     setTimeout(() => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -51,19 +49,15 @@ const HomePage = () => {
       setMessages(prev => [...prev, botResponse]);
     }, 1000);
   };
-
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
-    
     if (!useCredit()) return;
-    
     const searchMessage: Message = {
       id: Date.now().toString(),
       type: "user",
       content: `Search for: ${searchQuery}`
     };
     setMessages(prev => [...prev, searchMessage]);
-
     setTimeout(() => {
       const botResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -73,7 +67,6 @@ const HomePage = () => {
       setMessages(prev => [...prev, botResponse]);
     }, 1000);
   };
-
   const getResponse = (message: string) => {
     const lowerMsg = message.toLowerCase();
     if (lowerMsg.includes("hello") || lowerMsg.includes("hi ")) {
@@ -88,9 +81,7 @@ const HomePage = () => {
       return "I'd love to help you with that! To access our full platform features including KOL search, campaign management, and analytics, please sign in or create an account.";
     }
   };
-
-  return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
+  return <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
       <div className="container mx-auto px-4 py-16 flex-1 flex lg:flex-row flex-col gap-8 relative z-10">
         <div className="lg:w-2/3 w-full flex flex-col">
           <div className="text-center lg:text-left mb-8">
@@ -112,9 +103,7 @@ const HomePage = () => {
                 <div>
                   <h2 className="font-semibold text-lg">AI KOL Discovery Agent</h2>
                   <p className="text-sm text-muted-foreground">
-                    {creditsLeft > 0 ? 
-                      `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` : 
-                      'Out of free searches today'}
+                    {creditsLeft > 0 ? `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` : 'Out of free searches today'}
                   </p>
                 </div>
               </div>
@@ -122,12 +111,7 @@ const HomePage = () => {
 
             <div className="bg-black/40 p-4 border-b border-white/10">
               <div className="flex gap-2">
-                <Input 
-                  placeholder="Quick search for TikTok creators..." 
-                  value={searchQuery} 
-                  onChange={e => setSearchQuery(e.target.value)}
-                  className="bg-black/60"
-                />
+                <Input placeholder="Quick search for TikTok creators..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="bg-black/60" />
                 <Button size="icon" variant="secondary">
                   <Search className="h-4 w-4" />
                 </Button>
@@ -135,35 +119,23 @@ const HomePage = () => {
             </div>
 
             <div className="flex-1 p-6 overflow-y-auto bg-black/20">
-              {messages.map(message => (
-                <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+              {messages.map(message => <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  {message.type === "bot" && <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
                       <MessageCircle className="h-4 w-4 text-white" />
-                    </div>
-                  )}
+                    </div>}
                   <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
                     {message.content}
                   </div>
-                  {message.type === "user" && (
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                  {message.type === "user" && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
                       <User className="h-4 w-4" />
-                    </div>
-                  )}
-                </div>
-              ))}
+                    </div>}
+                </div>)}
               <div ref={messagesEndRef} />
             </div>
 
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
-                <Input
-                  placeholder="Ask about specific creator types, niches, or requirements..."
-                  value={inputValue}
-                  onChange={e => setInputValue(e.target.value)}
-                  onKeyPress={e => e.key === "Enter" && handleSendMessage()}
-                  className="bg-black/60"
-                />
+                <Input placeholder="Ask about specific creator types, niches, or requirements..." value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyPress={e => e.key === "Enter" && handleSendMessage()} className="bg-black/60" />
                 <Button onClick={handleSendMessage}>Send</Button>
               </div>
               <div className="flex items-center gap-4 mt-3">
@@ -171,10 +143,7 @@ const HomePage = () => {
                   <Paperclip className="h-4 w-4 mr-2" />
                   Attach
                 </Button>
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
-                  <Figma className="h-4 w-4 mr-2" />
-                  Import Figma
-                </Button>
+                
               </div>
             </div>
           </div>
@@ -202,10 +171,7 @@ const HomePage = () => {
                 </li>
               </ul>
               <div className="mt-6">
-                <Button 
-                  onClick={() => navigate("/signup")} 
-                  className="w-full bg-brand-pink hover:bg-brand-pink/90"
-                >
+                <Button onClick={() => navigate("/signup")} className="w-full bg-brand-pink hover:bg-brand-pink/90">
                   Sign Up for Full Access
                 </Button>
               </div>
@@ -213,8 +179,6 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default HomePage;
