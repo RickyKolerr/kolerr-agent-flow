@@ -19,7 +19,7 @@ const PricingPage = () => {
       period: "forever",
       description: "Basic access for everyone",
       features: [
-        "5 AI-Matchmaking searches per day",
+        "5 AI-powered searches per day",
         "Basic creator profiles",
         "Limited analytics",
         "Community support",
@@ -37,7 +37,7 @@ const PricingPage = () => {
       period: "per month",
       description: "Perfect for small brands starting with influencer marketing",
       features: [
-        "100 Premium credits per month",
+        "100 Search credits per month",
         "Up to 3 active campaigns",
         "Basic contract templates",
         "Email support",
@@ -55,7 +55,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "500 Premium credits per month",
+        "500 Search credits per month",
         "Up to 10 active campaigns",
         "Advanced contract templates",
         "Priority email support",
@@ -74,7 +74,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "2000 Premium credits per month",
+        "2000 Search credits per month",
         "Unlimited active campaigns",
         "Custom contract builder",
         "24/7 priority support",
