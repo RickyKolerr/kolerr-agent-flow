@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 
@@ -15,12 +14,33 @@ export const useSearchCredits = () => {
     const resetTime = new Date(lastReset);
     resetTime.setHours(RESET_HOUR, 0, 0, 0);
     
-    if (now.getTime() > resetTime.getTime() && now.getHours() >= RESET_HOUR) {
+    if (now.getTime() > resetTime.getTime() && 
+        (now.getDate() > resetTime.getDate() || 
+         now.getMonth() > resetTime.getMonth() ||
+         now.getFullYear() > resetTime.getFullYear())) {
       return DAILY_CREDITS;
     }
     
     return credits;
   });
+
+  const getTimeUntilReset = (): string => {
+    const now = new Date();
+    const tomorrow = new Date();
+    
+    if (now.getHours() < RESET_HOUR) {
+      tomorrow.setDate(now.getDate());
+    } else {
+      tomorrow.setDate(now.getDate() + 1);
+    }
+    
+    tomorrow.setHours(RESET_HOUR, 0, 0, 0);
+    
+    const hoursLeft = Math.floor((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
+    const minutesLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hoursLeft}h ${minutesLeft}m`;
+  };
 
   useEffect(() => {
     localStorage.setItem('search_credits', JSON.stringify({
@@ -35,20 +55,25 @@ export const useSearchCredits = () => {
       return true;
     }
     
-    const now = new Date();
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    tomorrow.setHours(RESET_HOUR, 0, 0, 0);
-    
-    const hoursLeft = Math.ceil((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
-    
     toast.error(
       "You've used all your free searches for today", 
-      { description: `Sign up now for unlimited searches or wait ${hoursLeft} hours for your credits to reset.` }
+      { 
+        description: `Get more searches with a premium plan or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset.`,
+        action: {
+          label: "Upgrade",
+          onClick: () => window.location.href = "/pricing"
+        }
+      }
     );
     
     return false;
   };
 
-  return { creditsLeft, useCredit };
+  return { 
+    creditsLeft, 
+    useCredit,
+    dailyLimit: DAILY_CREDITS,
+    getTimeUntilReset,
+    resetHour: RESET_HOUR
+  };
 };

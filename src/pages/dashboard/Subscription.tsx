@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CheckCircle2, AlertCircle, CreditCard, Info } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useCredits } from "@/contexts/CreditContext";
 
 // Type for subscription plans
 interface Plan {
@@ -29,17 +30,38 @@ const SubscriptionPage = () => {
   const navigate = useNavigate();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>("pro");
+  const { hasPremiumPlan, premiumCredits } = useCredits();
 
   // Current plan (mock data)
   const currentPlan = {
-    id: "pro",
-    name: "Professional",
+    id: hasPremiumPlan || "free",
+    name: hasPremiumPlan ? "Professional" : "Free",
     billing: "monthly",
     nextRenewal: "July 1, 2023"
   };
 
   // Plans data
   const plans: Plan[] = [
+    {
+      id: "free",
+      name: "Free",
+      description: "Limited access with daily credits",
+      price: {
+        monthly: 0,
+        yearly: 0
+      },
+      features: [
+        { text: "5 free credits daily", included: true },
+        { text: "Basic search functionality", included: true },
+        { text: "Limited creator profiles", included: true },
+        { text: "Community support", included: true },
+        { text: "Advanced analytics", included: false },
+        { text: "Contract templates", included: false },
+        { text: "Campaign management", included: false },
+        { text: "Priority booking slots", included: false },
+      ],
+      credits: 5
+    },
     {
       id: "starter",
       name: "Starter",
@@ -131,17 +153,25 @@ const SubscriptionPage = () => {
                   {currentPlan.billing.charAt(0).toUpperCase() + currentPlan.billing.slice(1)}
                 </Badge>
               </div>
-              <p className="text-muted-foreground text-sm">
-                Next renewal: {currentPlan.nextRenewal}
-              </p>
+              {hasPremiumPlan ? (
+                <p className="text-muted-foreground text-sm">
+                  Next renewal: {currentPlan.nextRenewal} • {premiumCredits} premium credits remaining
+                </p>
+              ) : (
+                <p className="text-muted-foreground text-sm">
+                  Free tier • 5 daily credits • Resets at 7:00 AM daily
+                </p>
+              )}
             </div>
-            <Button 
-              variant="outline" 
-              className="mt-4 md:mt-0"
-              onClick={handleCancelSubscription}
-            >
-              Cancel Subscription
-            </Button>
+            {hasPremiumPlan && (
+              <Button 
+                variant="outline" 
+                className="mt-4 md:mt-0"
+                onClick={handleCancelSubscription}
+              >
+                Cancel Subscription
+              </Button>
+            )}
           </div>
         </CardContent>
       </Card>
@@ -167,7 +197,7 @@ const SubscriptionPage = () => {
       </div>
 
       {/* Plans */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
           <Card 
             key={plan.id}
@@ -188,7 +218,7 @@ const SubscriptionPage = () => {
                   </span>
                   <span className="text-muted-foreground ml-2">/ month</span>
                 </div>
-                {billingPeriod === 'yearly' && (
+                {billingPeriod === 'yearly' && plan.id !== 'free' && (
                   <p className="text-sm text-green-500 mt-1">
                     Save ${(plan.price.monthly * 12 - plan.price.yearly * 12).toFixed(0)} annually
                   </p>
@@ -213,21 +243,25 @@ const SubscriptionPage = () => {
               <div className="mt-6 p-4 bg-muted rounded-md">
                 <div className="flex items-center">
                   <CreditCard className="h-5 w-5 mr-2" />
-                  <span className="font-medium">{plan.credits} Credits monthly</span>
+                  <span className="font-medium">
+                    {plan.id === 'free' ? `${plan.credits} daily free credits` : `${plan.credits} Premium credits monthly`}
+                  </span>
                 </div>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Roll over up to 50% of unused credits
+                  {plan.id === 'free' ? 'Resets every day at 7:00 AM' : 'Roll over up to 50% of unused credits'}
                 </p>
               </div>
             </CardContent>
             <CardFooter>
               <Button
-                className={`w-full ${plan.id === currentPlan.id ? 'bg-muted hover:bg-muted' : 'bg-brand-pink hover:bg-brand-pink/90'}`}
-                disabled={plan.id === currentPlan.id}
-                onClick={() => setSelectedPlan(plan.id)}
+                className={`w-full ${plan.id === currentPlan.id ? 'bg-muted hover:bg-muted' : plan.id === 'free' ? '' : 'bg-brand-pink hover:bg-brand-pink/90'}`}
+                disabled={plan.id === currentPlan.id || plan.id === 'free'}
+                onClick={() => plan.id !== 'free' && setSelectedPlan(plan.id)}
                 variant={plan.id === selectedPlan ? 'default' : 'outline'}
               >
-                {plan.id === currentPlan.id ? 'Current Plan' : plan.id === selectedPlan ? 'Selected' : 'Select Plan'}
+                {plan.id === currentPlan.id ? 'Current Plan' : 
+                 plan.id === 'free' ? 'Free Plan' :
+                 plan.id === selectedPlan ? 'Selected' : 'Select Plan'}
               </Button>
             </CardFooter>
           </Card>
@@ -235,7 +269,7 @@ const SubscriptionPage = () => {
       </div>
 
       {/* Proceed with plan change */}
-      {selectedPlan && selectedPlan !== currentPlan.id && (
+      {selectedPlan && selectedPlan !== currentPlan.id && selectedPlan !== 'free' && (
         <div className="flex justify-center mt-8">
           <Card className="w-full max-w-2xl">
             <CardHeader>

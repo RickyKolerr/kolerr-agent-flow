@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -5,6 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Search, User, MessageCircle, Lock, Paperclip } from "lucide-react";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { toast } from "sonner";
+import { CreditBadge } from "@/components/CreditBadge";
+import { useCredits } from "@/contexts/CreditContext";
 
 interface Message {
   id: string;
@@ -22,7 +25,8 @@ const HomePage = () => {
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { isAuthenticated, canAccessFeature, getRedirectPath, creditsLeft } = useUserAccess();
+  const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
+  const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -31,7 +35,10 @@ const HomePage = () => {
   }, [messages]);
 
   const handleSendMessage = () => {
-    if (!canAccessFeature("search")) {
+    if (inputValue.trim() === "") return;
+    
+    // Check if user can send message (has credits)
+    if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         toast.info("Please sign in to continue", {
           action: {
@@ -42,19 +49,15 @@ const HomePage = () => {
         return;
       }
       
-      if (creditsLeft === 0) {
-        toast.error("Out of free searches", {
-          description: "Upgrade your plan to continue searching",
-          action: {
-            label: "Upgrade",
-            onClick: () => navigate("/pricing")
-          }
-        });
-        return;
-      }
+      toast.error("Out of free searches", {
+        description: "Upgrade your plan to continue searching",
+        action: {
+          label: "Upgrade",
+          onClick: () => navigate("/pricing")
+        }
+      });
+      return;
     }
-
-    if (inputValue.trim() === "") return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -64,6 +67,11 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+
+    // Use credit only after message is sent
+    if (!hasPremiumPlan) {
+      useFreeCredit();
+    }
 
     setTimeout(() => {
       const botResponse: Message = {
@@ -76,7 +84,10 @@ const HomePage = () => {
   };
 
   const handleSearch = () => {
-    if (!canAccessFeature("search")) {
+    if (searchQuery.trim() === "") return;
+    
+    // Check if user can search (has credits)
+    if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         toast.info("Please sign in to continue", {
           action: {
@@ -87,19 +98,15 @@ const HomePage = () => {
         return;
       }
       
-      if (creditsLeft === 0) {
-        toast.error("Out of free searches", {
-          description: "Upgrade your plan to continue searching",
-          action: {
-            label: "Upgrade",
-            onClick: () => navigate("/pricing")
-          }
-        });
-        return;
-      }
+      toast.error("Out of free searches", {
+        description: "Upgrade your plan to continue searching",
+        action: {
+          label: "Upgrade",
+          onClick: () => navigate("/pricing")
+        }
+      });
+      return;
     }
-
-    if (searchQuery.trim() === "") return;
 
     const searchMessage: Message = {
       id: Date.now().toString(),
@@ -108,6 +115,11 @@ const HomePage = () => {
     };
     
     setMessages(prev => [...prev, searchMessage]);
+
+    // Use credit only after search is performed
+    if (!hasPremiumPlan) {
+      useFreeCredit();
+    }
 
     setTimeout(() => {
       const botResponse: Message = {
@@ -165,13 +177,13 @@ const HomePage = () => {
                 <div>
                   <h2 className="font-semibold text-lg">AI KOL Discovery Agent</h2>
                   <p className="text-sm text-muted-foreground">
-                    {creditsLeft > 0 
-                      ? `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` 
-                      : 'Out of free searches today'}
+                    {freeCredits > 0 
+                      ? `${freeCredits} free ${freeCredits === 1 ? 'search' : 'searches'} remaining today` 
+                      : hasPremiumPlan ? 'Premium plan activated' : 'Out of free searches today'}
                   </p>
                 </div>
               </div>
-              {!isAuthenticated && (
+              {!isAuthenticated ? (
                 <Button 
                   variant="ghost" 
                   size="sm"
@@ -181,13 +193,15 @@ const HomePage = () => {
                   <Lock className="h-4 w-4 mr-2" />
                   Sign in for full access
                 </Button>
+              ) : !hasPremiumPlan && (
+                <CreditBadge variant="compact" />
               )}
             </div>
 
             <div className="bg-black/40 p-4 border-b border-white/10">
               <div className="flex gap-2">
                 <Input placeholder="Quick search for TikTok creators..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="bg-black/60" />
-                <Button size="icon" variant="secondary">
+                <Button size="icon" variant="secondary" onClick={handleSearch}>
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -213,12 +227,25 @@ const HomePage = () => {
                 <Input placeholder="Ask about specific creator types, niches, or requirements..." value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyPress={e => e.key === "Enter" && handleSendMessage()} className="bg-black/60" />
                 <Button onClick={handleSendMessage}>Send</Button>
               </div>
-              <div className="flex items-center gap-4 mt-3">
+              <div className="flex items-center justify-between mt-3 px-2">
                 <Button variant="ghost" size="sm" className="text-muted-foreground">
                   <Paperclip className="h-4 w-4 mr-2" />
                   Attach
                 </Button>
                 
+                {!hasPremiumPlan && (
+                  <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span>Free tier: {freeCredits}/5 searches</span>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-brand-pink p-0 h-auto" 
+                      onClick={() => navigate("/pricing")}
+                    >
+                      Upgrade
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>

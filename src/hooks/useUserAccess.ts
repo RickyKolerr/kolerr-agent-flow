@@ -1,29 +1,29 @@
 
 import { useAuth } from "@/contexts/AuthContext";
-import { useSearchCredits } from "@/hooks/useSearchCredits";
+import { useCredits } from "@/contexts/CreditContext";
 
 export const useUserAccess = () => {
   const { user, isAuthenticated } = useAuth();
-  const { creditsLeft } = useSearchCredits();
+  const { freeCredits, hasPremiumPlan } = useCredits();
 
   const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
     if (feature === "search") {
-      return creditsLeft > 0;
+      return freeCredits > 0 || hasPremiumPlan;
     }
 
-    // Role-based feature access
+    // Role-based feature access and premium plan checks
     const userRole = user?.role;
     
     switch (feature) {
       case "campaigns":
-        return ["brand", "admin"].includes(userRole || "");
+        return (["brand", "admin"].includes(userRole || "") && hasPremiumPlan);
       case "analytics":
-        return ["brand", "admin"].includes(userRole || "");
+        return (["brand", "admin"].includes(userRole || "") && hasPremiumPlan);
       case "contracts":
-        return ["brand", "kol", "admin"].includes(userRole || "");
+        return (["brand", "kol", "admin"].includes(userRole || "") && hasPremiumPlan);
       default:
         return false;
     }
@@ -42,6 +42,7 @@ export const useUserAccess = () => {
     getRedirectPath,
     isAuthenticated,
     user,
-    creditsLeft
+    freeCredits,
+    hasPremiumPlan
   };
 };
