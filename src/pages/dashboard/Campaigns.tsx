@@ -1,13 +1,15 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Plus, Search } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { Campaign } from "@/types/campaign";
+import { Campaign as CampaignType } from "@/types/campaign";
 import { CampaignFilters } from "@/components/campaigns/CampaignFilters";
 import { CampaignListItem } from "@/components/campaigns/CampaignListItem";
 
+// Define a local campaign structure that matches what we're using in this file
 interface Campaign {
   id: string;
   title: string;
@@ -16,8 +18,24 @@ interface Campaign {
   audience: string;
   startDate: string;
   endDate: string;
-  kols: number;
-  engagement: number;
+  description: string;
+  metrics: {
+    views: number;
+    engagement: number;
+    conversions: number;
+    roi: number;
+  };
+  assignedKols: {
+    id: string;
+    name: string;
+    status: "pending" | "accepted" | "declined";
+    metrics?: {
+      views: number;
+      engagement: number;
+    };
+  }[];
+  createdAt: string;
+  updatedAt: string;
 }
 
 const CampaignsPage = () => {
@@ -64,8 +82,19 @@ const CampaignsPage = () => {
       audience: "Fashion enthusiasts, 18-35",
       startDate: "2023-06-10",
       endDate: "2023-07-10",
-      kols: 12,
-      engagement: 4.8
+      description: "Summer fashion collection launch featuring new swimwear line",
+      metrics: {
+        views: 12500,
+        engagement: 4.8,
+        conversions: 380,
+        roi: 3.2
+      },
+      assignedKols: [
+        { id: "kol1", name: "Fashion Influencer 1", status: "accepted", metrics: { views: 5000, engagement: 5.2 } },
+        { id: "kol2", name: "Fashion Influencer 2", status: "pending" }
+      ],
+      createdAt: "2023-05-15T10:30:00Z",
+      updatedAt: "2023-05-20T14:15:00Z"
     },
     {
       id: "camp2",
@@ -75,8 +104,16 @@ const CampaignsPage = () => {
       audience: "Tech enthusiasts, 20-45",
       startDate: "2023-07-20",
       endDate: "2023-08-05",
-      kols: 8,
-      engagement: 0
+      description: "Teaser campaign for upcoming product launch",
+      metrics: {
+        views: 0,
+        engagement: 0,
+        conversions: 0,
+        roi: 0
+      },
+      assignedKols: [],
+      createdAt: "2023-06-10T09:15:00Z",
+      updatedAt: "2023-06-10T09:15:00Z"
     },
     {
       id: "camp3",
@@ -86,8 +123,19 @@ const CampaignsPage = () => {
       audience: "General, all ages",
       startDate: "2022-12-01",
       endDate: "2022-12-25",
-      kols: 15,
-      engagement: 5.2
+      description: "Holiday season promotional campaign",
+      metrics: {
+        views: 25000,
+        engagement: 5.2,
+        conversions: 850,
+        roi: 4.5
+      },
+      assignedKols: [
+        { id: "kol3", name: "Lifestyle Influencer", status: "accepted", metrics: { views: 12000, engagement: 6.1 } },
+        { id: "kol4", name: "Family Influencer", status: "accepted", metrics: { views: 8500, engagement: 4.8 } }
+      ],
+      createdAt: "2022-11-10T08:20:00Z",
+      updatedAt: "2022-12-28T16:45:00Z"
     },
     {
       id: "camp4",
@@ -97,8 +145,18 @@ const CampaignsPage = () => {
       audience: "Students, parents, 16-45",
       startDate: "2023-08-15",
       endDate: "2023-09-05",
-      kols: 10,
-      engagement: 3.7
+      description: "Back to school promotional campaign for students and parents",
+      metrics: {
+        views: 7500,
+        engagement: 3.7,
+        conversions: 210,
+        roi: 2.8
+      },
+      assignedKols: [
+        { id: "kol5", name: "Student Influencer", status: "accepted", metrics: { views: 3500, engagement: 4.2 } }
+      ],
+      createdAt: "2023-07-20T11:30:00Z",
+      updatedAt: "2023-08-25T13:40:00Z"
     },
     {
       id: "camp5",
@@ -108,8 +166,19 @@ const CampaignsPage = () => {
       audience: "Fitness enthusiasts, 18-40",
       startDate: "2023-05-01",
       endDate: "2023-05-31",
-      kols: 8,
-      engagement: 6.3
+      description: "30-day fitness challenge campaign with workout influencers",
+      metrics: {
+        views: 18000,
+        engagement: 6.3,
+        conversions: 520,
+        roi: 3.9
+      },
+      assignedKols: [
+        { id: "kol6", name: "Fitness Instructor 1", status: "accepted", metrics: { views: 9500, engagement: 7.1 } },
+        { id: "kol7", name: "Fitness Instructor 2", status: "declined" }
+      ],
+      createdAt: "2023-04-15T14:20:00Z",
+      updatedAt: "2023-04-28T10:10:00Z"
     }
   ];
 
