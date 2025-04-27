@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -13,8 +14,16 @@ export const MainNav = () => {
     logout
   } = useAuth();
 
+  // Add state for controlling sheet visibility
+  const [isOpen, setIsOpen] = useState(false);
+
   const getInitials = (name: string) => {
     return name.split(" ").map(part => part[0]).join("").toUpperCase();
+  };
+
+  // Handler for mobile nav items
+  const handleMobileNavClick = () => {
+    setIsOpen(false);
   };
 
   return (
@@ -95,7 +104,7 @@ export const MainNav = () => {
           </div>
 
           {/* Mobile Navigation */}
-          <Sheet>
+          <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
                 <Menu className="h-5 w-5" />
@@ -104,23 +113,24 @@ export const MainNav = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link to="/about" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                <Link to="/about" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                   About
                 </Link>
-                <Link to="/features" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                <Link to="/features" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                   Features
                 </Link>
-                <Link to="/pricing" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                <Link to="/pricing" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                   Pricing
                 </Link>
-                <Link to="/docs" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                <Link to="/docs" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                   Docs
                 </Link>
-                <Link to="/contact" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                <Link to="/contact" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                   Contact
                 </Link>
                 <div className="flex flex-col space-y-4 pt-6 border-t border-gray-800">
-                  {isAuthenticated ? <>
+                  {isAuthenticated ? (
+                    <>
                       <div className="flex items-center space-x-3">
                         <Avatar className="h-9 w-9">
                           <AvatarImage src={user?.avatar} alt={user?.name} />
@@ -131,26 +141,29 @@ export const MainNav = () => {
                           <p className="text-sm text-muted-foreground">{user?.email}</p>
                         </div>
                       </div>
-                      <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                      <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         Dashboard
                       </Link>
-                      <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                      <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         Profile
                       </Link>
-                      <Link to="/dashboard/settings" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                      <Link to="/dashboard/settings" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         Settings
                       </Link>
-                      <button onClick={logout} className="text-lg font-medium hover:text-brand-pink transition-colors text-left">
+                      <button onClick={() => { logout(); handleMobileNavClick(); }} className="text-lg font-medium hover:text-brand-pink transition-colors text-left">
                         Log out
                       </button>
-                    </> : <>
-                      <Link to="/login" className="text-lg font-medium hover:text-brand-pink transition-colors">
+                    </>
+                  ) : (
+                    <>
+                      <Link to="/login" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         Log In
                       </Link>
-                      <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center">
+                      <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center" onClick={handleMobileNavClick}>
                         Sign Up
                       </Link>
-                    </>}
+                    </>
+                  )}
                 </div>
               </nav>
             </SheetContent>
@@ -160,3 +173,4 @@ export const MainNav = () => {
     </header>
   );
 };
+
