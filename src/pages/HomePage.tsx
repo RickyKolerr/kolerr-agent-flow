@@ -8,6 +8,8 @@ import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useCredits } from "@/contexts/CreditContext";
 import { mockCreatorData } from "@/data/mockCreators";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 
 interface Message {
   id: string;
@@ -150,28 +152,130 @@ const HomePage = () => {
     }
   };
 
+  const topPerformers = mockCreatorData
+    .sort((a, b) => b.followers - a.followers)
+    .slice(0, 6);
+
   const trendingCreators = mockCreatorData
     .filter(creator => creator.trending)
-    .slice(0, 3);
+    .slice(0, 6);
 
-  const topCreators = [...mockCreatorData]
-    .sort((a, b) => b.followers - a.followers)
-    .slice(0, 3);
+  const viralCreators = mockCreatorData
+    .sort((a, b) => b.engagementRate - a.engagementRate)
+    .slice(0, 6);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
-      <div className="container mx-auto px-4 py-16 flex-1 flex lg:flex-row flex-col gap-8 relative z-10">
-        <div className="lg:w-2/3 w-full flex flex-col">
-          <div className="text-center lg:text-left mb-8">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gradient mb-4">
-              Discover your perfect
-              <span className="text-brand-pink"> KOL match</span>
-            </h1>
-            <p className="text-xl md:text-2xl text-muted-foreground">
-              Connect with TikTok creators that align with your brand
-            </p>
+      <div className="container mx-auto px-4 pt-8 pb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div className="glass-panel rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <Star className="h-8 w-8 text-brand-pink" />
+              <h2 className="text-2xl font-bold">Top Performers</h2>
+            </div>
+            <div className="space-y-4">
+              {topPerformers.slice(0, 3).map(creator => (
+                <Card key={creator.id} className="bg-black/40 hover:bg-black/50 transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={creator.avatar} 
+                        alt={creator.fullName} 
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{creator.fullName}</h3>
+                        <p className="text-brand-pink font-medium">
+                          {(creator.followers / 1000000).toFixed(1)}M Followers
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {creator.niche.slice(0, 2).map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
 
+          <div className="glass-panel rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <TrendingUp className="h-8 w-8 text-brand-pink" />
+              <h2 className="text-2xl font-bold">Trending Now</h2>
+            </div>
+            <div className="space-y-4">
+              {trendingCreators.slice(0, 3).map(creator => (
+                <Card key={creator.id} className="bg-black/40 hover:bg-black/50 transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={creator.avatar} 
+                        alt={creator.fullName} 
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{creator.fullName}</h3>
+                        <div className="flex items-center text-brand-pink font-medium">
+                          <TrendingUp className="h-4 w-4 mr-1" />
+                          {(creator.engagementRate * 100).toFixed(1)}% Engagement
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {creator.niche.slice(0, 2).map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+
+          <div className="glass-panel rounded-2xl p-6 shadow-2xl">
+            <div className="flex items-center gap-3 mb-6">
+              <Users className="h-8 w-8 text-brand-pink" />
+              <h2 className="text-2xl font-bold">Viral Stars</h2>
+            </div>
+            <div className="space-y-4">
+              {viralCreators.slice(0, 3).map(creator => (
+                <Card key={creator.id} className="bg-black/40 hover:bg-black/50 transition-all">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-4">
+                      <img 
+                        src={creator.avatar} 
+                        alt={creator.fullName} 
+                        className="w-16 h-16 rounded-full object-cover"
+                      />
+                      <div className="flex-1">
+                        <h3 className="font-semibold text-lg">{creator.fullName}</h3>
+                        <p className="text-brand-pink font-medium">
+                          {creator.avgViews} Avg. Views
+                        </p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {creator.niche.slice(0, 2).map(tag => (
+                            <Badge key={tag} variant="secondary" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="lg:w-2/3 w-full">
           <div className="rounded-2xl overflow-hidden glass-panel shadow-2xl flex flex-col flex-1">
             <div className="bg-black/70 p-6 border-b border-white/10 flex justify-between items-center">
               <div className="flex items-center">
@@ -253,69 +357,9 @@ const HomePage = () => {
               </div>
             </div>
           </div>
-
-          <div className="mt-8 space-y-8">
-            <div className="rounded-2xl glass-panel p-6 shadow-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <TrendingUp className="h-6 w-6 text-brand-pink" />
-                <h3 className="text-2xl font-bold">Trending Creators</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {trendingCreators.map(creator => (
-                  <div key={creator.id} className="bg-black/40 rounded-xl p-4 hover:bg-black/50 transition-colors">
-                    <div className="flex items-center gap-3 mb-2">
-                      <img src={creator.avatar} alt={creator.fullName} className="w-12 h-12 rounded-full object-cover" />
-                      <div>
-                        <h4 className="font-semibold">{creator.fullName}</h4>
-                        <p className="text-sm text-muted-foreground">{creator.followers.toLocaleString()} followers</p>
-                      </div>
-                    </div>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{creator.bio}</p>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {creator.niche.map(tag => (
-                        <span key={tag} className="text-xs bg-brand-pink/20 text-brand-pink px-2 py-1 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="rounded-2xl glass-panel p-6 shadow-2xl">
-              <div className="flex items-center gap-3 mb-4">
-                <Star className="h-6 w-6 text-brand-pink" />
-                <h3 className="text-2xl font-bold">Most Popular Creators</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {topCreators.map(creator => (
-                  <div key={creator.id} className="bg-black/40 rounded-xl p-4 hover:bg-black/50 transition-colors">
-                    <div className="flex items-center gap-3 mb-2">
-                      <img src={creator.avatar} alt={creator.fullName} className="w-12 h-12 rounded-full object-cover" />
-                      <div>
-                        <h4 className="font-semibold">{creator.fullName}</h4>
-                        <p className="text-sm text-muted-foreground">{creator.followers.toLocaleString()} followers</p>
-                      </div>
-                    </div>
-                    <div className="mt-2 space-y-1">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Avg. Views:</span>
-                        <span className="font-medium">{creator.avgViews}</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Engagement:</span>
-                        <span className="font-medium">{(creator.engagementRate * 100).toFixed(1)}%</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
 
-        <div className="lg:w-1/3 w-full">
+        <div className="lg:w-1/3 w-full mt-8 lg:mt-0">
           <div className="rounded-2xl glass-panel p-8 shadow-2xl">
             <h2 className="text-3xl font-bold mb-8">Discover TikTok Creators</h2>
             <div className="space-y-6">
