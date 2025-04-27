@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -119,33 +118,35 @@ const Settings = () => {
       .toUpperCase() || "U";
   };
 
-  const renderMobileSettingsNav = () => (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
-          <span className="flex items-center gap-2">
-            {sections.find(s => s.id === activeSection)?.icon && 
-              <sections.find(s => s.id === activeSection)?.icon className="h-4 w-4" />
-            }
-            {sections.find(s => s.id === activeSection)?.title}
-          </span>
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-full">
-        {sections.map((section) => (
-          <DropdownMenuItem 
-            key={section.id}
-            className="flex items-center gap-2"
-            onClick={() => setActiveSection(section.id)}
-          >
-            <section.icon className="h-4 w-4" />
-            <span>{section.title}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
-  );
+  const renderMobileSettingsNav = () => {
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
+            <span className="flex items-center gap-2">
+              {sections.find(s => s.id === activeSection)?.icon && 
+                <sections.find(s => s.id === activeSection)?.icon className="h-4 w-4" />
+              }
+              {sections.find(s => s.id === activeSection)?.title}
+            </span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-full">
+          {sections.map((section) => (
+            <DropdownMenuItem 
+              key={section.id}
+              className="flex items-center gap-2"
+              onClick={() => setActiveSection(section.id)}
+            >
+              <section.icon className="h-4 w-4" />
+              <span>{section.title}</span>
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
 
   const renderDesktopSettingsNav = () => (
     <div className="hidden md:block w-56 shrink-0 mr-6">
