@@ -28,10 +28,10 @@ const DashboardLayout = () => {
       name: "KOLs", 
       path: "/dashboard/kols",
     },
-    { 
-      icon: BarChart, 
-      name: "Campaigns", 
-      path: "/dashboard/campaigns",
+    {
+      icon: BarChart,
+      name: "Analytics",
+      path: "/dashboard/analytics",
     },
     { 
       icon: Calendar, 
