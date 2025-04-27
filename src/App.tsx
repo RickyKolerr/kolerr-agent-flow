@@ -14,6 +14,8 @@ import DocsPage from "@/pages/docs/DocsPage";
 import ContactPage from "@/pages/ContactPage";
 import PartnersPage from "@/pages/partners/PartnersPage";
 import APIPage from "@/pages/api/APIPage";
+import BlogPage from "@/pages/blog/BlogPage";
+import HelpCenter from "@/pages/help/HelpCenter";
 import TermsPage from "@/pages/legal/Terms";
 import PrivacyPage from "@/pages/legal/Privacy";
 import SecurityPage from "@/pages/legal/SecurityPage";
@@ -78,12 +80,11 @@ const App = () => {
                 <Route path="/features" element={<FeaturesPage />} />
                 <Route path="/pricing" element={<PricingPage />} />
                 <Route path="/docs" element={<DocsPage />} />
+                <Route path="/api" element={<APIPage />} />
+                <Route path="/blog" element={<BlogPage />} />
+                <Route path="/help" element={<HelpCenter />} />
                 <Route path="/contact" element={<ContactPage />} />
                 <Route path="/partners" element={<PartnersPage />} />
-                <Route path="/api" element={<APIPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                 
                 {/* Legal routes */}
                 <Route path="/terms" element={<TermsPage />} />
