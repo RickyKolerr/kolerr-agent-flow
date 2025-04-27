@@ -26,46 +26,50 @@ import NotFound from "@/pages/NotFound";
 
 // Context
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useState } from "react";
 
-const queryClient = new QueryClient();
+const App = () => {
+  // Create a new QueryClient instance inside the component
+  const [queryClient] = useState(() => new QueryClient());
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<HomePage />} />
-            <Route path="/login" element={<LoginPage />} />
-            <Route path="/signup" element={<SignupPage />} />
-            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-            
-            {/* Protected dashboard routes */}
-            <Route path="/dashboard" element={<DashboardLayout />}>
-              <Route index element={<Navigate to="/dashboard/overview" replace />} />
-              <Route path="overview" element={<DashboardOverview />} />
-              <Route path="kols" element={<KOLsPage />} />
-              <Route path="campaigns" element={<CampaignsPage />} />
-              <Route path="bookings" element={<BookingsPage />} />
-              <Route path="credits" element={<CreditsPage />} />
-              <Route path="profile" element={<ProfilePage />} />
-              <Route path="billing" element={<BillingPage />} />
-              <Route path="subscription" element={<SubscriptionPage />} />
-              <Route path="contracts" element={<ContractsPage />} />
-              <Route path="settings" element={<SettingsPage />} />
-              <Route path="payment" element={<PaymentPage />} />
-            </Route>
-            
-            {/* Catch all route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </AuthProvider>
-  </QueryClientProvider>
-);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/" element={<HomePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/signup" element={<SignupPage />} />
+              <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+              
+              {/* Protected dashboard routes */}
+              <Route path="/dashboard" element={<DashboardLayout />}>
+                <Route index element={<Navigate to="/dashboard/overview" replace />} />
+                <Route path="overview" element={<DashboardOverview />} />
+                <Route path="kols" element={<KOLsPage />} />
+                <Route path="campaigns" element={<CampaignsPage />} />
+                <Route path="bookings" element={<BookingsPage />} />
+                <Route path="credits" element={<CreditsPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+                <Route path="billing" element={<BillingPage />} />
+                <Route path="subscription" element={<SubscriptionPage />} />
+                <Route path="contracts" element={<ContractsPage />} />
+                <Route path="settings" element={<SettingsPage />} />
+                <Route path="payment" element={<PaymentPage />} />
+              </Route>
+              
+              {/* Catch all route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </AuthProvider>
+    </QueryClientProvider>
+  );
+};
 
 export default App;

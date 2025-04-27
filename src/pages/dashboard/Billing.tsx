@@ -1,327 +1,360 @@
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CreditCard, Download, FileText, Clock, ArrowRight, AlertCircle } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "sonner";
+import {
+  CreditCard,
+  Download,
+  Plus as PlusIcon,
+  Receipt,
+  ChevronDown,
+  CheckCircle2
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
-interface Invoice {
-  id: string;
-  date: string;
-  amount: number;
-  status: 'paid' | 'pending' | 'overdue';
-  description: string;
-}
+const Billing = () => {
+  const [activeTab, setActiveTab] = useState("overview");
 
-interface PaymentMethod {
-  id: string;
-  type: 'visa' | 'mastercard' | 'amex' | 'paypal';
-  last4: string;
-  expiry?: string;
-  default: boolean;
-}
-
-const BillingPage = () => {
-  const navigate = useNavigate();
-
-  // Mock data
-  const currentPlan = {
-    name: "Professional",
-    amount: 99,
-    period: "monthly",
-    credits: 500,
-    renewalDate: "July 1, 2023",
-  };
-
-  const invoices: Invoice[] = [
+  // Mock data for billing plans
+  const plans = [
     {
-      id: "INV-2023-005",
-      date: "2023-06-01",
-      amount: 99,
-      status: 'paid',
-      description: "Professional Plan - Monthly"
+      id: "starter",
+      name: "Starter",
+      description: "Perfect for small brands just getting started with influencer marketing.",
+      price: "$49",
+      features: [
+        "10 KOL searches per month",
+        "5 outreach campaigns",
+        "Basic analytics",
+        "Email support"
+      ],
+      current: false
     },
     {
-      id: "INV-2023-004",
-      date: "2023-05-01",
-      amount: 99,
-      status: 'paid',
-      description: "Professional Plan - Monthly"
+      id: "pro",
+      name: "Pro",
+      description: "For growing brands with active influencer marketing programs.",
+      price: "$149",
+      features: [
+        "50 KOL searches per month",
+        "Unlimited campaigns",
+        "Advanced analytics & reporting",
+        "Priority support",
+        "Contract templates"
+      ],
+      current: true
     },
     {
-      id: "INV-2023-003",
-      date: "2023-04-01",
-      amount: 99,
-      status: 'paid',
-      description: "Professional Plan - Monthly"
-    },
-    {
-      id: "INV-2023-002",
-      date: "2023-03-01",
-      amount: 75,
-      status: 'paid',
-      description: "Basic Plan - Monthly"
-    },
-    {
-      id: "INV-2023-001",
-      date: "2023-02-01",
-      amount: 75,
-      status: 'paid',
-      description: "Basic Plan - Monthly"
+      id: "enterprise",
+      name: "Enterprise",
+      description: "For established brands with extensive influencer partnerships.",
+      price: "$499",
+      features: [
+        "Unlimited KOL searches",
+        "Unlimited campaigns",
+        "Custom analytics",
+        "Dedicated account manager",
+        "Custom contract creation",
+        "API access"
+      ],
+      current: false
     }
   ];
 
-  const paymentMethods: PaymentMethod[] = [
+  // Mock data for payment methods
+  const paymentMethods = [
     {
-      id: "pm1",
-      type: "visa",
-      last4: "4242",
-      expiry: "06/25",
+      id: 1,
+      name: "Visa ending in 4242",
+      expiry: "04/25",
       default: true
     },
     {
-      id: "pm2",
-      type: "mastercard",
-      last4: "8888",
-      expiry: "10/24",
-      default: false
-    },
-    {
-      id: "pm3",
-      type: "paypal",
-      last4: "",
+      id: 2,
+      name: "Mastercard ending in 5555",
+      expiry: "08/24",
       default: false
     }
   ];
 
-  const handleViewPlan = () => {
-    navigate("/dashboard/subscription");
-  };
-
-  const handleManagePayment = () => {
-    navigate("/dashboard/payment");
-  };
-
-  const handleDownloadInvoice = (id: string) => {
-    toast.success(`Downloading invoice ${id}...`);
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  const getStatusBadge = (status: Invoice['status']) => {
-    switch(status) {
-      case 'paid': return <Badge variant="outline" className="bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">Paid</Badge>;
-      case 'pending': return <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/20">Pending</Badge>;
-      case 'overdue': return <Badge variant="outline" className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/20">Overdue</Badge>;
+  // Mock data for billing history
+  const billingHistory = [
+    {
+      id: "INV-001",
+      date: "Apr 1, 2023",
+      amount: "$149.00",
+      status: "Paid",
+      description: "Pro Plan - Monthly"
+    },
+    {
+      id: "INV-002",
+      date: "Mar 1, 2023",
+      amount: "$149.00",
+      status: "Paid",
+      description: "Pro Plan - Monthly"
+    },
+    {
+      id: "INV-003",
+      date: "Feb 1, 2023",
+      amount: "$149.00",
+      status: "Paid",
+      description: "Pro Plan - Monthly"
+    },
+    {
+      id: "INV-004",
+      date: "Jan 1, 2023",
+      amount: "$49.00",
+      status: "Paid",
+      description: "Starter Plan - Monthly"
     }
-  };
-
-  const getCreditCardIcon = (type: PaymentMethod['type']) => {
-    switch(type) {
-      case 'visa': return <span className="text-blue-600 font-bold">VISA</span>;
-      case 'mastercard': return <span className="text-orange-500 font-bold">MC</span>;
-      case 'amex': return <span className="text-blue-800 font-bold">AMEX</span>;
-      case 'paypal': return <span className="text-blue-700 font-bold">PP</span>;
-    }
-  };
+  ];
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Billing & Payments</h1>
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Billing & Subscription</h1>
+        <p className="text-muted-foreground mt-2">
+          Manage your subscription plan, payment methods, and billing history.
+        </p>
       </div>
 
-      {/* Current Plan */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <FileText className="h-5 w-5 mr-2" />
-            Current Subscription
-          </CardTitle>
-          <CardDescription>Your current plan and upcoming charges</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center border rounded-lg p-4">
-            <div className="space-y-1">
-              <div className="flex items-center">
-                <h3 className="text-lg font-medium">{currentPlan.name} Plan</h3>
-                <Badge variant="outline" className="ml-2 bg-brand-pink/10 text-brand-pink hover:bg-brand-pink/20 border-brand-pink/20">
-                  {currentPlan.period.charAt(0).toUpperCase() + currentPlan.period.slice(1)}
-                </Badge>
-              </div>
-              <p className="text-muted-foreground text-sm">
-                ${currentPlan.amount} per month • {currentPlan.credits} Credits
-              </p>
-              <div className="flex items-center text-sm text-muted-foreground">
-                <Clock className="h-3 w-3 mr-1" />
-                <span>Renews on {currentPlan.renewalDate}</span>
-              </div>
-            </div>
-            <div className="mt-4 md:mt-0 flex flex-col sm:flex-row gap-2">
-              <Button
-                variant="outline"
-                onClick={handleManagePayment}
-              >
-                Manage Payment
-              </Button>
-              <Button
-                className="bg-brand-pink hover:bg-brand-pink/90"
-                onClick={handleViewPlan}
-              >
-                Change Plan
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Payment Methods & Invoices */}
-      <Tabs defaultValue="payment-methods">
+      <Tabs defaultValue="overview" className="space-y-4" onValueChange={setActiveTab}>
         <TabsList>
-          <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="plans">Plans</TabsTrigger>
+          <TabsTrigger value="payment">Payment Methods</TabsTrigger>
+          <TabsTrigger value="history">Billing History</TabsTrigger>
         </TabsList>
-        <TabsContent value="payment-methods" className="mt-6">
+
+        <TabsContent value="overview" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Payment Methods
-              </CardTitle>
-              <CardDescription>Manage your payment methods</CardDescription>
+              <CardTitle>Current Plan</CardTitle>
+              <CardDescription>
+                Your current subscription details and usage.
+              </CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {paymentMethods.map((method) => (
-                  <div key={method.id} className="flex justify-between items-center p-4 border rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="h-10 w-16 bg-muted rounded flex items-center justify-center">
-                        {getCreditCardIcon(method.type)}
-                      </div>
-                      <div>
-                        <p className="font-medium">
-                          {method.type === 'paypal' ? 'PayPal' : `${method.type.charAt(0).toUpperCase() + method.type.slice(1)} ending in ${method.last4}`}
-                        </p>
-                        {method.expiry && (
-                          <p className="text-sm text-muted-foreground">Expires {method.expiry}</p>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {method.default && (
-                        <Badge variant="outline">Default</Badge>
-                      )}
-                      <Button variant="ghost" size="sm">
-                        Edit
-                      </Button>
-                      {!method.default && (
-                        <Button variant="ghost" size="sm">
-                          Remove
-                        </Button>
-                      )}
-                    </div>
+            <CardContent className="space-y-6">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Pro Plan</h3>
+                  <p className="text-muted-foreground">$149/month, billed monthly</p>
+                </div>
+                <div className="flex flex-col xs:flex-row gap-2">
+                  <Button variant="outline">Change Plan</Button>
+                  <Button variant="outline" className="text-red-500 hover:text-red-700">
+                    Cancel Subscription
+                  </Button>
+                </div>
+              </div>
+
+              <div className="border rounded-lg p-4 space-y-4">
+                <h4 className="font-medium">Your usage this month</h4>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">KOL searches</span>
+                    <span>23 / 50</span>
                   </div>
-                ))}
-                
-                <Button 
-                  onClick={() => navigate("/dashboard/payment")}
-                  className="w-full bg-brand-pink hover:bg-brand-pink/90"
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Add Payment Method
-                </Button>
+                  <div className="h-2 bg-secondary rounded-full">
+                    <div className="h-2 bg-brand-pink rounded-full w-[46%]"></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Active campaigns</span>
+                    <span>4 / Unlimited</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full">
+                    <div className="h-2 bg-brand-pink rounded-full w-[40%]"></div>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Credits</span>
+                    <span>720 remaining</span>
+                  </div>
+                  <div className="h-2 bg-secondary rounded-full">
+                    <div className="h-2 bg-brand-pink rounded-full w-[72%]"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-2">Billing information</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Payment method
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <CreditCard className="h-4 w-4" /> 
+                      Visa ending in 4242
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Next billing date
+                    </p>
+                    <p>May 1, 2023</p>
+                  </div>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
-        
-        <TabsContent value="invoices" className="mt-6">
+
+        <TabsContent value="plans" className="space-y-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {plans.map((plan) => (
+              <Card 
+                key={plan.id} 
+                className={`relative ${plan.current ? "border-brand-pink shadow-lg" : ""}`}
+              >
+                {plan.current && (
+                  <div className="absolute top-0 right-0 transform translate-x-1/4 -translate-y-1/4">
+                    <span className="bg-brand-pink text-white text-xs font-medium px-2 py-1 rounded-full">
+                      Current
+                    </span>
+                  </div>
+                )}
+                <CardHeader>
+                  <CardTitle>{plan.name}</CardTitle>
+                  <CardDescription>{plan.description}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <span className="text-3xl font-bold">{plan.price}</span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <ul className="space-y-2">
+                    {plan.features.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        <span>{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button 
+                    className={`w-full ${plan.current ? "bg-brand-pink hover:bg-brand-pink/90" : ""}`}
+                    variant={plan.current ? "default" : "outline"}
+                    disabled={plan.current}
+                  >
+                    {plan.current ? "Current Plan" : "Select Plan"}
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </TabsContent>
+
+        <TabsContent value="payment" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="h-5 w-5 mr-2" />
-                Invoice History
-              </CardTitle>
-              <CardDescription>View and download your past invoices</CardDescription>
+              <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2">
+                <div>
+                  <CardTitle>Payment Methods</CardTitle>
+                  <CardDescription>Manage your payment methods.</CardDescription>
+                </div>
+                <Button className="flex items-center gap-1">
+                  <PlusIcon className="h-4 w-4" /> Add Method
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {paymentMethods.map((method) => (
+                <div 
+                  key={method.id} 
+                  className={`flex justify-between items-center p-4 border rounded-lg ${method.default ? "bg-secondary/50" : ""}`}
+                >
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="h-5 w-5" />
+                    <div>
+                      <p>{method.name}</p>
+                      <p className="text-xs text-muted-foreground">Expires {method.expiry}</p>
+                    </div>
+                    {method.default && (
+                      <span className="text-xs bg-secondary text-foreground px-2 py-0.5 rounded-full">
+                        Default
+                      </span>
+                    )}
+                  </div>
+                  <Button variant="ghost" size="sm" className="h-8">
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="history" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle>Billing History</CardTitle>
+              <CardDescription>View and download your invoices.</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Invoice</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {invoices.map((invoice) => (
-                      <TableRow key={invoice.id}>
-                        <TableCell className="font-medium">{invoice.id}</TableCell>
-                        <TableCell>{formatDate(invoice.date)}</TableCell>
-                        <TableCell>${invoice.amount.toFixed(2)}</TableCell>
-                        <TableCell>{invoice.description}</TableCell>
-                        <TableCell>{getStatusBadge(invoice.status)}</TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDownloadInvoice(invoice.id)}
-                          >
-                            <Download className="h-4 w-4 mr-1" /> Download
-                          </Button>
-                        </TableCell>
-                      </TableRow>
+              <div className="relative overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="text-xs uppercase bg-secondary">
+                    <tr>
+                      <th scope="col" className="px-4 py-3 rounded-l-lg">
+                        Invoice
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Date
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Amount
+                      </th>
+                      <th scope="col" className="px-4 py-3">
+                        Status
+                      </th>
+                      <th scope="col" className="px-4 py-3 rounded-r-lg">
+                        Actions
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {billingHistory.map((invoice) => (
+                      <tr key={invoice.id} className="border-b">
+                        <td className="px-4 py-3">
+                          <div className="flex flex-col">
+                            <span>{invoice.id}</span>
+                            <span className="text-xs text-muted-foreground">{invoice.description}</span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">{invoice.date}</td>
+                        <td className="px-4 py-3">{invoice.amount}</td>
+                        <td className="px-4 py-3">
+                          <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {invoice.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex space-x-2">
+                            <Button variant="ghost" size="sm" className="h-8">
+                              <Receipt className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
+                            <Button variant="ghost" size="sm" className="h-8">
+                              <Download className="h-4 w-4 mr-1" />
+                              PDF
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
                     ))}
-                  </TableBody>
-                </Table>
+                  </tbody>
+                </table>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
-
-      {/* Billing Address */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Billing Address</CardTitle>
-          <CardDescription>Address used for invoice generation</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="border rounded-lg p-4">
-            <div className="space-y-1">
-              <p className="font-medium">Alex Johnson</p>
-              <p className="text-muted-foreground">Brand Innovations Inc.</p>
-              <p className="text-muted-foreground">123 Business Ave, Suite 500</p>
-              <p className="text-muted-foreground">New York, NY 10001</p>
-              <p className="text-muted-foreground">United States</p>
-            </div>
-            <Button variant="outline" className="mt-4">
-              Update Address
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
 
-export default BillingPage;
+export default Billing;
