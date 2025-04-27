@@ -1,29 +1,30 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const PrivacyPage = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="container mx-auto py-12">
       <Card>
         <CardHeader>
-          <CardTitle>Privacy Policy</CardTitle>
+          <CardTitle>{t('legal.privacy.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              This Privacy Policy outlines how Kolerr collects, uses, and protects your personal information.
+              {t('legal.privacy.description')}
             </p>
             
-            <h3 className="text-xl font-semibold mt-6">Data Collection</h3>
+            <h3 className="text-xl font-semibold mt-6">{t('legal.privacy.dataCollection')}</h3>
             <p className="text-muted-foreground">
-              We collect information that you provide directly to us, including but not limited to 
-              your name, email address, and payment information.
+              {t('legal.privacy.dataCollectionDesc')}
             </p>
 
-            <h3 className="text-xl font-semibold mt-6">Data Usage</h3>
+            <h3 className="text-xl font-semibold mt-6">{t('legal.privacy.dataUsage')}</h3>
             <p className="text-muted-foreground">
-              We use your information to provide and improve our services, process payments, 
-              and communicate with you about your account and updates.
+              {t('legal.privacy.dataUsageDesc')}
             </p>
           </div>
         </CardContent>

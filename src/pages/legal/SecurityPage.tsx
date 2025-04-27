@@ -1,27 +1,30 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const SecurityPage = () => {
+  const { t } = useLanguage();
+
   return (
     <div className="container mx-auto py-12">
       <Card>
         <CardHeader>
-          <CardTitle>Security</CardTitle>
+          <CardTitle>{t('legal.security.title')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="prose prose-gray max-w-none">
             <p className="text-lg text-muted-foreground">
-              Learn about our commitment to protecting your data and maintaining the security of our platform.
+              {t('legal.security.description')}
             </p>
             
-            <h3 className="text-xl font-semibold mt-6">Data Protection</h3>
+            <h3 className="text-xl font-semibold mt-6">{t('legal.security.dataProtection')}</h3>
             <p className="text-muted-foreground">
-              We employ industry-standard encryption and security measures to protect your sensitive information.
+              {t('legal.security.dataProtectionDesc')}
             </p>
 
-            <h3 className="text-xl font-semibold mt-6">Compliance</h3>
+            <h3 className="text-xl font-semibold mt-6">{t('legal.security.compliance')}</h3>
             <p className="text-muted-foreground">
-              Our platform adheres to global security standards and data protection regulations.
+              {t('legal.security.complianceDesc')}
             </p>
           </div>
         </CardContent>

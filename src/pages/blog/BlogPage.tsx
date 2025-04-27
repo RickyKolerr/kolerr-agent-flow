@@ -1,8 +1,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const BlogPage = () => {
+  const { t } = useLanguage();
   const posts = [
     {
       title: "Maximizing ROI with AI-Powered Influencer Selection",
@@ -31,9 +33,9 @@ const BlogPage = () => {
     <div className="container mx-auto py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4">Kolerr Blog</h1>
+          <h1 className="text-4xl font-bold mb-4">{t('blog.title')}</h1>
           <p className="text-xl text-muted-foreground">
-            Insights, trends, and success stories from the world of influencer marketing
+            {t('blog.description')}
           </p>
         </div>
 
@@ -45,7 +47,7 @@ const BlogPage = () => {
                   <span className="text-sm text-brand-pink">{post.category}</span>
                   <div className="flex items-center text-sm text-muted-foreground">
                     <FileText className="w-4 h-4 mr-2" />
-                    {post.readTime}
+                    {post.readTime} {t('blog.minRead')}
                   </div>
                 </div>
                 <CardTitle className="text-2xl mb-2">{post.title}</CardTitle>
@@ -55,7 +57,7 @@ const BlogPage = () => {
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-muted-foreground">{post.date}</span>
                   <button className="text-brand-pink hover:text-brand-pink/80 text-sm font-medium">
-                    Read more →
+                    {t('blog.readMore')} →
                   </button>
                 </div>
               </CardContent>
