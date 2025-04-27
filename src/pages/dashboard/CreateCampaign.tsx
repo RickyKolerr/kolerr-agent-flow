@@ -1,4 +1,3 @@
-
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -17,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { toast } from "sonner";
 import { Campaign, CampaignStatus } from "@/types/campaign";
+import { CampaignTemplates } from "@/components/campaigns/CampaignTemplates";
 
 const campaignFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -48,7 +48,7 @@ export default function CreateCampaign() {
   function onSubmit(data: CampaignFormValues) {
     const campaign: Partial<Campaign> = {
       ...data,
-      budget: parseFloat(data.budget), // Convert budget string to number
+      budget: parseFloat(data.budget),
       metrics: {
         views: 0,
         engagement: 0,
@@ -64,6 +64,18 @@ export default function CreateCampaign() {
     navigate("/dashboard/campaigns");
   }
 
+  const handleTemplateSelect = (template: any) => {
+    form.reset({
+      title: "",
+      budget: template.defaultBudget.toString(),
+      audience: template.defaultAudience,
+      startDate: "",
+      endDate: "",
+      description: "",
+      status: template.status,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -77,122 +89,130 @@ export default function CreateCampaign() {
         <h1 className="text-3xl font-bold tracking-tight">Create Campaign</h1>
       </div>
 
-      <div className="max-w-2xl">
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Campaign Title</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter campaign title" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <div className="space-y-8">
+        <div>
+          <h2 className="text-xl font-semibold mb-4">Campaign Templates</h2>
+          <CampaignTemplates onSelectTemplate={handleTemplateSelect} />
+        </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
+        <div className="max-w-2xl">
+          <h2 className="text-xl font-semibold mb-4">Campaign Details</h2>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
                 control={form.control}
-                name="budget"
+                name="title"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Budget ($)</FormLabel>
+                    <FormLabel>Campaign Title</FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="5000" {...field} />
+                      <Input placeholder="Enter campaign title" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="budget"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Budget ($)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="5000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="audience"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Target Audience</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g., Fashion enthusiasts, 18-35" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="date" {...field} />
+                          <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="date" {...field} />
+                          <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name="audience"
+                name="description"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Target Audience</FormLabel>
+                    <FormLabel>Campaign Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g., Fashion enthusiasts, 18-35" {...field} />
+                      <Textarea 
+                        placeholder="Enter campaign details, goals, and requirements..."
+                        className="min-h-[120px]"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="startDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Start Date</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input type="date" {...field} />
-                        <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="endDate"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>End Date</FormLabel>
-                    <FormControl>
-                      <div className="relative">
-                        <Input type="date" {...field} />
-                        <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Campaign Description</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Enter campaign details, goals, and requirements..."
-                      className="min-h-[120px]"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="flex gap-4">
-              <Button type="submit" className="w-full md:w-auto">
-                Create Campaign
-              </Button>
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={() => navigate("/dashboard/campaigns")}
-                className="w-full md:w-auto"
-              >
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </Form>
+              <div className="flex gap-4">
+                <Button type="submit" className="w-full md:w-auto">
+                  Create Campaign
+                </Button>
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  onClick={() => navigate("/dashboard/campaigns")}
+                  className="w-full md:w-auto"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </div>
       </div>
     </div>
   );
