@@ -33,7 +33,7 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   const t = (key: string): string => {
     try {
       const keys = key.split('.');
-      let value = translations[language];
+      let value: any = translations[language];
       
       for (const k of keys) {
         if (value && typeof value === 'object' && k in value) {
@@ -44,7 +44,12 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
         }
       }
       
-      return value as string;
+      if (typeof value === 'string') {
+        return value;
+      } else {
+        console.warn(`Translation value is not a string: ${key} in language ${language}`);
+        return key;
+      }
     } catch (error) {
       console.error(`Error translating key: ${key}`, error);
       return key;

@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { Menu, User, Languages } from "lucide-react";
@@ -17,7 +16,7 @@ export const MainNav = () => {
     logout
   } = useAuth();
 
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   // Add state for controlling sheet visibility
   const [isOpen, setIsOpen] = useState(false);
@@ -140,7 +139,6 @@ export const MainNav = () => {
                     size="sm" 
                     className="text-lg font-medium hover:text-brand-pink transition-colors"
                     onClick={() => {
-                      const { language, setLanguage } = useLanguage();
                       setLanguage(language === 'en' ? 'vi' : 'en');
                       handleMobileNavClick();
                     }}

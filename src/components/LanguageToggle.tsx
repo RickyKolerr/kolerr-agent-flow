@@ -1,7 +1,7 @@
 
 import { useLanguage } from '@/contexts/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { languages } from 'lucide-react';
+import { Languages } from 'lucide-react';
 
 export function LanguageToggle() {
   const { language, setLanguage, t } = useLanguage();
@@ -20,7 +20,7 @@ export function LanguageToggle() {
       onClick={toggleLanguage}
       title={language === 'en' ? t('language.vi') : t('language.en')}
     >
-      <languages className="h-5 w-5 mr-1" />
+      <Languages className="h-5 w-5 mr-1" />
       <span className="sr-only md:not-sr-only md:ml-2">{language === 'en' ? 'VI' : 'EN'}</span>
     </Button>
   );
