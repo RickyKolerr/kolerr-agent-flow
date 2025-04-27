@@ -22,6 +22,10 @@ import {
   AlertCircle,
   Search
 } from "lucide-react";
+import { SearchPreferences } from "@/components/settings/SearchPreferences";
+import { SavedSearches } from "@/components/search/SavedSearches";
+import { CreditAlertSettings } from "@/components/settings/CreditAlertSettings";
+import { APIPortal } from "@/components/api/APIPortal";
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState("profile");
