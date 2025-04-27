@@ -1,9 +1,10 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, User, MessageCircle } from "lucide-react";
+import { useSearchCredits } from "@/hooks/useSearchCredits";
+import { toast } from "sonner";
 
 interface Message {
   id: string;
@@ -17,10 +18,11 @@ const HomePage = () => {
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
     type: "bot",
-    content: "👋 Hi! I'm your AI agent for influencer discovery. What kind of TikTok creator are you looking for? Try searching by niche, follower count, or engagement rate."
+    content: "👋 Hi! I'm your AI agent for influencer discovery. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { creditsLeft, useCredit } = useSearchCredits();
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -30,6 +32,9 @@ const HomePage = () => {
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
+    
+    if (!useCredit()) return;
+    
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
@@ -50,6 +55,9 @@ const HomePage = () => {
 
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
+    
+    if (!useCredit()) return;
+    
     const searchMessage: Message = {
       id: Date.now().toString(),
       type: "user",
@@ -85,10 +93,8 @@ const HomePage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="container mx-auto px-4 py-8 flex-1 flex lg:flex-row flex-col gap-8">
-        {/* Chat Interface - Takes more space now */}
         <div className="lg:w-2/3 w-full flex flex-col">
           <div className="rounded-xl border border-border overflow-hidden glass-panel shadow-lg flex flex-col h-[800px]">
-            {/* Chat header */}
             <div className="bg-secondary p-4 border-b border-border flex justify-between items-center">
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
@@ -96,12 +102,14 @@ const HomePage = () => {
                 </div>
                 <div>
                   <h2 className="font-semibold text-lg">AI KOL Discovery Agent</h2>
-                  <p className="text-sm text-muted-foreground">Find the perfect creators for your brand</p>
+                  <p className="text-sm text-muted-foreground">
+                    {creditsLeft > 0 ? 
+                      `${creditsLeft} free ${creditsLeft === 1 ? 'search' : 'searches'} remaining today` : 
+                      'Out of free searches today'}
+                  </p>
                 </div>
               </div>
             </div>
-
-            {/* Quick Search Bar */}
             <div className="bg-secondary/50 p-4 border-b border-border">
               <div className="flex gap-2">
                 <Input 
@@ -115,8 +123,6 @@ const HomePage = () => {
                 </Button>
               </div>
             </div>
-
-            {/* Chat messages */}
             <div className="flex-1 p-6 overflow-y-auto bg-background/30">
               {messages.map(message => (
                 <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
@@ -137,8 +143,6 @@ const HomePage = () => {
               ))}
               <div ref={messagesEndRef} />
             </div>
-
-            {/* Chat input */}
             <div className="p-4 border-t border-border bg-background">
               <div className="flex gap-2">
                 <Input
@@ -157,8 +161,6 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-
-        {/* Quick Info Panel */}
         <div className="lg:w-1/3 w-full">
           <div className="rounded-xl border border-border p-6 glass-panel">
             <h2 className="text-2xl font-bold mb-6">Discover TikTok Creators</h2>
