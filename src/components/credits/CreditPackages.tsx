@@ -101,6 +101,5 @@ export function CreditPackages() {
         </div>
       </CardContent>
     </Card>
-  </div>
   );
 }
