@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -46,11 +47,11 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 import CheckoutPage from "@/pages/dashboard/CheckoutPage";
-import PaymentSuccess from "@/pages/dashboard/PaymentSuccess";
 
 // Components
 import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
+import { PaymentSuccess } from "@/components/PaymentSuccess";
 
 // Helper component to conditionally render MainNav and Footer
 const Layout = ({ children }) => {
