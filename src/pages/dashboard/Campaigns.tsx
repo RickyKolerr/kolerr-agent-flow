@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +6,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Plus, Search, Filter, Calendar, ArrowUpRight } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
-// Campaign type definition
 interface Campaign {
   id: string;
   title: string;
@@ -24,8 +23,8 @@ interface Campaign {
 const CampaignsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+  const navigate = useNavigate();
 
-  // Mock data for campaigns
   const mockCampaigns: Campaign[] = [
     {
       id: "camp1",
@@ -84,7 +83,6 @@ const CampaignsPage = () => {
     }
   ];
 
-  // Filter campaigns based on search and active tab
   const filteredCampaigns = mockCampaigns
     .filter(campaign => 
       campaign.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -95,7 +93,7 @@ const CampaignsPage = () => {
     });
 
   const handleCreateCampaign = () => {
-    toast.success("Creating new campaign...");
+    navigate("/dashboard/campaigns/create");
   };
 
   const formatDate = (dateString: string) => {
@@ -115,7 +113,6 @@ const CampaignsPage = () => {
         </Button>
       </div>
 
-      {/* Search and filter section */}
       <Card>
         <CardContent className="p-6">
           <div className="flex flex-col space-y-4 md:flex-row md:space-y-0 md:space-x-4">
@@ -135,7 +132,6 @@ const CampaignsPage = () => {
         </CardContent>
       </Card>
 
-      {/* Tabs for different campaign statuses */}
       <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
         <div className="flex justify-between items-center">
           <TabsList>
