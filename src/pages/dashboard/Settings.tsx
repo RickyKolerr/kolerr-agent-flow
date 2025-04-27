@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -119,8 +120,8 @@ const Settings = () => {
   };
 
   const renderMobileSettingsNav = () => {
-    const activeSection = sections.find(s => s.id === activeSection);
-    const ActiveIcon = activeSection?.icon;
+    const activeItem = sections.find(s => s.id === activeSection);
+    const ActiveIcon = activeItem?.icon;
 
     return (
       <DropdownMenu>
@@ -128,7 +129,7 @@ const Settings = () => {
           <Button variant="outline" className="w-full mb-4 flex items-center justify-between">
             <span className="flex items-center gap-2">
               {ActiveIcon && <ActiveIcon className="h-4 w-4" />}
-              {activeSection?.title}
+              {activeItem?.title}
             </span>
             <ChevronRight className="h-4 w-4" />
           </Button>
