@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { SearchAnalyticsChart } from "@/components/analytics/SearchAnalyticsChart";
 import { CreditUsageStats } from "@/components/analytics/CreditUsageStats";
 import { ROITracker } from "@/components/analytics/ROITracker";
-import { Export } from "lucide-react";
+import { Upload } from "lucide-react";  // Changed from 'Export' to 'Upload'
 import { useCredits } from "@/contexts/CreditContext";
 
 // Mock data - in a real app, this would come from an API
@@ -39,7 +39,7 @@ export default function AnalyticsPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold tracking-tight">Analytics Dashboard</h1>
         <Button onClick={handleExport}>
-          <Export className="mr-2 h-4 w-4" />
+          <Upload className="mr-2 h-4 w-4" />  // Changed from Export to Upload
           Export Report
         </Button>
       </div>
