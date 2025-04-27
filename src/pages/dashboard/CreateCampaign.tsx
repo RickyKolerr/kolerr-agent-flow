@@ -16,6 +16,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { toast } from "sonner";
+import { Campaign, CampaignStatus } from "@/types/campaign";
 
 const campaignFormSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -24,6 +25,7 @@ const campaignFormSchema = z.object({
   startDate: z.string().min(1, "Start date is required"),
   endDate: z.string().min(1, "End date is required"),
   description: z.string().min(1, "Description is required"),
+  status: z.enum(["draft", "active", "paused", "completed"] as const).default("draft"),
 });
 
 type CampaignFormValues = z.infer<typeof campaignFormSchema>;
@@ -39,10 +41,24 @@ export default function CreateCampaign() {
       startDate: "",
       endDate: "",
       description: "",
+      status: "draft",
     },
   });
 
   function onSubmit(data: CampaignFormValues) {
+    const campaign: Partial<Campaign> = {
+      ...data,
+      metrics: {
+        views: 0,
+        engagement: 0,
+        conversions: 0,
+        roi: 0,
+      },
+      assignedKols: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
     toast.success("Campaign created successfully!");
     navigate("/dashboard/campaigns");
   }
