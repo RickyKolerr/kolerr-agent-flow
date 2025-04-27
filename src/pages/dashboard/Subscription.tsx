@@ -2,11 +2,13 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CheckCircle2, AlertCircle, CreditCard, Info } from "lucide-react";
-import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
+import { toast } from "sonner";
+import { CurrentPlanCard } from "@/components/subscription/CurrentPlanCard";
+import { BillingPeriodSelector } from "@/components/subscription/BillingPeriodSelector";
+import { PlanFeatures } from "@/components/subscription/PlanFeatures";
+import { PlanChangeConfirmation } from "@/components/subscription/PlanChangeConfirmation";
 
 interface Plan {
   id: string;
@@ -28,7 +30,7 @@ const SubscriptionPage = () => {
   const navigate = useNavigate();
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const [selectedPlan, setSelectedPlan] = useState<string | null>(null);
-  const { hasPremiumPlan, premiumCredits } = useCredits();
+  const { hasPremiumPlan } = useCredits();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const actionParam = searchParams.get('action');
@@ -157,57 +159,12 @@ const SubscriptionPage = () => {
         <h1 className="text-3xl font-bold tracking-tight">Subscription Plans</h1>
       </div>
 
-      <Card className="bg-muted/30">
-        <CardContent className="p-6">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center">
-            <div className="space-y-1">
-              <div className="flex items-center">
-                <h3 className="text-lg font-medium">Your Current Plan: {currentPlan.name}</h3>
-                <Badge variant="outline" className="ml-2 bg-brand-pink/10 text-brand-pink border-brand-pink/20">
-                  {currentPlan.billing.charAt(0).toUpperCase() + currentPlan.billing.slice(1)}
-                </Badge>
-              </div>
-              {hasPremiumPlan ? (
-                <p className="text-muted-foreground text-sm">
-                  Next renewal: {currentPlan.nextRenewal} • {premiumCredits} premium credits remaining
-                </p>
-              ) : (
-                <p className="text-muted-foreground text-sm">
-                  Free tier • 5 daily searches • Resets at 7:00 AM daily
-                </p>
-              )}
-            </div>
-            {hasPremiumPlan && (
-              <Button 
-                variant="outline" 
-                className="mt-4 md:mt-0"
-                onClick={handleCancelSubscription}
-              >
-                Cancel Subscription
-              </Button>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <CurrentPlanCard currentPlan={currentPlan} />
 
-      <div className="flex justify-center">
-        <Tabs
-          defaultValue="monthly"
-          value={billingPeriod}
-          onValueChange={(value) => setBillingPeriod(value as 'monthly' | 'yearly')}
-          className="w-fit"
-        >
-          <TabsList className="grid w-[300px] grid-cols-2 mb-8">
-            <TabsTrigger value="monthly">Monthly Billing</TabsTrigger>
-            <TabsTrigger value="yearly">
-              Yearly Billing
-              <Badge className="ml-2 bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20">
-                Save 20%
-              </Badge>
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-      </div>
+      <BillingPeriodSelector 
+        value={billingPeriod}
+        onValueChange={(value) => setBillingPeriod(value)}
+      />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((plan) => (
@@ -243,31 +200,11 @@ const SubscriptionPage = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2">
-                {plan.features.map((feature, idx) => (
-                  <div key={idx} className="flex items-center">
-                    {feature.included ? (
-                      <CheckCircle2 className="h-5 w-5 text-green-500 mr-2" />
-                    ) : (
-                      <AlertCircle className="h-5 w-5 text-muted-foreground mr-2" />
-                    )}
-                    <p className={feature.included ? '' : 'text-muted-foreground'}>
-                      {feature.text}
-                    </p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-6 p-4 bg-muted rounded-md">
-                <div className="flex items-center">
-                  <CreditCard className="h-5 w-5 mr-2" />
-                  <span className="font-medium">
-                    {plan.id === 'free' ? `${plan.credits} daily free searches` : `${plan.credits} Premium credits monthly`}
-                  </span>
-                </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {plan.id === 'free' ? 'Resets every day at 7:00 AM' : 'Roll over up to 50% of unused credits'}
-                </p>
-              </div>
+              <PlanFeatures 
+                features={plan.features}
+                credits={plan.credits}
+                isFree={plan.id === 'free'}
+              />
             </CardContent>
             <CardFooter>
               <Button
@@ -286,48 +223,15 @@ const SubscriptionPage = () => {
       </div>
 
       {selectedPlan && selectedPlan !== currentPlan.id && selectedPlan !== 'free' && (
-        <div className="flex justify-center mt-8">
-          <Card className="w-full max-w-2xl">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <Info className="h-5 w-5 mr-2" />
-                Change Subscription
-              </CardTitle>
-              <CardDescription>
-                You are about to change your subscription plan
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center p-4 bg-muted rounded-md">
-                <div>
-                  <p className="font-medium">From: {currentPlan.name} ({currentPlan.billing})</p>
-                  <p className="text-sm text-muted-foreground">
-                    To: {plans.find(p => p.id === selectedPlan)?.name} ({billingPeriod})
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="font-medium">
-                    New price: ${plans.find(p => p.id === selectedPlan)?.price[billingPeriod]} / month
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Effective immediately
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between">
-              <Button variant="ghost" onClick={() => setSelectedPlan(null)}>
-                Cancel
-              </Button>
-              <Button 
-                className="bg-brand-pink hover:bg-brand-pink/90"
-                onClick={handlePlanChange}
-              >
-                Proceed to Payment
-              </Button>
-            </CardFooter>
-          </Card>
-        </div>
+        <PlanChangeConfirmation
+          currentPlan={currentPlan.name}
+          selectedPlan={plans.find(p => p.id === selectedPlan)?.name || ''}
+          currentBilling={currentPlan.billing}
+          newPrice={plans.find(p => p.id === selectedPlan)?.price[billingPeriod] || 0}
+          billingPeriod={billingPeriod}
+          onCancel={() => setSelectedPlan(null)}
+          onConfirm={handlePlanChange}
+        />
       )}
     </div>
   );
