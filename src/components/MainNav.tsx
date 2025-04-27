@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { Menu, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,7 @@ export const MainNav = () => {
             <img 
               src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
               alt="Kolerr Logo" 
-              className="h-12 w-auto" // Increased from h-8 to h-12
+              className="h-16 w-auto" // Increased from h-12 to h-16
             />
           </Link>
 

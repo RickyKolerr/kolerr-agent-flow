@@ -2,11 +2,12 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, User, MessageCircle, Lock, Paperclip } from "lucide-react";
+import { Search, User, MessageCircle, Lock, Paperclip, Star, Users, TrendingUp } from "lucide-react";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useCredits } from "@/contexts/CreditContext";
+import { mockCreatorData } from "@/data/mockCreators";
 
 interface Message {
   id: string;
@@ -36,7 +37,6 @@ const HomePage = () => {
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
     
-    // Check if user can send message (has credits)
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         toast.info("Please sign in to continue", {
@@ -67,7 +67,6 @@ const HomePage = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
 
-    // Use credit only after message is sent
     if (!hasPremiumPlan) {
       useFreeCredit();
     }
@@ -85,7 +84,6 @@ const HomePage = () => {
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
     
-    // Check if user can search (has credits)
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         toast.info("Please sign in to continue", {
@@ -115,7 +113,6 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, searchMessage]);
 
-    // Use credit only after search is performed
     if (!hasPremiumPlan) {
       useFreeCredit();
     }
@@ -152,6 +149,14 @@ const HomePage = () => {
       return "I'd love to help you with that! To access our full platform features including KOL search, campaign management, and analytics, please sign in or create an account.";
     }
   };
+
+  const trendingCreators = mockCreatorData
+    .filter(creator => creator.trending)
+    .slice(0, 3);
+
+  const topCreators = [...mockCreatorData]
+    .sort((a, b) => b.followers - a.followers)
+    .slice(0, 3);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
@@ -245,6 +250,66 @@ const HomePage = () => {
                     </Button>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-8 space-y-8">
+            <div className="rounded-2xl glass-panel p-6 shadow-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <TrendingUp className="h-6 w-6 text-brand-pink" />
+                <h3 className="text-2xl font-bold">Trending Creators</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {trendingCreators.map(creator => (
+                  <div key={creator.id} className="bg-black/40 rounded-xl p-4 hover:bg-black/50 transition-colors">
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src={creator.avatar} alt={creator.fullName} className="w-12 h-12 rounded-full object-cover" />
+                      <div>
+                        <h4 className="font-semibold">{creator.fullName}</h4>
+                        <p className="text-sm text-muted-foreground">{creator.followers.toLocaleString()} followers</p>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{creator.bio}</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {creator.niche.map(tag => (
+                        <span key={tag} className="text-xs bg-brand-pink/20 text-brand-pink px-2 py-1 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-2xl glass-panel p-6 shadow-2xl">
+              <div className="flex items-center gap-3 mb-4">
+                <Star className="h-6 w-6 text-brand-pink" />
+                <h3 className="text-2xl font-bold">Most Popular Creators</h3>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {topCreators.map(creator => (
+                  <div key={creator.id} className="bg-black/40 rounded-xl p-4 hover:bg-black/50 transition-colors">
+                    <div className="flex items-center gap-3 mb-2">
+                      <img src={creator.avatar} alt={creator.fullName} className="w-12 h-12 rounded-full object-cover" />
+                      <div>
+                        <h4 className="font-semibold">{creator.fullName}</h4>
+                        <p className="text-sm text-muted-foreground">{creator.followers.toLocaleString()} followers</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 space-y-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Avg. Views:</span>
+                        <span className="font-medium">{creator.avgViews}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Engagement:</span>
+                        <span className="font-medium">{(creator.engagementRate * 100).toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
