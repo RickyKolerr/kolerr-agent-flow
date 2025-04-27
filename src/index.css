@@ -5,13 +5,13 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
+    --background: 223 47% 11%;
     --foreground: 0 0% 98%;
 
-    --card: 240 10% 3.9%;
+    --card: 224 47% 11%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 3.9%;
+    --popover: 224 47% 11%;
     --popover-foreground: 0 0% 98%;
 
     /* Updated primary color to match logo's magenta */
@@ -22,19 +22,19 @@
     --secondary: 180 90% 50%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 3.7% 15.9%;
-    --muted-foreground: 240 5% 64.9%;
+    --muted: 223 47% 11%;
+    --muted-foreground: 215 20.2% 65.1%;
 
-    /* Updated accent color to match logo's orange */
-    --accent: 24 94% 53%;
+    /* Updated accent color to match logo's blue */
+    --accent: 217 91% 60%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 3.7% 15.9%;
-    --input: 240 3.7% 15.9%;
-    --ring: 240 4.9% 83.9%;
+    --border: 217 32.6% 17.5%;
+    --input: 217 32.6% 17.5%;
+    --ring: 224 71.4% 4.1%;
 
     --radius: 0.75rem;
 
