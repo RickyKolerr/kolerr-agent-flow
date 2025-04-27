@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -87,6 +88,7 @@ const DashboardLayout = () => {
   return (
     <ProtectedRoute>
       <div className="flex h-screen">
+        {/* Mobile menu toggle */}
         <Button 
           variant="ghost" 
           size="icon" 
@@ -96,6 +98,7 @@ const DashboardLayout = () => {
           {isSidebarOpen ? <X /> : <Menu />}
         </Button>
 
+        {/* Sidebar */}
         <aside 
           className={cn(
             "fixed inset-y-0 left-0 z-40 w-64 bg-sidebar border-r border-sidebar-border shadow-lg transition-transform duration-300 ease-in-out",
@@ -103,6 +106,7 @@ const DashboardLayout = () => {
             "md:translate-x-0"
           )}
         >
+          {/* Logo */}
           <div className="h-16 flex items-center px-6">
             <div className="flex items-center space-x-2">
               <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
@@ -112,6 +116,7 @@ const DashboardLayout = () => {
             </div>
           </div>
 
+          {/* Main navigation */}
           <nav className="px-4 py-6">
             <div className="space-y-1">
               {menuItems.map((item) => (
@@ -159,6 +164,7 @@ const DashboardLayout = () => {
             </div>
           </nav>
 
+          {/* User profile */}
           <div className="absolute bottom-0 w-full px-4 py-4 border-t border-sidebar-border">
             <div className="flex items-center">
               <Avatar className="h-8 w-8">
@@ -173,6 +179,7 @@ const DashboardLayout = () => {
           </div>
         </aside>
 
+        {/* Main content */}
         <main 
           className={cn(
             "flex-1 overflow-auto transition-all",

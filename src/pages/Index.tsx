@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Figma, Paperclip, Bitcoin, Receipt, Users, Activity } from "lucide-react";
+import { Figma, Paperclip, Bitcoin, Bill, Social, Activity } from "lucide-react";
 
 const Index = () => {
   return (
@@ -53,11 +53,11 @@ const Index = () => {
             Crypto portfolio tracker
           </Button>
           <Button variant="outline" className="bg-background/50">
-            <Receipt className="h-4 w-4 mr-2" />
+            <Bill className="h-4 w-4 mr-2" />
             Bill splitter
           </Button>
           <Button variant="outline" className="bg-background/50">
-            <Users className="h-4 w-4 mr-2" />
+            <Social className="h-4 w-4 mr-2" />
             Social media feed
           </Button>
           <Button variant="outline" className="bg-background/50">

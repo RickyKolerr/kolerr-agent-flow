@@ -1,99 +1,104 @@
 
 import { Link } from "react-router-dom";
-import { Menu } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  NavigationMenuContent,
+  navigationMenuTriggerStyle
+} from "@/components/ui/navigation-menu";
 
 export const MainNav = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black">
-      <div className="container mx-auto px-4">
-        <div className="flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
-              <span className="font-bold text-white">K</span>
-            </div>
-            <span className="font-bold text-xl text-white">Kolerr</span>
-          </Link>
-
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/about" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              About
-            </Link>
-            <Link to="/features" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Features
-            </Link>
-            <Link to="/pricing" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Pricing
-            </Link>
-            <Link to="/docs" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Docs
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Contact
-            </Link>
-          </nav>
-
-          {/* Desktop Auth Buttons */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/login" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              Log In
-            </Link>
-            <Link
-              to="/signup"
-              className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors"
-            >
-              Sign Up
-            </Link>
+    <div className="container mx-auto px-4">
+      <div className="flex h-16 items-center justify-between">
+        <Link to="/" className="flex items-center space-x-2">
+          <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
+            <span className="font-bold text-white">K</span>
           </div>
+          <span className="font-bold text-xl">Kolerr</span>
+        </Link>
+        
+        <NavigationMenu>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Link to="/about" className={navigationMenuTriggerStyle()}>
+                About
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Products</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <li>
+                    <Link to="/features" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Features</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Discover our platform's capabilities
+                      </p>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/pricing" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Pricing</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Choose the right plan for your needs
+                      </p>
+                    </Link>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <NavigationMenuTrigger>Resources</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2">
+                  <li>
+                    <Link to="/docs" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">Documentation</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Detailed guides and tutorials
+                      </p>
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/api" className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground">
+                      <div className="text-sm font-medium leading-none">API</div>
+                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                        Integration documentation
+                      </p>
+                    </Link>
+                  </li>
+                </ul>
+              </NavigationMenuContent>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link to="/partners" className={navigationMenuTriggerStyle()}>
+                Partners
+              </Link>
+            </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Link to="/contact" className={navigationMenuTriggerStyle()}>
+                Contact
+              </Link>
+            </NavigationMenuItem>
+          </NavigationMenuList>
+        </NavigationMenu>
 
-          {/* Mobile Navigation */}
-          <Sheet>
-            <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
-                <Menu className="h-5 w-5" />
-                <span className="sr-only">Toggle menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
-              <nav className="flex flex-col space-y-4 mt-8">
-                <Link to="/about" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                  About
-                </Link>
-                <Link to="/features" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                  Features
-                </Link>
-                <Link to="/pricing" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                  Pricing
-                </Link>
-                <Link to="/docs" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                  Docs
-                </Link>
-                <Link to="/contact" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                  Contact
-                </Link>
-                <div className="flex flex-col space-y-4 pt-6 border-t border-gray-800">
-                  <Link to="/login" className="text-lg font-medium hover:text-brand-pink transition-colors">
-                    Log In
-                  </Link>
-                  <Link
-                    to="/signup"
-                    className="rounded-full bg-brand-pink px-6 py-2 text-lg font-medium text-white hover:bg-brand-pink/90 transition-colors text-center"
-                  >
-                    Sign Up
-                  </Link>
-                </div>
-              </nav>
-            </SheetContent>
-          </Sheet>
+        <div className="flex items-center space-x-4">
+          <Link to="/login" className="text-sm font-medium hover:text-brand-pink">
+            Sign In
+          </Link>
+          <Link
+            to="/signup"
+            className="rounded-md bg-brand-pink px-4 py-2 text-sm font-medium text-white hover:bg-brand-pink/90"
+          >
+            Get Started
+          </Link>
         </div>
       </div>
-    </header>
+    </div>
   );
 };
