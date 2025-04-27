@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -51,13 +50,13 @@ const Layout = ({ children }) => {
   const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname);
   
   return (
-    <>
+    <div className="min-h-screen flex flex-col">
       {!isDashboardRoute && !isAuthRoute && <MainNav />}
-      <main className={!isDashboardRoute && !isAuthRoute ? "pt-16" : ""}>
+      <main className={!isDashboardRoute && !isAuthRoute ? "flex-1 pt-16" : "flex-1"}>
         {children}
       </main>
       {!isDashboardRoute && !isAuthRoute && <Footer />}
-    </>
+    </div>
   );
 };
 

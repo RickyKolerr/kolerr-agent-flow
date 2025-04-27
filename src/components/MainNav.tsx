@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -10,7 +10,7 @@ import {
 
 export const MainNav = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black text-white">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -18,7 +18,7 @@ export const MainNav = () => {
             <div className="h-8 w-8 rounded-md bg-brand-pink flex items-center justify-center">
               <span className="font-bold text-white">K</span>
             </div>
-            <span className="font-bold text-xl">Kolerr</span>
+            <span className="font-bold text-xl text-white">Kolerr</span>
           </Link>
 
           {/* Desktop Navigation */}
