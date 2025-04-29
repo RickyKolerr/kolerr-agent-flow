@@ -1,260 +1,313 @@
-import { useState, useEffect, useMemo } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { 
+  LayoutDashboard, Users, Calendar, CreditCard, 
+  Settings, LogOut, Menu, X, Languages,
+  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { MainNav } from "@/components/MainNav";
-import { Icons } from "@/components/icons";
+import { useAuth } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/contexts/AuthContext";
 import { cn } from "@/lib/utils";
-import { UserRole } from "@/contexts/AuthContext";
-import { MessageCircle } from 'lucide-react';
-import { useChat } from '@/contexts/ChatContext';
-import { FloatingChatButton } from '@/components/chat/FloatingChatButton';
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useLanguage } from "@/contexts/LanguageContext";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
-interface DashboardLayoutProps {
-  children?: React.ReactNode;
-}
-
-interface NavLink {
-  name: string;
-  href: string;
-  icon: any;
-  badge?: string;
-  badgeColor?: string;
-}
-
-// Update the sidebar navigation to include the chat link
-const generateNavigation = (role: string, unreadCount = 0) => {
-  const commonLinks = [
-    {
-      name: "Overview",
-      href: "/dashboard/overview",
-      icon: Icons.overview,
-    },
-    {
-      name: "Profile",
-      href: "/dashboard/profile",
-      icon: Icons.profile,
-    },
-    {
-      name: "Billing",
-      href: "/dashboard/billing",
-      icon: Icons.billing,
-    },
-    {
-      name: "Subscription",
-      href: "/dashboard/subscription",
-      icon: Icons.subscription,
-    },
-    {
-      name: "Settings",
-      href: "/dashboard/settings",
-      icon: Icons.settings,
-    },
-    {
-      name: "Messages",
-      href: "/dashboard/messages",
-      icon: MessageCircle,
-      badge: unreadCount > 0 ? unreadCount.toString() : undefined,
-      badgeColor: "bg-brand-pink"
-    },
-  ];
-
-  const brandLinks = [
-    {
-      name: "KOLs",
-      href: "/dashboard/kols",
-      icon: Icons.kols,
-    },
-    {
-      name: "Campaigns",
-      href: "/dashboard/campaigns",
-      icon: Icons.campaigns,
-    },
-    {
-      name: "Bookings",
-      href: "/dashboard/bookings",
-      icon: Icons.bookings,
-    },
-    {
-      name: "Credits",
-      href: "/dashboard/credits",
-      icon: Icons.credits,
-    },
-    {
-      name: "Contracts",
-      href: "/dashboard/contracts",
-      icon: Icons.contracts,
-    }
-  ];
-
-  const kolLinks = [
-    {
-      name: "Available Campaigns",
-      href: "/dashboard/kol/campaigns",
-      icon: Icons.campaigns,
-    },
-    {
-      name: "Applications",
-      href: "/dashboard/kol/applications",
-      icon: Icons.applications,
-    },
-    {
-      name: "Analytics",
-      href: "/dashboard/kol/analytics",
-      icon: Icons.analytics,
-    },
-    {
-      name: "Referrals",
-      href: "/dashboard/kol/referrals",
-      icon: Icons.referrals,
-    },
-    {
-      name: "Rewards",
-      href: "/dashboard/kol/rewards",
-      icon: Icons.rewards,
-    },
-    {
-      name: "Community",
-      href: "/dashboard/kol/community",
-      icon: Icons.community,
-    },
-    {
-      name: "Contracts",
-      href: "/dashboard/kol/contracts",
-      icon: Icons.contracts,
-    }
-  ];
-
-  let roleSpecificLinks: NavLink[] = [];
-  if (role === "brand") {
-    roleSpecificLinks = brandLinks;
-  } else if (role === "kol") {
-    roleSpecificLinks = kolLinks;
-  }
-
-  // Return the merged navigation based on role
-  return [...commonLinks, ...roleSpecificLinks];
-};
-
-// Inside the DashboardLayout component, update the navigation to include unread count
 const DashboardLayout = () => {
-  const { user, isAuthenticated } = useAuth();
-  const { unreadCount } = useChat();
+  const { user, logout } = useAuth();
+  const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isMounted, setIsMounted] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // Auto-hide sidebar on login/initial load
   useEffect(() => {
-    setIsMounted(true);
-    setIsLoading(false);
+    // Start with sidebar closed on mobile, open on desktop
+    setIsSidebarOpen(window.innerWidth >= 768);
   }, []);
+
+  // Handle clicks outside sidebar to close it on mobile
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (window.innerWidth < 768 && 
+          isSidebarOpen && 
+          sidebarRef.current && 
+          !sidebarRef.current.contains(event.target as Node)) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isSidebarOpen]);
+
+  // Determine menu items based on user role
+  const getBrandMenuItems = () => [
+    { 
+      icon: LayoutDashboard, 
+      name: "Overview", 
+      path: "/dashboard/overview",
+      description: t('dashboard.overview')
+    },
+    { 
+      icon: Users, 
+      name: "KOLs", 
+      path: "/dashboard/kols",
+      description: t('dashboard.kols')
+    },
+    { 
+      icon: Calendar, 
+      name: "Bookings", 
+      path: "/dashboard/bookings",
+      description: t('dashboard.bookings')
+    },
+    { 
+      icon: CreditCard, 
+      name: "Credits", 
+      path: "/dashboard/credits",
+      description: t('dashboard.credits')
+    },
+    { 
+      icon: FileText, 
+      name: "Contracts", 
+      path: "/dashboard/contracts",
+      description: t('dashboard.contracts')
+    },
+  ];
+
+  const getKolMenuItems = () => [
+    { 
+      icon: FileSearch, 
+      name: "Available Campaigns", 
+      path: "/dashboard/kol/campaigns",
+      description: "Browse available campaigns"
+    },
+    { 
+      icon: FileText, 
+      name: "My Applications", 
+      path: "/dashboard/kol/applications",
+      description: "Track your campaign applications"
+    },
+    { 
+      icon: TrendingUp, 
+      name: "Performance", 
+      path: "/dashboard/kol/analytics",
+      description: "Your performance analytics"
+    },
+    { 
+      icon: FileText, 
+      name: "Contracts", 
+      path: "/dashboard/kol/contracts", 
+      description: "Manage your contracts"
+    },
+    { 
+      icon: Link, 
+      name: "Referrals", 
+      path: "/dashboard/kol/referrals",
+      description: "Refer other creators"
+    },
+    { 
+      icon: BadgePercent, 
+      name: "Rewards", 
+      path: "/dashboard/kol/rewards",
+      description: "Your reward points and benefits"
+    },
+    { 
+      icon: MessageCircle, 
+      name: "Community", 
+      path: "/dashboard/kol/community",
+      description: "Connect with other creators"
+    },
+  ];
   
-  const navigation = useMemo(() => {
-    return generateNavigation(user?.role || 'brand', unreadCount);
-  }, [user?.role, unreadCount]);
+  // Select the appropriate menu items based on user role
+  const menuItems = user?.role === 'kol' ? getKolMenuItems() : getBrandMenuItems();
   
-  if (!isMounted) {
-    return <div className="h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (isLoading) {
-    return <div className="h-screen flex items-center justify-center">Loading...</div>;
-  }
-  
-  if (!user) {
-    navigate("/login");
-    return null;
-  }
-  
+  const userItems = [
+    { 
+      icon: Settings, 
+      name: "Settings & Billing", 
+      path: "/dashboard/settings",
+      description: t('dashboard.settings')
+    },
+  ];
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(" ")
+      .map(part => part[0])
+      .join("")
+      .toUpperCase();
+  };
+
+  const toggleLanguage = () => {
+    setLanguage(language === 'en' ? 'vi' : 'en');
+  };
+
   return (
-    <div className="flex h-screen bg-gray-100 text-gray-700">
-      {/* Sidebar navigation */}
-      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-        <SheetTrigger asChild>
-          <Button variant="ghost" size="icon" className="md:hidden">
-            <Icons.menu className="h-6 w-6" />
-            <span className="sr-only">Open navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side="left" className="w-full sm:w-60 border-r pr-0">
-          <SheetHeader className="pl-6 pb-10 pt-6">
-            <SheetTitle>Menu</SheetTitle>
-          </SheetHeader>
-          <MainNav />
-          <ScrollArea className="flex-1">
-            <div className="py-4">
-              {navigation.map((item) => (
-                <Button
-                  key={item.href}
-                  variant="ghost"
-                  className={cn(
-                    "justify-start px-6",
-                    location.pathname === item.href ? "font-semibold" : "font-normal"
-                  )}
-                  onClick={() => {
-                    navigate(item.href);
-                    setIsMobileMenuOpen(false);
-                  }}
+    <ProtectedRoute>
+      <div className="flex h-screen bg-background">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={toggleSidebar}
+          className="fixed top-4 right-4 z-50 md:hidden"
+        >
+          {isSidebarOpen ? <X className="h-5 w-5"/> : <Menu className="h-5 w-5"/>}
+        </Button>
+
+        <aside 
+          ref={sidebarRef}
+          className={cn(
+            "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out",
+            "bg-gradient-to-b from-brand-navy to-brand-dark border-r border-white/10",
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full",
+            "md:translate-x-0 md:transition-all md:ease-in-out md:duration-300",
+            !isSidebarOpen && "md:w-0 md:border-none md:overflow-hidden"
+          )}
+        >
+          <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
+            <button 
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center hover:opacity-80 transition-opacity"
+            >
+              <img 
+                src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" 
+                alt="Kolerr Logo" 
+                className="h-10 w-10"
+              />
+            </button>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={toggleLanguage} 
+              className="text-white/70 hover:text-white hover:bg-white/10"
+              title={language === 'en' ? t('language.vi') : t('language.en')}
+            >
+              <Languages className="h-5 w-5" />
+            </Button>
+          </div>
+
+          <TooltipProvider>
+            <nav className="px-3 py-6">
+              <div className="space-y-1">
+                {menuItems.map((item) => (
+                  <Tooltip key={item.name} delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => handleNavigation(item.path)}
+                        className={cn(
+                          "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
+                          location.pathname === item.path
+                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
+                            : "text-white/70 hover:text-white hover:bg-white/10"
+                        )}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.name}</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="ml-2">
+                      {item.description}
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+              </div>
+
+              <Separator className="my-6 bg-white/10" />
+
+              <div className="space-y-1">
+                {userItems.map((item) => (
+                  <Tooltip key={item.name} delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => handleNavigation(item.path)}
+                        className={cn(
+                          "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
+                          location.pathname === item.path
+                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
+                            : "text-white/70 hover:text-white hover:bg-white/10"
+                        )}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.name}</span>
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right" className="ml-2">
+                      {item.description}
+                    </TooltipContent>
+                  </Tooltip>
+                ))}
+                <button
+                  onClick={() => logout()}
+                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3 text-white/70 hover:text-white hover:bg-white/10"
                 >
-                  <item.icon className="h-4 w-4 mr-2" />
-                  {item.name}
-                  {item.badge && (
-                    <span className={cn(
-                      "ml-auto rounded-sm px-2 py-0.5 text-xs font-semibold",
-                      item.badgeColor || "bg-secondary",
-                      "text-secondary-foreground"
-                    )}>
-                      {item.badge}
-                    </span>
-                  )}
-                </Button>
-              ))}
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-      
-      {/* Main content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
-        <header className="w-full h-16 flex items-center justify-between border-b p-4 md:pl-6">
-          <div className="flex items-center space-x-4">
-            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
-              <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
-                  <Icons.menu className="h-6 w-6" />
-                  <span className="sr-only">Open navigation menu</span>
-                </Button>
-              </SheetTrigger>
-            </Sheet>
-            <div className="hidden md:flex">
-              <MainNav />
+                  <LogOut className="h-5 w-5" />
+                  <span>{t('mainNav.logout')}</span>
+                </button>
+              </div>
+            </nav>
+          </TooltipProvider>
+
+          <div className="absolute bottom-0 w-full p-4 border-t border-white/10 bg-black/20">
+            <div className="flex items-center gap-3">
+              <Avatar className="h-10 w-10 border-2 border-brand-gradient-via">
+                <AvatarImage src={user?.avatar} />
+                <AvatarFallback className="bg-brand-gradient-via text-white">
+                  {user?.name ? getInitials(user.name) : "U"}
+                </AvatarFallback>
+              </Avatar>
+              <div className="overflow-hidden">
+                <p className="text-sm font-medium truncate text-white">{user?.name}</p>
+                <p className="text-xs truncate text-white/70">{user?.email}</p>
+              </div>
             </div>
           </div>
+        </aside>
+
+        <main 
+          className={cn(
+            "flex-1 overflow-auto transition-all duration-300 ease-in-out",
+            "bg-gradient-to-br from-background via-background to-brand-navy/5",
+            isSidebarOpen ? "md:ml-64" : "ml-0"
+          )}
+        >
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar}
+            className="fixed top-4 left-4 z-30 hidden md:flex"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
           
-          <div className="flex items-center space-x-4">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user.avatar} alt={user.name} />
-              <AvatarFallback>{user.name.slice(0, 1)}</AvatarFallback>
-            </Avatar>
-            <span className="text-sm font-medium">{user.name}</span>
+          <div className="container mx-auto p-6 pt-16 md:pt-6">
+            <Outlet />
           </div>
-        </header>
-        
-        {/* Content area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          <Outlet />
         </main>
       </div>
-      
-      {/* Floating chat button */}
-      <FloatingChatButton />
-    </div>
+    </ProtectedRoute>
   );
 };
 
