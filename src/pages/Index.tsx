@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent } from "lucide-react";
+import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent, Eye, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
@@ -262,6 +262,7 @@ const Index = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const [userView, setUserView] = useState<"brand" | "kol">("brand");
+  const [applyingTo, setApplyingTo] = useState<string | null>(null);
   
   // Detect user role and set initial view
   useEffect(() => {
@@ -541,16 +542,57 @@ const Index = () => {
     event.currentTarget.src = "https://ui-avatars.com/api/?name=Brand&background=0D8ABC&color=fff";
   };
 
-  // Add a global function to handle navigation from the injected HTML
+  // Add global functions to handle navigation and apply actions from the injected HTML
   useEffect(() => {
     window.navigateToCreator = (creatorId) => {
       navigate(`/creators/${creatorId}`);
     };
     
+    window.navigateToCampaign = (campaignId) => {
+      navigate(`/campaigns/${campaignId}`);
+    };
+    
+    window.handleChatApply = (campaignId) => {
+      // Check if user is authenticated
+      if (!isAuthenticated) {
+        toast.info("Please sign in to apply for this campaign");
+        navigate(`/login?redirect=/campaigns/${campaignId}&action=apply`);
+        return;
+      }
+      
+      // Check if user has completed their profile
+      if (user && (!user.onboardingStatus || user.onboardingStatus === "incomplete")) {
+        toast.info("Please complete your profile before applying to campaigns");
+        navigate(`/onboarding/${user.role}`);
+        return;
+      }
+      
+      // Simulate API call delay
+      setApplyingTo(campaignId);
+      
+      setTimeout(() => {
+        toast.success("Your application has been submitted", {
+          description: "The brand will review your application shortly."
+        });
+        setApplyingTo(null);
+      }, 1000);
+    };
+    
     return () => {
       delete window.navigateToCreator;
+      delete window.navigateToCampaign;
+      delete window.handleChatApply;
     };
-  }, [navigate]);
+  }, [navigate, isAuthenticated, user]);
+
+  // Add type definition for the window object
+  declare global {
+    interface Window {
+      navigateToCreator: (creatorId: string) => void;
+      navigateToCampaign: (campaignId: string) => void;
+      handleChatApply: (campaignId: string) => void;
+    }
+  }
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
