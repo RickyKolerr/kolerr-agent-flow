@@ -525,13 +525,38 @@ const Index = () => {
     
     return suggestions.length > 0 
       ? `<div class="mt-2 space-y-2">${suggestions.map(campaign => 
-          `<div class="flex items-center gap-2">
+          `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
             <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
               <img src="${campaign.brandLogo}" alt="${campaign.brand}" class="w-full h-full object-cover" />
             </div>
-            <div>
+            <div class="flex-1">
               <div class="font-medium">${campaign.title}</div>
               <div class="text-xs text-gray-500">${campaign.budget} • ${campaign.deadline}</div>
+            </div>
+            <div class="flex gap-2">
+              <button 
+                onclick="window.navigateToCampaign('${campaign.id}')" 
+                class="text-xs bg-brand-navy hover:bg-brand-navy/80 text-white px-3 py-1 rounded-md flex items-center gap-1"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                View
+              </button>
+              <button 
+                onclick="window.handleChatApply('${campaign.id}')" 
+                class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded-md flex items-center gap-1"
+                ${applyingTo === campaign.id ? 'disabled' : ''}
+              >
+                ${applyingTo === campaign.id ? 
+                  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+                  </svg>
+                  Applying...` : 
+                  'Apply'
+                }
+              </button>
             </div>
           </div>`
         ).join('')}</div>`
