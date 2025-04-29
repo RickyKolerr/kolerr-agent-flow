@@ -12,6 +12,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { getTimeUntilReset } from "@/hooks/useSearchCredits";
 
 interface Message {
@@ -208,7 +209,7 @@ const Index = () => {
   const allCreators = mockCreatorData.slice(0, 10);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-x-hidden overflow-y-auto hero-gradient pt-16 pb-16">
+    <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
       
@@ -234,7 +235,7 @@ const Index = () => {
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <ScrollArea className="flex-1 p-4 space-y-4">
               {messages.map(message => (
                 <div 
                   key={message.id} 
@@ -263,7 +264,7 @@ const Index = () => {
                 </div>
               ))}
               <div ref={messagesEndRef} />
-            </div>
+            </ScrollArea>
             
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">

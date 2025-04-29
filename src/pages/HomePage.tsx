@@ -11,6 +11,7 @@ import { useCredits } from "@/contexts/CreditContext";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 
 interface Message {
@@ -167,7 +168,7 @@ const HomePage = () => {
     .slice(0, 6);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
+    <div className="min-h-screen flex flex-col overflow-auto hero-gradient">
       <div className="container mx-auto px-4 pt-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
           <div className="glass-panel rounded-2xl p-6 shadow-2xl">
@@ -317,7 +318,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="flex-1 p-6 overflow-y-auto bg-black/20">
+            <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
               {messages.map(message => <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                   {message.type === "bot" && <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
                       <MessageCircle className="h-4 w-4 text-white" />
@@ -330,7 +331,7 @@ const HomePage = () => {
                     </div>}
                 </div>)}
               <div ref={messagesEndRef} />
-            </div>
+            </ScrollArea>
 
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
