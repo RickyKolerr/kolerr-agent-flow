@@ -287,7 +287,7 @@ export default function CreateContract() {
                             </SelectTrigger>
                           </FormControl>
                           <SelectContent>
-                            <SelectItem value="">None</SelectItem>
+                            <SelectItem value="none">None</SelectItem>
                             {mockCampaigns.map((campaign) => (
                               <SelectItem key={campaign.id} value={campaign.id}>
                                 {campaign.name}
