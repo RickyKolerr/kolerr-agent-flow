@@ -155,15 +155,15 @@ export default {
       title: 'Careers at Kolerr',
       description: 'Join our team and help shape the future of influencer marketing',
       innovative: 'Innovative Work',
-      innovativeDesc: 'Work on cutting-edge technology that's reshaping how brands connect with digital creators',
+      innovativeDesc: 'Work on cutting-edge technology that is reshaping how brands connect with digital creators',
       flexible: 'Flexible Environment',
       flexibleDesc: 'Remote-first culture with flexible hours and locations across Southeast Asia',
       supportive: 'Supportive Culture',
       supportiveDesc: 'Inclusive environment focused on growth, learning, and work-life balance',
       openPositions: 'Open Positions',
       apply: 'Apply Now',
-      noPositions: 'Don't see the right position?',
-      speculative: 'We're always looking for talented individuals. Send us your CV for future opportunities.',
+      noPositions: 'Don\'t see the right position?',
+      speculative: 'We\'re always looking for talented individuals. Send us your CV for future opportunities.',
       sendCV: 'Send Your CV'
     },
     press: {
@@ -185,11 +185,11 @@ export default {
       title: 'Sustainability',
       description: 'Our commitment to responsible business practices and positive social impact',
       commitment: 'Our Commitment',
-      commitmentDesc1: 'At Kolerr, sustainability isn't just a buzzword—it's a core part of our business strategy and company culture.',
-      commitmentDesc2: 'We're dedicated to promoting responsible digital marketing practices while minimizing our environmental footprint and supporting the communities we serve.',
+      commitmentDesc1: 'At Kolerr, sustainability isn\'t just a buzzword—it\'s a core part of our business strategy and company culture.',
+      commitmentDesc2: 'We\'re dedicated to promoting responsible digital marketing practices while minimizing our environmental footprint and supporting the communities we serve.',
       environmental: {
         title: 'Environmental Impact',
-        description: 'We're committed to reducing our environmental footprint across all operations.',
+        description: 'We\'re committed to reducing our environmental footprint across all operations.',
         goal1: 'Carbon-neutral data operations by 2026',
         goal2: 'Reducing energy consumption in our offices by 30%',
         goal3: 'Implementing sustainable procurement practices'
