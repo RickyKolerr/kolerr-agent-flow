@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -154,7 +153,7 @@ const KOLContractsPage = () => {
       default:
         return (
           <Badge variant="outline">
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {typeof status === 'string' ? status.charAt(0).toUpperCase() + status.slice(1) : status}
           </Badge>
         );
     }
