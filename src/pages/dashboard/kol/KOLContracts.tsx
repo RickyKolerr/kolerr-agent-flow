@@ -153,7 +153,7 @@ const KOLContractsPage = () => {
       default:
         return (
           <Badge variant="outline">
-            {typeof status === 'string' ? status.charAt(0).toUpperCase() + status.slice(1) : status}
+            {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
           </Badge>
         );
     }

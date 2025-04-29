@@ -66,7 +66,7 @@ export function KOLContractReview({ contract, onSign, onDecline }: KOLContractRe
       default:
         return (
           <Badge variant="outline">
-            {status.charAt(0).toUpperCase() + status.slice(1)}
+            {String(status).charAt(0).toUpperCase() + String(status).slice(1)}
           </Badge>
         );
     }
@@ -155,7 +155,7 @@ export function KOLContractReview({ contract, onSign, onDecline }: KOLContractRe
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Contract Type</p>
-                <p>{contract.type.charAt(0).toUpperCase() + contract.type.slice(1)}</p>
+                <p>{typeof contract.type === 'string' ? contract.type.charAt(0).toUpperCase() + contract.type.slice(1) : contract.type}</p>
               </div>
               <div>
                 <p className="text-sm font-medium text-muted-foreground">Campaign</p>
