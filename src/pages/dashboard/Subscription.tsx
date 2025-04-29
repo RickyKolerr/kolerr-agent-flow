@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,6 +50,7 @@ const SubscriptionPage = () => {
     id: hasPremiumPlan ? "growth" : "free",
     name: hasPremiumPlan ? "Growth" : "Free",
     billing: "monthly",
+    price: hasPremiumPlan ? 200 : 0,
     nextRenewal: "May 1, 2023"
   };
 
@@ -142,7 +144,7 @@ const SubscriptionPage = () => {
       toast.success(`You've ${action} the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
         description: "You'll be redirected to complete the payment process.",
       });
-      navigate("/dashboard/payment");
+      navigate(`/dashboard/payment?plan=${selectedPlan}&currentPrice=${currentPlan.price}`);
     }
   };
 
@@ -227,6 +229,7 @@ const SubscriptionPage = () => {
           currentPlan={currentPlan.name}
           selectedPlan={plans.find(p => p.id === selectedPlan)?.name || ''}
           currentBilling={currentPlan.billing}
+          currentPrice={currentPlan.price}
           newPrice={plans.find(p => p.id === selectedPlan)?.price[billingPeriod] || 0}
           billingPeriod={billingPeriod}
           onCancel={() => setSelectedPlan(null)}

@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreditCard, Lock, ShieldCheck } from "lucide-react";
+import { CreditCard, Lock, ShieldCheck, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
@@ -18,7 +18,11 @@ const PaymentPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { hasPremiumPlan } = useCredits();
-  const [currentPlanPrice, setCurrentPlanPrice] = useState(0);
+  
+  const searchParams = new URLSearchParams(location.search);
+  const selectedPlanId = searchParams.get('plan') || (hasPremiumPlan ? "growth" : "starter");
+  const currentPriceParam = searchParams.get('currentPrice');
+  const currentPrice = currentPriceParam ? parseInt(currentPriceParam, 10) : (hasPremiumPlan ? 200 : 0);
 
   const plans = {
     starter: {
@@ -41,30 +45,24 @@ const PaymentPage = () => {
     }
   };
 
-  const searchParams = new URLSearchParams(location.search);
-  const selectedPlanId = searchParams.get('plan') || (hasPremiumPlan ? "growth" : "starter");
   const selectedPlan = plans[selectedPlanId] || plans.growth;
-
-  // Determine current plan price
-  useEffect(() => {
-    if (hasPremiumPlan) {
-      // Fetch current plan price based on user's plan
-      // For demo purposes, we're assuming Growth plan ($200)
-      setCurrentPlanPrice(200);
-    } else {
-      setCurrentPlanPrice(0);
-    }
-  }, [hasPremiumPlan]);
-
-  // Calculate the amount due (difference between plans)
+  
+  // Calculate the amount due (difference between plans for upgrades, 0 for downgrades)
   const calculateAmountDue = () => {
-    const difference = selectedPlan.price - currentPlanPrice;
-    return difference > 0 ? difference : 0;
+    const selectedPrice = selectedPlan.price;
+    if (selectedPrice > currentPrice) {
+      // Upgrade: charge the difference immediately
+      return selectedPrice - currentPrice;
+    } else {
+      // Downgrade or same plan: no immediate charge
+      return 0;
+    }
   };
 
   const amountDue = calculateAmountDue();
-  const isUpgrade = selectedPlan.price > currentPlanPrice;
-  const isDowngrade = selectedPlan.price < currentPlanPrice && currentPlanPrice > 0;
+  const isUpgrade = selectedPlan.price > currentPrice;
+  const isDowngrade = selectedPlan.price < currentPrice && currentPrice > 0;
+  const isNewSubscription = currentPrice === 0 && selectedPlan.price > 0;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear + i).toString());
@@ -157,7 +155,7 @@ const PaymentPage = () => {
                   <p className="font-medium">Current Plan</p>
                   <p className="text-sm text-muted-foreground">Your existing subscription</p>
                 </div>
-                <p className="font-medium">-${currentPlanPrice}</p>
+                <p className="font-medium">-${currentPrice}</p>
               </div>
             )}
             
@@ -174,7 +172,8 @@ const PaymentPage = () => {
             {isUpgrade && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
                 <p className="text-sm text-green-700">
-                  You're upgrading your plan. You'll be charged the difference of ${amountDue}.
+                  You're upgrading your plan. You'll be charged the difference of ${amountDue} now.
+                  Your new monthly rate of ${selectedPlan.price} will apply starting from your next billing cycle.
                 </p>
               </div>
             )}
@@ -182,7 +181,17 @@ const PaymentPage = () => {
             {isDowngrade && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-700">
-                  You're downgrading your plan. Your new rate will be ${selectedPlan.price} starting next billing cycle.
+                  You're downgrading your plan. No charges today. Your new rate of ${selectedPlan.price}/month will
+                  apply starting from your next billing cycle.
+                </p>
+              </div>
+            )}
+
+            {isNewSubscription && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-700">
+                  You're subscribing to the {selectedPlan.name} plan at ${selectedPlan.price}/month. 
+                  Your subscription will begin immediately after payment.
                 </p>
               </div>
             )}
@@ -311,9 +320,11 @@ const PaymentPage = () => {
               <Button
                 type="submit"
                 className="bg-brand-pink hover:bg-brand-pink/90"
-                disabled={isProcessing}
+                disabled={isProcessing || (isDowngrade && amountDue === 0)}
               >
-                {isProcessing ? "Processing..." : `Pay $${amountDue}`}
+                {isProcessing ? "Processing..." : 
+                  isDowngrade ? "Confirm Plan Change" : 
+                  `Pay $${amountDue}`}
               </Button>
             </CardFooter>
           </form>

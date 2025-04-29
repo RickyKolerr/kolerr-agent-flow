@@ -14,6 +14,7 @@ interface PlanChangeConfirmationProps {
   currentPlan: string;
   selectedPlan: string;
   currentBilling: string;
+  currentPrice: number;
   newPrice: number;
   billingPeriod: 'monthly' | 'yearly';
   onCancel: () => void;
@@ -24,14 +25,20 @@ export const PlanChangeConfirmation = ({
   currentPlan,
   selectedPlan,
   currentBilling,
+  currentPrice,
   newPrice,
   billingPeriod,
   onCancel,
   onConfirm,
 }: PlanChangeConfirmationProps) => {
-  // Calculate plan price difference logic
+  // Calculate plan price difference and determine change type
   const isNewUser = currentPlan === "Free";
-  const planChangeType = isNewUser ? "Subscribe" : newPrice > 0 ? "Upgrade" : "Downgrade";
+  const isUpgrade = newPrice > currentPrice;
+  const isDowngrade = newPrice < currentPrice && !isNewUser;
+  const priceDifference = isUpgrade ? newPrice - currentPrice : 0;
+  
+  // Determine the right action text and messaging
+  const planChangeType = isNewUser ? "Subscribe" : isUpgrade ? "Upgrade" : "Downgrade";
   const actionText = isNewUser ? "Start Subscription" : "Change Plan";
   
   return (
@@ -55,16 +62,28 @@ export const PlanChangeConfirmation = ({
               </p>
             </div>
             <div className="text-right">
-              <p className="font-medium">
-                {isNewUser || newPrice > 0 ? (
-                  <>New price: ${newPrice} / month</>
-                ) : (
-                  <>New price will apply at next billing cycle</>
-                )}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {isNewUser || newPrice > 0 ? "Effective immediately" : "No charge today"}
-              </p>
+              {isNewUser && (
+                <>
+                  <p className="font-medium">New price: ${newPrice} / month</p>
+                  <p className="text-sm text-muted-foreground">Effective immediately</p>
+                </>
+              )}
+              {isUpgrade && !isNewUser && (
+                <>
+                  <p className="font-medium">Amount due now: ${priceDifference}</p>
+                  <p className="text-sm text-muted-foreground">
+                    New price: ${newPrice} / month (from next cycle)
+                  </p>
+                </>
+              )}
+              {isDowngrade && (
+                <>
+                  <p className="font-medium">New price: ${newPrice} / month</p>
+                  <p className="text-sm text-muted-foreground">
+                    Change applies at next billing cycle
+                  </p>
+                </>
+              )}
             </div>
           </div>
           
@@ -83,7 +102,7 @@ export const PlanChangeConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
             onClick={onConfirm}
           >
-            {newPrice > 0 ? `Proceed to Payment` : actionText}
+            {isUpgrade && !isNewUser ? `Pay $${priceDifference} now` : actionText}
           </Button>
         </CardFooter>
       </Card>
