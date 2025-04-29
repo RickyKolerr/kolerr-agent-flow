@@ -14,7 +14,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
-import { CreditCard, MessageSquare, CreditCounter, DemoIndicator } from "@/components";
+import { CreditCard, MessageSquare } from "lucide-react";
+import { CreditCounter } from "@/components/CreditCounter";
+import { DemoIndicator } from "@/components/demo/DemoIndicator";
 
 interface Message {
   id: string;
