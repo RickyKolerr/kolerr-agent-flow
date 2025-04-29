@@ -1,4 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+
+import { useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,28 +8,32 @@ import { useUserAccess } from "@/hooks/useUserAccess";
 import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useCredits } from "@/contexts/CreditContext";
+import { useChat } from "@/contexts/ChatContext";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-
-interface Message {
-  id: string;
-  type: "user" | "bot";
-  content: string;
-}
+import { useState } from "react";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const [messages, setMessages] = useState<Message[]>([{
-    id: "welcome",
-    type: "bot",
-    content: "👋 Hi! I'm your AI agent for influencer discovery. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
-  }]);
+  const { messages, setMessages, showWelcomeMessage, setShowWelcomeMessage } = useChat();
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
   const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
+
+  // Initialize welcome message if needed
+  useEffect(() => {
+    if (showWelcomeMessage && messages.length === 0) {
+      setMessages([{
+        id: "welcome",
+        type: "bot",
+        content: "👋 Hi! I'm your AI agent for influencer discovery. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
+      }]);
+      setShowWelcomeMessage(false);
+    }
+  }, [showWelcomeMessage, messages.length, setMessages, setShowWelcomeMessage]);
 
   useEffect(() => {
     if (messagesEndRef.current) {

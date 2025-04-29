@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users } from "lucide-react";
@@ -6,41 +6,34 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { useChat } from "@/contexts/ChatContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-
-interface Message {
-  id: string;
-  type: "user" | "bot";
-  content: string;
-}
+import { useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
   const { t } = useLanguage();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [inputValue, setInputValue] = useState("");
-  const [messages, setMessages] = useState<Message[]>([]);
+  const { messages, setMessages, showWelcomeMessage, setShowWelcomeMessage } = useChat();
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [showWelcome, setShowWelcome] = useState(true);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   
   useEffect(() => {
-    if (showWelcome) {
+    if (showWelcomeMessage && messages.length === 0) {
       setTimeout(() => {
         setMessages([{
           id: "welcome",
           type: "bot",
           content: "👋 Welcome to the world's first Influencer Marketing AI Agent! I can help you discover the perfect TikTok creators for your brand. What type of influencers are you looking for today?"
         }]);
-        setShowWelcome(false);
+        setShowWelcomeMessage(false);
       }, 500);
     }
-  }, [showWelcome]);
+  }, [showWelcomeMessage, messages.length, setMessages, setShowWelcomeMessage]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
