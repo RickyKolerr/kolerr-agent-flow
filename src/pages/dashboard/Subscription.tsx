@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -153,12 +152,6 @@ const SubscriptionPage = () => {
     });
     navigate('/dashboard/settings');
   };
-  
-  // Get current plan price based on the current plan ID
-  const getCurrentPlanPrice = () => {
-    const plan = plans.find(p => p.id === currentPlan.id);
-    return plan ? plan.price[billingPeriod] : 0;
-  };
 
   return (
     <div className="space-y-6">
@@ -238,7 +231,6 @@ const SubscriptionPage = () => {
           billingPeriod={billingPeriod}
           onCancel={() => setSelectedPlan(null)}
           onConfirm={handlePlanChange}
-          currentPlanPrice={getCurrentPlanPrice()} // Pass the current plan price
         />
       )}
     </div>

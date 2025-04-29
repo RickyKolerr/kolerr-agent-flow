@@ -9,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlanChangeConfirmationProps {
   currentPlan: string;
@@ -19,7 +18,6 @@ interface PlanChangeConfirmationProps {
   billingPeriod: 'monthly' | 'yearly';
   onCancel: () => void;
   onConfirm: () => void;
-  currentPlanPrice?: number; // Add optional currentPlanPrice
 }
 
 export const PlanChangeConfirmation = ({
@@ -30,19 +28,11 @@ export const PlanChangeConfirmation = ({
   billingPeriod,
   onCancel,
   onConfirm,
-  currentPlanPrice = 0, // Default to 0 if not provided
 }: PlanChangeConfirmationProps) => {
-  const isMobile = useIsMobile();
-  
   // Calculate plan price difference logic
   const isNewUser = currentPlan === "Free";
-  const isUpgrade = !isNewUser && newPrice > currentPlanPrice;
-  const isDowngrade = !isNewUser && newPrice < currentPlanPrice;
-  const planChangeType = isNewUser ? "Subscribe" : isUpgrade ? "Upgrade" : "Downgrade";
+  const planChangeType = isNewUser ? "Subscribe" : newPrice > 0 ? "Upgrade" : "Downgrade";
   const actionText = isNewUser ? "Start Subscription" : "Change Plan";
-  
-  // Calculate the difference amount for upgrade/downgrade
-  const diffAmount = isNewUser ? newPrice : Math.abs(newPrice - currentPlanPrice);
   
   return (
     <div className="flex justify-center mt-8">
@@ -57,25 +47,23 @@ export const PlanChangeConfirmation = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-muted rounded-md gap-4">
+          <div className="flex justify-between items-center p-4 bg-muted rounded-md">
             <div>
               <p className="font-medium">From: {currentPlan} ({currentBilling})</p>
               <p className="text-sm text-muted-foreground">
                 To: {selectedPlan} ({billingPeriod})
               </p>
             </div>
-            <div className={isMobile ? "" : "text-right"}>
+            <div className="text-right">
               <p className="font-medium">
-                {isNewUser ? (
-                  <>New price: ${newPrice} / {billingPeriod}</>
-                ) : isUpgrade ? (
-                  <>Amount due today: ${diffAmount}</>
+                {isNewUser || newPrice > 0 ? (
+                  <>New price: ${newPrice} / month</>
                 ) : (
-                  <>New price: ${newPrice} / {billingPeriod}</>
+                  <>New price will apply at next billing cycle</>
                 )}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isNewUser || isUpgrade ? "Effective immediately" : "At next billing cycle"}
+                {isNewUser || newPrice > 0 ? "Effective immediately" : "No charge today"}
               </p>
             </div>
           </div>
@@ -95,7 +83,7 @@ export const PlanChangeConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
             onClick={onConfirm}
           >
-            {isUpgrade ? `Pay $${diffAmount} Now` : actionText}
+            {newPrice > 0 ? `Proceed to Payment` : actionText}
           </Button>
         </CardFooter>
       </Card>

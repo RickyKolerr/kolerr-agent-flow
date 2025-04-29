@@ -19,7 +19,6 @@ const PaymentPage = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { hasPremiumPlan } = useCredits();
   const [currentPlanPrice, setCurrentPlanPrice] = useState(0);
-  const [amountDue, setAmountDue] = useState(0);
 
   const plans = {
     starter: {
@@ -46,7 +45,7 @@ const PaymentPage = () => {
   const selectedPlanId = searchParams.get('plan') || (hasPremiumPlan ? "growth" : "starter");
   const selectedPlan = plans[selectedPlanId] || plans.growth;
 
-  // Determine current plan price and calculate amount due
+  // Determine current plan price
   useEffect(() => {
     if (hasPremiumPlan) {
       // Fetch current plan price based on user's plan
@@ -57,22 +56,15 @@ const PaymentPage = () => {
     }
   }, [hasPremiumPlan]);
 
-  // Calculate and set the amount due whenever selected plan or current plan changes
-  useEffect(() => {
-    if (hasPremiumPlan) {
-      const difference = selectedPlan.price - currentPlanPrice;
-      // Only charge if it's an upgrade (positive difference)
-      const due = difference > 0 ? difference : 0;
-      setAmountDue(due);
-    } else {
-      // New subscription - charge full amount
-      setAmountDue(selectedPlan.price);
-    }
-  }, [selectedPlan.price, currentPlanPrice, hasPremiumPlan]);
+  // Calculate the amount due (difference between plans)
+  const calculateAmountDue = () => {
+    const difference = selectedPlan.price - currentPlanPrice;
+    return difference > 0 ? difference : 0;
+  };
 
+  const amountDue = calculateAmountDue();
   const isUpgrade = selectedPlan.price > currentPlanPrice;
   const isDowngrade = selectedPlan.price < currentPlanPrice && currentPlanPrice > 0;
-  const isNewSubscription = !hasPremiumPlan;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear + i).toString());
@@ -162,7 +154,7 @@ const PaymentPage = () => {
             {hasPremiumPlan && (
               <div className="flex justify-between items-center py-4 border-b border-border">
                 <div>
-                  <p className="font-medium">Current Plan Credit</p>
+                  <p className="font-medium">Current Plan</p>
                   <p className="text-sm text-muted-foreground">Your existing subscription</p>
                 </div>
                 <p className="font-medium">-${currentPlanPrice}</p>
@@ -175,14 +167,14 @@ const PaymentPage = () => {
             </div>
             
             <div className="flex justify-between items-center pt-4 border-t border-border text-lg">
-              <p className="font-medium">Total Due Today</p>
+              <p className="font-medium">Total</p>
               <p className="font-bold">${amountDue}</p>
             </div>
             
             {isUpgrade && (
               <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
                 <p className="text-sm text-green-700">
-                  You're upgrading your plan. You'll be charged the difference of ${amountDue} today.
+                  You're upgrading your plan. You'll be charged the difference of ${amountDue}.
                 </p>
               </div>
             )}
@@ -190,191 +182,145 @@ const PaymentPage = () => {
             {isDowngrade && (
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-700">
-                  You're downgrading your plan. Your new rate of ${selectedPlan.price} will start on your next billing cycle. No charges today.
-                </p>
-              </div>
-            )}
-            
-            {isNewSubscription && (
-              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
-                <p className="text-sm text-green-700">
-                  You're subscribing to the {selectedPlan.name} plan at ${selectedPlan.price}/{selectedPlan.period}.
+                  You're downgrading your plan. Your new rate will be ${selectedPlan.price} starting next billing cycle.
                 </p>
               </div>
             )}
           </CardContent>
         </Card>
 
-        {amountDue > 0 ? (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Payment Information
-              </CardTitle>
-              <CardDescription>Enter your payment details securely</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cardName">Cardholder Name</Label>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <CreditCard className="h-5 w-5 mr-2" />
+              Payment Information
+            </CardTitle>
+            <CardDescription>Enter your payment details securely</CardDescription>
+          </CardHeader>
+          <form onSubmit={handleSubmit}>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="cardName">Cardholder Name</Label>
+                  <Input
+                    id="cardName"
+                    placeholder="Name as it appears on card"
+                    value={cardName}
+                    onChange={(e) => setCardName(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cardNumber">Card Number</Label>
+                  <div className="relative">
                     <Input
-                      id="cardName"
-                      placeholder="Name as it appears on card"
-                      value={cardName}
-                      onChange={(e) => setCardName(e.target.value)}
+                      id="cardNumber"
+                      placeholder="1234 5678 9012 3456"
+                      value={cardNumber}
+                      onChange={handleCardNumberChange}
+                      maxLength={19}
                       required
                     />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="cardNumber">Card Number</Label>
-                    <div className="relative">
-                      <Input
-                        id="cardNumber"
-                        placeholder="1234 5678 9012 3456"
-                        value={cardNumber}
-                        onChange={handleCardNumberChange}
-                        maxLength={19}
-                        required
-                      />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2">
-                        <div className="flex items-center space-x-1">
-                          <div className="h-6 w-9 rounded bg-gray-200 flex items-center justify-center">
-                            <span className="text-[10px] font-bold text-gray-600">VISA</span>
-                          </div>
-                          <div className="h-6 w-9 rounded bg-gray-200 flex items-center justify-center">
-                            <span className="text-[10px] font-bold text-gray-600">MC</span>
-                          </div>
+                    <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                      <div className="flex items-center space-x-1">
+                        <div className="h-6 w-9 rounded bg-gray-200 flex items-center justify-center">
+                          <span className="text-[10px] font-bold text-gray-600">VISA</span>
+                        </div>
+                        <div className="h-6 w-9 rounded bg-gray-200 flex items-center justify-center">
+                          <span className="text-[10px] font-bold text-gray-600">MC</span>
                         </div>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Expiry Date</Label>
-                      <div className="flex gap-2">
-                        <Select value={expiryMonth} onValueChange={setExpiryMonth}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="MM" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {months.map((month) => (
-                              <SelectItem key={month} value={month}>{month}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <Select value={expiryYear} onValueChange={setExpiryYear}>
-                          <SelectTrigger>
-                            <SelectValue placeholder="YYYY" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {years.map((year) => (
-                              <SelectItem key={year} value={year}>{year}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="cvv">CVV</Label>
-                      <Input
-                        id="cvv"
-                        placeholder="123"
-                        value={cvv}
-                        onChange={handleCvvChange}
-                        maxLength={4}
-                        required
-                      />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label>Expiry Date</Label>
+                    <div className="flex gap-2">
+                      <Select value={expiryMonth} onValueChange={setExpiryMonth}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="MM" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((month) => (
+                            <SelectItem key={month} value={month}>{month}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Select value={expiryYear} onValueChange={setExpiryYear}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="YYYY" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {years.map((year) => (
+                            <SelectItem key={year} value={year}>{year}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
-
-                  <div className="flex items-center space-x-2 pt-2">
-                    <Checkbox id="saveCard" checked={saveCard} onCheckedChange={(checked) => setSaveCard(!!checked)} />
-                    <Label htmlFor="saveCard" className="text-sm cursor-pointer">
-                      Save card for future payments
-                    </Label>
+                  <div className="space-y-2">
+                    <Label htmlFor="cvv">CVV</Label>
+                    <Input
+                      id="cvv"
+                      placeholder="123"
+                      value={cvv}
+                      onChange={handleCvvChange}
+                      maxLength={4}
+                      required
+                    />
                   </div>
                 </div>
 
-                <div className="pt-4 space-y-4">
-                  <div className="p-4 bg-gray-50 border rounded-md">
-                    <div className="flex items-center text-sm gap-2">
-                      <ShieldCheck className="h-5 w-5 text-green-600" />
-                      <span className="font-medium">Secure Payment Processing</span>
-                    </div>
-                    <p className="mt-2 text-sm text-muted-foreground">
-                      Your payment information is encrypted and securely processed by Stripe, a PCI-DSS Level 1 certified payment processor.
-                      Kolerr never stores your full card details.
-                    </p>
-                  </div>
-                  
-                  <div className="text-sm text-muted-foreground flex items-center">
-                    <Lock className="h-4 w-4 mr-1" />
-                    <span>Your payment is protected with industry-standard SSL encryption.</span>
-                  </div>
+                <div className="flex items-center space-x-2 pt-2">
+                  <Checkbox id="saveCard" checked={saveCard} onCheckedChange={(checked) => setSaveCard(!!checked)} />
+                  <Label htmlFor="saveCard" className="text-sm cursor-pointer">
+                    Save card for future payments
+                  </Label>
                 </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button
-                  type="button"
-                  variant="ghost"
-                  onClick={() => navigate("/dashboard/subscription")}
-                >
-                  Back
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-brand-pink hover:bg-brand-pink/90"
-                  disabled={isProcessing}
-                >
-                  {isProcessing ? "Processing..." : 
-                   isUpgrade ? `Pay $${amountDue} Now` : 
-                   amountDue > 0 ? `Pay $${amountDue}` : "Confirm Change"}
-                </Button>
-              </CardFooter>
-            </form>
-          </Card>
-        ) : (
-          <Card>
-            <CardHeader>
-              <CardTitle>No Payment Required</CardTitle>
-              <CardDescription>
-                {isDowngrade ? 
-                  "Your plan will be downgraded at the next billing cycle." : 
-                  "Your current plan includes this upgrade or change."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-blue-700">
-                  {isDowngrade ? 
-                    `You're downgrading to the ${selectedPlan.name} plan. Your new rate of $${selectedPlan.price} will begin on your next billing cycle.` : 
-                    "No additional payment is required for this plan change."}
-                </p>
+              </div>
+
+              <div className="pt-4 space-y-4">
+                <div className="p-4 bg-gray-50 border rounded-md">
+                  <div className="flex items-center text-sm gap-2">
+                    <ShieldCheck className="h-5 w-5 text-green-600" />
+                    <span className="font-medium">Secure Payment Processing</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Your payment information is encrypted and securely processed by Stripe, a PCI-DSS Level 1 certified payment processor.
+                    Kolerr never stores your full card details.
+                  </p>
+                </div>
+                
+                <div className="text-sm text-muted-foreground flex items-center">
+                  <Lock className="h-4 w-4 mr-1" />
+                  <span>Your payment is protected with industry-standard SSL encryption.</span>
+                </div>
               </div>
             </CardContent>
             <CardFooter className="flex justify-between">
               <Button
+                type="button"
                 variant="ghost"
                 onClick={() => navigate("/dashboard/subscription")}
               >
                 Back
               </Button>
               <Button
-                onClick={() => navigate(`/dashboard/payment/success/subscription?plan=${selectedPlanId}`)}
+                type="submit"
                 className="bg-brand-pink hover:bg-brand-pink/90"
+                disabled={isProcessing}
               >
-                {isDowngrade ? "Confirm Downgrade" : "Confirm Change"}
+                {isProcessing ? "Processing..." : `Pay $${amountDue}`}
               </Button>
             </CardFooter>
-          </Card>
-        )}
+          </form>
+        </Card>
 
         <div className="mt-6 text-center text-sm text-muted-foreground">
-          By proceeding, you agree to our <a href="/terms" className="underline">Terms of Service</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
+          By proceeding with payment, you agree to our <a href="/terms" className="underline">Terms of Service</a> and <a href="/privacy" className="underline">Privacy Policy</a>.
         </div>
       </div>
 
