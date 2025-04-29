@@ -14,6 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
+import { CreditCard, MessageSquare, CreditCounter, DemoIndicator } from "@/components";
 
 interface Message {
   id: string;
@@ -485,6 +486,34 @@ const HomePage = () => {
             </div>
 
             <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
+              {/* Add Credit ratio indicator at the top of chat */}
+              <div className="mb-4 rounded-md bg-brand-pink/10 p-3 border border-brand-pink/20 relative">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <CreditCard className="h-4 w-4 text-brand-pink mr-2" />
+                    <span className="font-medium text-sm">Credit Usage Guide</span>
+                  </div>
+                  
+                  <div className="flex items-center">
+                    {!hasPremiumPlan && <CreditCounter variant="compact" />}
+                  </div>
+                </div>
+                <div className="mt-2 text-xs grid grid-cols-2 gap-2">
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="flex items-center mr-2 bg-brand-pink/5 border-brand-pink/20">
+                      <Search className="h-3 w-3 mr-1 text-brand-pink" />
+                    </Badge>
+                    <span>KOL specific: 1 credit</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="flex items-center mr-2 bg-brand-pink/5 border-brand-pink/20">
+                      <MessageSquare className="h-3 w-3 mr-1 text-brand-pink" />
+                    </Badge>
+                    <span>General: {generalQuestionsPerCredit} questions = 1 credit</span>
+                  </div>
+                </div>
+              </div>
+              
               {messages.map(message => (
                 <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
                   {message.type === "bot" && (
@@ -580,31 +609,38 @@ const HomePage = () => {
             </div>
           </div>
           
-          {/* Update the Credit Usage Info Card */}
-          <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6">
+          {/* Replace Credit Usage Info Card with enhanced component */}
+          <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6 relative">
+            <DemoIndicator 
+              section="Credit System" 
+              icon="info"
+              tooltip={
+                <div className="text-sm space-y-1">
+                  <p>The Kolerr credit system intelligently manages your free searches.</p>
+                  <p>Different question types consume credits at different rates.</p>
+                </div>
+              }
+            />
             <h3 className="text-lg font-bold mb-3 flex items-center">
-              <MessageCircle className="h-4 w-4 text-brand-pink mr-2" />
+              <CreditCard className="h-4 w-4 text-brand-pink mr-2" />
               Understanding Credits
             </h3>
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span>KOL specific questions:</span>
-                <span className="font-medium">1 credit each</span>
-              </div>
-              <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                <span>General questions:</span>
-                <span className="font-medium">{generalQuestionsPerCredit} for 1 credit</span>
-              </div>
+            
+            <CreditCounter />
+            
+            <div className="mt-4 pt-4 border-t border-white/10">
               <div className="flex justify-between items-center">
-                <span>Your remaining:</span>
-                <span className="font-medium">
-                  {freeCredits} credits + {remainingGeneralQuestions} general questions
-                </span>
+                <span className="text-sm">Current balance:</span>
+                <div>
+                  <Badge className="bg-brand-pink/80 hover:bg-brand-pink">
+                    {freeCredits} {freeCredits === 1 ? 'credit' : 'credits'}
+                  </Badge>
+                </div>
               </div>
               {!hasPremiumPlan && (
                 <Button 
                   variant="outline" 
-                  className="w-full mt-2 text-brand-pink border-brand-pink/30 hover:bg-brand-pink/10"
+                  className="w-full mt-4 text-brand-pink border-brand-pink/30 hover:bg-brand-pink/10"
                   onClick={() => navigate("/pricing")}
                 >
                   Get Unlimited With Premium
