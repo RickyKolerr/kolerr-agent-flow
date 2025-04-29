@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -109,7 +110,7 @@ const App = () => {
                 <Sonner />
                 <Layout>
                   <Routes>
-                    {/* Public routes - REMOVED DUPLICATE INDEX ROUTE */}
+                    {/* Public routes */}
                     <Route path="/" element={<HomePage />} />
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/about" element={<AboutPage />} />
