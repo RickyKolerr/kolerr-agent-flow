@@ -1,5 +1,5 @@
 
-import { BadgeDollarSign, Calendar, FileText, Check } from "lucide-react";
+import { BadgeDollarSign, Calendar, FileText, Check, Loader2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useState } from "react";
 
 interface CampaignCardProps {
   campaign: {
@@ -30,6 +31,29 @@ interface CampaignCardProps {
 }
 
 export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
+  const [isApplying, setIsApplying] = useState(false);
+  
+  const handleApply = async () => {
+    setIsApplying(true);
+    
+    // Simulate API call delay to show loading state
+    setTimeout(() => {
+      onApply(campaign);
+      setIsApplying(false);
+    }, 800);
+    
+    // When implementing real backend:
+    // try {
+    //   await applyToCampaign(campaign.id);
+    //   onApply(campaign);
+    // } catch (error) {
+    //   console.error("Failed to apply:", error);
+    //   // Handle error with toast notification
+    // } finally {
+    //   setIsApplying(false);
+    // }
+  };
+  
   return (
     <Card className="overflow-hidden hover-scale">
       <CardContent className="p-0">
@@ -114,10 +138,18 @@ export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
             </div>
             
             <Button 
-              className="w-full mt-6"
-              onClick={() => onApply(campaign)}
+              className="w-full mt-6 bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+              onClick={handleApply}
+              disabled={isApplying}
             >
-              Apply Now
+              {isApplying ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Applying...
+                </>
+              ) : (
+                "Apply Now"
+              )}
             </Button>
           </div>
         </div>
