@@ -59,7 +59,7 @@ export const useSearchCredits = () => {
     toast.error(
       "You've used all your free searches for today", 
       { 
-        description: `Get more searches with a premium plan or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset.`,
+        description: `Get more searches with a premium plan or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
         action: {
           label: "Upgrade",
           onClick: () => window.location.href = "/pricing"

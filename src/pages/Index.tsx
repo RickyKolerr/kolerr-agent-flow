@@ -92,7 +92,7 @@ const Index = () => {
       toast.error(
         "You've used all your free searches for today", 
         { 
-          description: "Get more searches with a premium plan or wait until tomorrow for your credits to reset.",
+          description: `Get more searches with a premium plan or wait until tomorrow at 7:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
           action: {
             label: "Upgrade",
             onClick: () => navigate("/pricing")
@@ -119,7 +119,7 @@ const Index = () => {
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           type: "bot",
-          content: "You've used all your free searches for today. Upgrade to our premium plan to continue accessing our AI agent."
+          content: "You've used all your free searches for today. Upgrade to our premium plan to continue accessing our AI agent, or wait until 7:00 AM tomorrow for your credits to reset."
         };
         setMessages(prev => [...prev, botResponse]);
       }, 800);

@@ -51,7 +51,7 @@ const HomePage = () => {
       }
       
       toast.error("Out of free searches", {
-        description: "Upgrade your plan to continue searching",
+        description: `Upgrade your plan to continue searching or wait until ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
         action: {
           label: "Upgrade",
           onClick: () => navigate("/pricing")
@@ -98,7 +98,7 @@ const HomePage = () => {
       }
       
       toast.error("Out of free searches", {
-        description: "Upgrade your plan to continue searching",
+        description: `Upgrade your plan to continue searching or wait until ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
         action: {
           label: "Upgrade",
           onClick: () => navigate("/pricing")
