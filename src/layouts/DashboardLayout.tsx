@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useMemo } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -140,14 +141,16 @@ const generateNavigation = (role: string, unreadCount = 0) => {
 
 // Inside the DashboardLayout component, update the navigation to include unread count
 const DashboardLayout = () => {
-  const { user, loading } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { unreadCount } = useChat();
   const navigate = useNavigate();
   const location = useLocation();
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   useEffect(() => {
     setIsMounted(true);
+    setIsLoading(false);
   }, []);
   
   const navigation = useMemo(() => {
@@ -158,7 +161,7 @@ const DashboardLayout = () => {
     return <div className="h-screen flex items-center justify-center">Loading...</div>;
   }
   
-  if (loading) {
+  if (isLoading) {
     return <div className="h-screen flex items-center justify-center">Loading...</div>;
   }
   
@@ -223,7 +226,9 @@ const DashboardLayout = () => {
                 <span className="sr-only">Open navigation menu</span>
               </Button>
             </SheetTrigger>
-            <MainNav className="hidden md:flex" />
+            <div className="hidden md:flex">
+              <MainNav />
+            </div>
           </div>
           
           <div className="flex items-center space-x-4">
