@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -39,7 +38,7 @@ const ContractsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
-  // Mock contracts data
+  // Mock contracts data with real portrait images
   const mockContracts: Contract[] = [
     {
       id: "CT-2023-001",
@@ -47,7 +46,7 @@ const ContractsPage = () => {
       kol: {
         name: "Sophia Chen",
         handle: "@fashionwithsophia",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sophia"
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop"
       },
       campaign: "Summer Collection Launch",
       createdDate: "2023-06-02",
@@ -60,7 +59,7 @@ const ContractsPage = () => {
       kol: {
         name: "Jake Thomas",
         handle: "@jakeadventures",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jake"
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop"
       },
       campaign: "New Product Teaser",
       createdDate: "2023-06-05",
@@ -73,7 +72,7 @@ const ContractsPage = () => {
       kol: {
         name: "Aisha Mohamed",
         handle: "@aisha_beauty",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=aisha"
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop"
       },
       campaign: "Holiday Special",
       createdDate: "2023-06-10",
@@ -86,7 +85,7 @@ const ContractsPage = () => {
       kol: {
         name: "Mike Wilson",
         handle: "@mike_fitness",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop"
       },
       campaign: "Fitness Challenge",
       createdDate: "2023-05-15",
@@ -99,7 +98,7 @@ const ContractsPage = () => {
       kol: {
         name: "Priya Singh",
         handle: "@priyacooks",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya"
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop"
       },
       createdDate: "2023-05-28",
       status: 'expired',
@@ -111,7 +110,7 @@ const ContractsPage = () => {
       kol: {
         name: "David Park",
         handle: "@techwithdavid",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=david"
+        avatar: "https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?w=150&h=150&auto=format&fit=crop"
       },
       createdDate: "2023-06-12",
       status: 'draft'
