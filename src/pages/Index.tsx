@@ -1,8 +1,7 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle } from "lucide-react";
+import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
@@ -11,6 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
 interface Message {
   id: string;
@@ -27,6 +27,7 @@ const Index = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showWelcome, setShowWelcome] = useState(true);
+  const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   
   // Auto welcome message
   useEffect(() => {
@@ -48,6 +49,17 @@ const Index = () => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  // Auto-rotate carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveCarouselIndex((prev) => 
+        prev === mockCreatorData.length - 1 ? 0 : prev + 1
+      );
+    }, 3000);
+    
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -171,7 +183,6 @@ const Index = () => {
     }, 1000);
   };
   
-  // Helper function to suggest creators based on input
   const getCreatorSuggestions = (input: string) => {
     let filteredCreators = [...mockCreatorData];
     
@@ -207,10 +218,11 @@ const Index = () => {
       : "I couldn't find creators matching that exact description. Try a broader search or different keywords.";
   };
   
-  // Get top trending creators for quick suggestions
   const trendingCreators = mockCreatorData
     .filter(creator => creator.trending)
     .slice(0, 3);
+
+  const allCreators = mockCreatorData.slice(0, 10);
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden overflow-y-auto hero-gradient pt-16 pb-16">
@@ -319,6 +331,44 @@ const Index = () => {
                   <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
                   Fitness creators
                 </Button>
+              </div>
+              
+              {/* Creator Portraits Carousel */}
+              <div className="mt-6 mb-2">
+                <div className="flex items-center mb-3">
+                  <Users className="h-4 w-4 text-brand-pink mr-2" />
+                  <h3 className="text-sm font-medium">Featured Creators</h3>
+                </div>
+                <Carousel 
+                  className="w-full" 
+                  opts={{
+                    align: "start",
+                    loop: true,
+                    startIndex: activeCarouselIndex,
+                  }}
+                  onSelect={(api) => {
+                    if (api) setActiveCarouselIndex(api.selectedScrollSnap());
+                  }}
+                >
+                  <CarouselContent>
+                    {allCreators.map((creator) => (
+                      <CarouselItem key={creator.id} className="basis-1/4 md:basis-1/5 lg:basis-1/6">
+                        <div className="p-1">
+                          <div className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-transform cursor-pointer"
+                              onClick={() => navigate(`/creators/${creator.id}`)}
+                          >
+                            <img
+                              src={creator.avatar}
+                              alt={creator.fullName}
+                              className="h-full w-full object-cover"
+                            />
+                          </div>
+                          <p className="text-xs text-center mt-1 truncate">{creator.fullName.split(' ')[0]}</p>
+                        </div>
+                      </CarouselItem>
+                    ))}
+                  </CarouselContent>
+                </Carousel>
               </div>
             </div>
           </div>
