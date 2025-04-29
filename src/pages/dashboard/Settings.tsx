@@ -1,11 +1,12 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Settings as SettingsIcon, CreditCard } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { SettingsGeneral } from "@/components/settings/SettingsGeneral";
 import { SettingsBilling } from "@/components/settings/SettingsBilling";
+import { BillingPreferences } from "@/components/settings/BillingPreferences";
 
 const Settings = () => {
   const location = useLocation();
@@ -14,10 +15,22 @@ const Settings = () => {
     location.pathname.includes("billing") ? "billing" : "general"
   );
 
+  // Check for billing preferences path
+  const showBillingPreferences = location.pathname.includes("/billing/preferences");
+
   const handleTabChange = (value: string) => {
     setActiveTab(value);
     navigate(value === "billing" ? "/dashboard/settings/billing" : "/dashboard/settings");
   };
+
+  // Update active tab based on URL changes
+  useEffect(() => {
+    if (location.pathname.includes("billing")) {
+      setActiveTab("billing");
+    } else {
+      setActiveTab("general");
+    }
+  }, [location.pathname]);
 
   return (
     <div className="space-y-6">
@@ -47,7 +60,22 @@ const Settings = () => {
         </TabsContent>
 
         <TabsContent value="billing" className="space-y-4">
-          <SettingsBilling />
+          {showBillingPreferences ? (
+            <div className="space-y-4">
+              <div className="flex items-center mb-4">
+                <Button 
+                  variant="ghost" 
+                  onClick={() => navigate("/dashboard/settings/billing")}
+                  className="px-0 hover:bg-transparent hover:text-brand-pink"
+                >
+                  ← Back to Billing
+                </Button>
+              </div>
+              <BillingPreferences />
+            </div>
+          ) : (
+            <SettingsBilling />
+          )}
         </TabsContent>
       </Tabs>
     </div>

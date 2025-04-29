@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 import { Button } from "@/components/ui/button";
@@ -113,10 +114,10 @@ export const SettingsBilling = () => {
           <Button
             variant="outline"
             className="w-full justify-start gap-4"
-            onClick={() => navigate('/dashboard/settings')}
+            onClick={() => navigate('/dashboard/settings/billing/preferences')}
           >
             <Settings className="h-4 w-4" />
-            Manage Billing Settings
+            Manage Billing Preferences
             <ChevronRight className="h-4 w-4 ml-auto" />
           </Button>
         </CardContent>
