@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { getTimeUntilReset, RESET_HOUR } from "./useSearchCredits";
@@ -5,8 +6,22 @@ import { getTimeUntilReset, RESET_HOUR } from "./useSearchCredits";
 // Constants for credit system
 const GENERAL_QUESTIONS_PER_CREDIT = 3;
 const KOL_PATTERNS = [
+  // Core KOL-related terms
   'kol', 'creator', 'influencer', 'tiktok', 'search', 'find', 'campaign',
-  'follower', 'niche', 'engagement', 'fashion', 'beauty', 'gaming', 'tech', 'travel'
+  'follower', 'niche', 'engagement',
+  
+  // Industry/category terms that indicate KOL search
+  'fashion', 'beauty', 'gaming', 'tech', 'travel', 'food', 'fitness', 
+  'lifestyle', 'music', 'sports', 'comedy',
+  
+  // Action words indicating search intent
+  'recommend', 'suggest', 'locate', 'identify', 'discover', 'show me',
+  
+  // Monetary terms indicating commercial intent
+  'sponsor', 'promote', 'advertise', 'collaborate', 'partnership', 'deal', 'cost',
+  
+  // Specific metrics
+  'views', 'likes', 'followers', 'engagement rate', 'audience'
 ];
 
 interface IntelligentCreditStore {
@@ -54,14 +69,35 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
 
   /**
    * Determines if a message is KOL/campaign-specific or general
+   * Using an enhanced algorithm for better detection
    * @param message The user message to classify
    * @returns True if the message is KOL/campaign-specific, false if general
    */
   const isKOLSpecificQuery = (message: string) => {
     const lowerMsg = message.toLowerCase();
     
-    // Check if the message contains any KOL-related keywords
-    return KOL_PATTERNS.some(pattern => lowerMsg.includes(pattern));
+    // Quick check for explicit KOL-related keywords
+    if (KOL_PATTERNS.some(pattern => lowerMsg.includes(pattern))) {
+      return true;
+    }
+    
+    // Enhanced context detection - check for phrases that suggest looking for specific creators
+    const findingPhrases = [
+      "who can", "who should", "looking for someone", "need a creator", 
+      "best creator", "top influencer", "recommend", "suggestion"
+    ];
+    
+    if (findingPhrases.some(phrase => lowerMsg.includes(phrase))) {
+      return true;
+    }
+    
+    // Check for questions about specific demographics or metrics
+    const metricPatterns = ["followers", "engagement", "audience", "demographic", "reach", "views"];
+    if (metricPatterns.some(metric => lowerMsg.includes(metric))) {
+      return true;
+    }
+    
+    return false;
   };
 
   /**

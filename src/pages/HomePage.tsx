@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -472,7 +471,7 @@ const HomePage = () => {
                   Sign in for full access
                 </Button>
               ) : !hasPremiumPlan && (
-                <CreditBadge variant="compact" />
+                <CreditBadge variant="detailed" />
               )}
             </div>
 
@@ -581,7 +580,7 @@ const HomePage = () => {
             </div>
           </div>
           
-          {/* New Credit Usage Info Card */}
+          {/* Update the Credit Usage Info Card */}
           <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6">
             <h3 className="text-lg font-bold mb-3 flex items-center">
               <MessageCircle className="h-4 w-4 text-brand-pink mr-2" />

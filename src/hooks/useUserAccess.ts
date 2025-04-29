@@ -1,10 +1,14 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { useCredits } from "@/contexts/CreditContext";
+import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 
 export const useUserAccess = () => {
   const { user, isAuthenticated } = useAuth();
-  const { freeCredits, hasPremiumPlan } = useCredits();
+  const { freeCredits: originalCredits, hasPremiumPlan } = useCredits();
+  
+  // Integrate the intelligent credits system for more accurate credit management
+  const { freeCredits, isKOLSpecificQuery } = useIntelligentCredits(originalCredits, hasPremiumPlan);
 
   const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "messages") => {
     if (!isAuthenticated) return false;
@@ -65,6 +69,7 @@ export const useUserAccess = () => {
     isAuthenticated,
     user,
     freeCredits,
-    hasPremiumPlan
+    hasPremiumPlan,
+    isKOLSpecificQuery // Export this function to be used across components
   };
 };
