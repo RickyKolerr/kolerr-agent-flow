@@ -16,6 +16,8 @@ import { getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/contexts/AuthContext";
+import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
+import { DemoIndicator } from "@/components/demo/DemoIndicator";
 
 // Add type definition for the window object at the top level of the file
 declare global {
@@ -596,6 +598,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
+      {/* Show the welcome tour */}
+      <WelcomeTour />
+      
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
       
@@ -620,7 +625,7 @@ const Index = () => {
         )}
 
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
-          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px]">
+          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
@@ -1050,7 +1055,8 @@ const Index = () => {
         )}
         
         {/* General carousel section */}
-        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
+        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl relative campaign-section">
+          <DemoIndicator section="Top Creators & Brands" />
           <div className="flex items-center mb-5">
             <Users className="h-5 w-5 text-brand-pink mr-2" />
             <h2 className="text-xl font-semibold">
