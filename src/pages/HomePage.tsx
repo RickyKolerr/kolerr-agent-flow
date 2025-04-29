@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ const HomePage = () => {
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
     type: "bot",
-    content: "👋 Hi! I'm your AI agent for influencer discovery. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
+    content: "👋 Hi! I'm your AI agent for influencer discovery. As a Strategic Partner of TikTok and Meta, Kolerr can help you find creators all around the world. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
