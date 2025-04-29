@@ -1,159 +1,134 @@
 
-import { BadgeDollarSign, Calendar, FileText, Check, Loader2 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import React from 'react';
+import { Calendar, Users, Star, Medal, Eye } from 'lucide-react';
+import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useState } from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-interface CampaignCardProps {
-  campaign: {
-    id: string;
-    title: string;
-    brand: string;
-    brandLogo: string;
-    description: string;
-    budget: string;
-    compatibility: number;
-    deadline: string;
-    platforms: string[];
-    categories: string[];
-    requirements: string[];
-    status: string;
-  };
-  onApply: (campaign: any) => void;
+interface Campaign {
+  id: string;
+  title: string;
+  brand: string;
+  brandLogo: string;
+  description: string;
+  budget: string;
+  compatibility: number;
+  deadline: string;
+  platforms: string[];
+  categories: string[];
+  requirements: string[];
+  status: string;
 }
 
-export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
-  const [isApplying, setIsApplying] = useState(false);
-  
-  const handleApply = async () => {
-    setIsApplying(true);
-    
-    // Simulate API call delay to show loading state
-    setTimeout(() => {
-      onApply(campaign);
-      setIsApplying(false);
-    }, 800);
-    
-    // When implementing real backend:
-    // try {
-    //   await applyToCampaign(campaign.id);
-    //   onApply(campaign);
-    // } catch (error) {
-    //   console.error("Failed to apply:", error);
-    //   // Handle error with toast notification
-    // } finally {
-    //   setIsApplying(false);
-    // }
-  };
-  
+interface CampaignCardProps {
+  campaign: Campaign;
+  onApply: (campaign: Campaign) => void;
+  onViewCampaign?: (campaignId: string) => void;
+}
+
+export const CampaignCard = ({ campaign, onApply, onViewCampaign }: CampaignCardProps) => {
   return (
-    <Card className="overflow-hidden hover-scale">
+    <Card key={campaign.id} className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-2/3 p-6">
             <div className="flex items-center space-x-3 mb-3">
-              <img 
-                src={campaign.brandLogo} 
-                alt={campaign.brand} 
-                className="h-10 w-10 rounded-full"
-              />
+              <Avatar>
+                <AvatarImage src={campaign.brandLogo} alt={campaign.brand} />
+                <AvatarFallback>{campaign.brand.substring(0, 2)}</AvatarFallback>
+              </Avatar>
               <div>
-                <h3 className="text-xl font-bold">{campaign.title}</h3>
-                <p className="text-sm text-muted-foreground">{campaign.brand}</p>
+                <h3 className="text-lg font-bold">{campaign.title}</h3>
+                <p className="text-sm text-muted-foreground">by {campaign.brand}</p>
               </div>
             </div>
             
-            <p className="text-muted-foreground mb-4">{campaign.description}</p>
+            <p className="text-muted-foreground mb-4">
+              {campaign.description}
+            </p>
             
             <div className="flex flex-wrap gap-2 mb-4">
-              {campaign.categories.map(category => (
-                <Badge key={category} variant="outline" className="capitalize">
-                  {category}
-                </Badge>
-              ))}
               {campaign.platforms.map(platform => (
-                <Badge key={platform} className="bg-brand-pink text-white capitalize">
+                <Badge key={platform} variant="outline" className="capitalize">
                   {platform}
                 </Badge>
               ))}
+              
+              {campaign.categories.map(category => (
+                <Badge key={category} className="bg-brand-pink/20 text-brand-pink capitalize">
+                  {category}
+                </Badge>
+              ))}
             </div>
             
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-sm">
-              <div className="flex items-center">
-                <BadgeDollarSign className="h-4 w-4 mr-1 text-brand-pink" />
-                <span>${campaign.budget}</span>
-              </div>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-sm">
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-1 text-brand-pink" />
-                <span>Due {new Date(campaign.deadline).toLocaleDateString()}</span>
+                <span>Deadline: {campaign.deadline}</span>
               </div>
+              
+              {campaign.requirements && (
+                <div className="flex items-center">
+                  <Medal className="h-4 w-4 mr-1 text-brand-pink" />
+                  <span>{campaign.requirements.join(", ")}</span>
+                </div>
+              )}
             </div>
           </div>
           
-          <div className="w-full md:w-1/3 bg-black/10 p-6 flex flex-col justify-between">
+          <div className="w-full md:w-1/3 bg-black/5 p-6 flex flex-col justify-between">
             <div>
               <div className="mb-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center mb-2">
-                        <FileText className="h-5 w-5 text-brand-pink mr-2" />
-                        <span className="font-semibold">Compatibility Score</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>How well this campaign matches your profile and audience</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                  <div 
-                    className="bg-brand-pink h-2.5 rounded-full" 
-                    style={{ width: `${campaign.compatibility}%` }}
-                  />
-                </div>
-                <p className="text-sm text-right">{campaign.compatibility}%</p>
+                <h4 className="font-medium text-sm mb-1">Budget:</h4>
+                <p className="text-xl font-bold">${campaign.budget}</p>
               </div>
               
-              <div className="space-y-2">
-                <h4 className="font-medium">Requirements:</h4>
-                <ul className="space-y-1">
-                  {campaign.requirements.map((req, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <Check className="h-4 w-4 mr-2 text-green-400" />
-                      {req}
-                    </li>
-                  ))}
-                </ul>
+              <div className="mb-6">
+                <div className="flex items-center space-x-1 mb-1">
+                  <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                  <h4 className="font-medium text-sm">Match Score:</h4>
+                </div>
+                <div className="flex items-center">
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 mr-2">
+                    <div 
+                      className={`h-2.5 rounded-full ${
+                        campaign.compatibility > 90 ? 'bg-green-500' : 
+                        campaign.compatibility > 75 ? 'bg-yellow-500' : 'bg-orange-500'
+                      }`}
+                      style={{ width: `${campaign.compatibility}%` }}
+                    ></div>
+                  </div>
+                  <span className={`text-sm font-medium ${
+                    campaign.compatibility > 90 ? 'text-green-500' : 
+                    campaign.compatibility > 75 ? 'text-yellow-500' : 'text-orange-500'
+                  }`}>{campaign.compatibility}%</span>
+                </div>
               </div>
             </div>
             
-            <Button 
-              className="w-full mt-6 bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-              onClick={handleApply}
-              disabled={isApplying}
-            >
-              {isApplying ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Applying...
-                </>
-              ) : (
-                "Apply Now"
+            <div className="space-y-2">
+              {onViewCampaign && (
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-center" 
+                  onClick={() => onViewCampaign(campaign.id)}
+                >
+                  <Eye className="h-4 w-4 mr-2" />
+                  View Campaign
+                </Button>
               )}
-            </Button>
+              
+              <Button 
+                className="w-full bg-brand-pink hover:bg-brand-pink/90"
+                onClick={() => onApply(campaign)}
+              >
+                Apply Now
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>
     </Card>
   );
-}
+};

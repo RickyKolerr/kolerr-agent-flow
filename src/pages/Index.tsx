@@ -513,13 +513,22 @@ const Index = () => {
     
     return suggestions.length > 0 
       ? `<div class="mt-2 space-y-2">${suggestions.map(campaign => 
-          `<div class="flex items-center gap-2">
+          `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
             <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
               <img src="${campaign.brandLogo}" alt="${campaign.brand}" class="w-full h-full object-cover" />
             </div>
-            <div>
+            <div class="flex-1">
               <div class="font-medium">${campaign.title}</div>
               <div class="text-xs text-gray-500">${campaign.budget} • ${campaign.deadline}</div>
+            </div>
+            <div class="ml-2">
+              <button 
+                onclick="window.navigateToCampaign('${campaign.id}')" 
+                class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded flex items-center"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-1"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v8"></path><path d="m8 12 4 4 4-4"></path></svg>
+                View
+              </button>
             </div>
           </div>`
         ).join('')}</div>`
@@ -547,8 +556,13 @@ const Index = () => {
       navigate(`/creators/${creatorId}`);
     };
     
+    window.navigateToCampaign = (campaignId) => {
+      navigate(`/campaigns/${campaignId}`);
+    };
+    
     return () => {
       delete window.navigateToCreator;
+      delete window.navigateToCampaign;
     };
   }, [navigate]);
 
@@ -883,7 +897,7 @@ const Index = () => {
                           <img src={campaign.brandLogo} alt={campaign.brand} className="object-cover" />
                         </Avatar>
                         <div className="flex-1">
-                          <div className="font-medium">{campaign.title}</div>
+                          <div className="font-medium">${campaign.title}</div>
                           <div className="text-xs text-gray-400">
                             {campaign.budget} • Deadline: {campaign.deadline}
                           </div>

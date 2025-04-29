@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { 
   FileSearch, Filter, 
-  TrendingUp
+  TrendingUp, Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Mock campaigns
 const mockCampaigns = [
@@ -95,6 +97,8 @@ const AvailableCampaigns = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [budgetFilter, setBudgetFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
+  const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   
   const filteredCampaigns = mockCampaigns.filter(campaign => {
     // Apply search filter
@@ -125,6 +129,17 @@ const AvailableCampaigns = () => {
   });
   
   const handleApplyCampaign = (campaign: typeof mockCampaigns[0]) => {
+    if (!isAuthenticated) {
+      toast.error("You need to be logged in to apply for campaigns", {
+        description: "Create an account or log in to apply for this campaign",
+        action: {
+          label: "Sign Up",
+          onClick: () => navigate("/signup")
+        }
+      });
+      return;
+    }
+    
     // This function could later be replaced with a backend call
     toast.success(`Applied to "${campaign.title}"`, {
       description: "Your application has been submitted successfully.",
@@ -136,6 +151,10 @@ const AvailableCampaigns = () => {
     // 2. Update local state to reflect application status
     // 3. Handle success/failure responses
     // 4. Redirect to application details or show follow-up actions
+  };
+  
+  const handleViewCampaign = (campaignId: string) => {
+    navigate(`/campaigns/${campaignId}`);
   };
   
   return (
@@ -208,6 +227,7 @@ const AvailableCampaigns = () => {
               key={campaign.id}
               campaign={campaign}
               onApply={handleApplyCampaign}
+              onViewCampaign={handleViewCampaign}
             />
           ))
         ) : (
