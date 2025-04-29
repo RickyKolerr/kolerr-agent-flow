@@ -19,6 +19,7 @@ interface PlanChangeConfirmationProps {
   billingPeriod: 'monthly' | 'yearly';
   onCancel: () => void;
   onConfirm: () => void;
+  currentPlanPrice?: number; // Add optional currentPlanPrice
 }
 
 export const PlanChangeConfirmation = ({
@@ -29,15 +30,19 @@ export const PlanChangeConfirmation = ({
   billingPeriod,
   onCancel,
   onConfirm,
+  currentPlanPrice = 0, // Default to 0 if not provided
 }: PlanChangeConfirmationProps) => {
   const isMobile = useIsMobile();
   
   // Calculate plan price difference logic
   const isNewUser = currentPlan === "Free";
-  const isUpgrade = newPrice > 0;
-  const isDowngrade = !isNewUser && !isUpgrade;
+  const isUpgrade = !isNewUser && newPrice > currentPlanPrice;
+  const isDowngrade = !isNewUser && newPrice < currentPlanPrice;
   const planChangeType = isNewUser ? "Subscribe" : isUpgrade ? "Upgrade" : "Downgrade";
   const actionText = isNewUser ? "Start Subscription" : "Change Plan";
+  
+  // Calculate the difference amount for upgrade/downgrade
+  const diffAmount = isNewUser ? newPrice : Math.abs(newPrice - currentPlanPrice);
   
   return (
     <div className="flex justify-center mt-8">
@@ -64,7 +69,7 @@ export const PlanChangeConfirmation = ({
                 {isNewUser ? (
                   <>New price: ${newPrice} / {billingPeriod}</>
                 ) : isUpgrade ? (
-                  <>Amount due today: ${newPrice}</>
+                  <>Amount due today: ${diffAmount}</>
                 ) : (
                   <>New price: ${newPrice} / {billingPeriod}</>
                 )}
@@ -90,7 +95,7 @@ export const PlanChangeConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
             onClick={onConfirm}
           >
-            {isUpgrade ? `Proceed to Payment` : actionText}
+            {isUpgrade ? `Pay $${diffAmount} Now` : actionText}
           </Button>
         </CardFooter>
       </Card>

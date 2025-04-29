@@ -59,14 +59,20 @@ const PaymentPage = () => {
 
   // Calculate and set the amount due whenever selected plan or current plan changes
   useEffect(() => {
-    const difference = selectedPlan.price - currentPlanPrice;
-    // Only charge if it's an upgrade (positive difference)
-    const due = difference > 0 ? difference : 0;
-    setAmountDue(due);
-  }, [selectedPlan.price, currentPlanPrice]);
+    if (hasPremiumPlan) {
+      const difference = selectedPlan.price - currentPlanPrice;
+      // Only charge if it's an upgrade (positive difference)
+      const due = difference > 0 ? difference : 0;
+      setAmountDue(due);
+    } else {
+      // New subscription - charge full amount
+      setAmountDue(selectedPlan.price);
+    }
+  }, [selectedPlan.price, currentPlanPrice, hasPremiumPlan]);
 
   const isUpgrade = selectedPlan.price > currentPlanPrice;
   const isDowngrade = selectedPlan.price < currentPlanPrice && currentPlanPrice > 0;
+  const isNewSubscription = !hasPremiumPlan;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear + i).toString());
@@ -185,6 +191,14 @@ const PaymentPage = () => {
               <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                 <p className="text-sm text-blue-700">
                   You're downgrading your plan. Your new rate of ${selectedPlan.price} will start on your next billing cycle. No charges today.
+                </p>
+              </div>
+            )}
+            
+            {isNewSubscription && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-700">
+                  You're subscribing to the {selectedPlan.name} plan at ${selectedPlan.price}/{selectedPlan.period}.
                 </p>
               </div>
             )}
@@ -316,7 +330,9 @@ const PaymentPage = () => {
                   className="bg-brand-pink hover:bg-brand-pink/90"
                   disabled={isProcessing}
                 >
-                  {isProcessing ? "Processing..." : `Pay $${amountDue}`}
+                  {isProcessing ? "Processing..." : 
+                   isUpgrade ? `Pay $${amountDue} Now` : 
+                   amountDue > 0 ? `Pay $${amountDue}` : "Confirm Change"}
                 </Button>
               </CardFooter>
             </form>
