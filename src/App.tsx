@@ -1,27 +1,28 @@
+
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from 'react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'sonner';
 import Index from './pages/Index';
 import About from './pages/About';
 import Features from './pages/Features';
-import ContactPage from './pages/Contact';
+import ContactPage from './pages/ContactPage';
 import Pricing from './pages/Pricing';
-import BlogPage from './pages/Blog';
-import DocsPage from './pages/Docs';
-import PartnersPage from './pages/Partners';
-import SearchResults from './pages/SearchResults';
-import AdvancedSearch from './pages/AdvancedSearch';
-import SearchHistory from './pages/SearchHistory';
-import CreatorProfile from './pages/CreatorProfile';
-import APIPage from './pages/API';
-import HelpCenter from './pages/HelpCenter';
-import Privacy from './pages/Privacy';
-import Terms from './pages/Terms';
-import SecurityPage from './pages/Security';
-import Signup from './pages/auth/Signup';
-import Login from './pages/auth/Login';
-import ForgotPassword from './pages/auth/ForgotPassword';
+import BlogPage from './pages/blog/BlogPage';
+import DocsPage from './pages/docs/DocsPage';
+import PartnersPage from './pages/partners/PartnersPage';
+import SearchResults from './pages/search/SearchResults';
+import AdvancedSearch from './pages/search/AdvancedSearch';
+import SearchHistory from './pages/search/SearchHistory';
+import CreatorProfile from './pages/creators/CreatorProfile';
+import APIPage from './pages/api/APIPage';
+import HelpCenter from './pages/help/HelpCenter';
+import Privacy from './pages/legal/Privacy';
+import Terms from './pages/legal/Terms';
+import SecurityPage from './pages/legal/SecurityPage';
+import Signup from './pages/auth/SignupPage';
+import Login from './pages/auth/LoginPage';
+import ForgotPassword from './pages/auth/ForgotPasswordPage';
 import ResetPassword from './pages/auth/ResetPassword';
 import EmailVerification from './pages/auth/EmailVerification';
 import DashboardLayout from './layouts/DashboardLayout';
@@ -30,7 +31,7 @@ import KOLsPage from './pages/dashboard/KOLs';
 import AnalyticsPage from './pages/dashboard/Analytics';
 import ContractsPage from './pages/dashboard/Contracts';
 import SettingsPage from './pages/dashboard/Settings';
-import OnboardingPage from './pages/Onboarding';
+import OnboardingPage from './pages/auth/OnboardingPage';
 import CreateCampaign from './pages/dashboard/CreateCampaign';
 import RewardsPage from './pages/dashboard/Rewards';
 import ReferralsPage from './pages/dashboard/Referrals';
@@ -39,7 +40,6 @@ import AvailableCampaigns from './pages/dashboard/kol/AvailableCampaigns';
 import KOLDashboardLayout from './layouts/KOLDashboardLayout';
 import CampaignDetail from './pages/campaigns/CampaignDetail';
 import { useAuth } from './contexts/AuthContext';
-import { UserRole } from './contexts/AuthContext';
 
 const queryClient = new QueryClient();
 
@@ -85,9 +85,7 @@ function App() {
             path="/dashboard"
             element={
               isAuthenticated ? (
-                <DashboardLayout>
-                  <Navigate to="/dashboard/campaigns" replace />
-                </DashboardLayout>
+                <DashboardLayout />
               ) : (
                 <Navigate to="/login" replace />
               )
@@ -109,9 +107,7 @@ function App() {
             path="/dashboard/kol"
             element={
               isAuthenticated && user?.role === "kol" ? (
-                <KOLDashboardLayout>
-                  <Navigate to="/dashboard/kol/campaigns" replace />
-                </KOLDashboardLayout>
+                <KOLDashboardLayout />
               ) : (
                 <Navigate to="/login" replace />
               )

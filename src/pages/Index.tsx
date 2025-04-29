@@ -250,6 +250,14 @@ const kolStats = {
   topEarningAmount: "$1,200"
 };
 
+// Add this declaration at the top of the file, outside of any component
+declare global {
+  interface Window {
+    navigateToCreator: (creatorId: string) => void;
+    navigateToCampaign: (campaignId: string) => void;
+  }
+}
+
 const Index = () => {
   const navigate = useNavigate();
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
