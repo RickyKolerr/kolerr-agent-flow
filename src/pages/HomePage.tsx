@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -44,12 +43,7 @@ const HomePage = () => {
     
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
-        toast.info("Please sign in to continue", {
-          action: {
-            label: "Sign In",
-            onClick: () => navigate("/login")
-          }
-        });
+        navigate("/login");
         return;
       }
       
@@ -91,12 +85,7 @@ const HomePage = () => {
     
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
-        toast.info("Please sign in to continue", {
-          action: {
-            label: "Sign In",
-            onClick: () => navigate("/login")
-          }
-        });
+        navigate("/login");
         return;
       }
       
@@ -385,7 +374,7 @@ const HomePage = () => {
               </ul>
               <div className="mt-8">
                 <Button onClick={() => navigate("/signup")} className="w-full bg-brand-pink hover:bg-brand-pink/90 py-3 text-lg">
-                  Sign Up for Full Access
+                  Get Started
                 </Button>
               </div>
             </div>
