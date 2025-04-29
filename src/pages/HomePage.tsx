@@ -147,7 +147,7 @@ const HomePage = () => {
       const containsSlowTypedPhrase = botResponseText.includes(slowTypedPhrase);
       const containsCreatorPhrase = botResponseText.includes(creatorPhrase);
       
-      let typingInterval = setInterval(() => {
+      const typingTextWithDelay = () => {
         if (charIndex < botResponseText.length) {
           // Check if we're currently typing one of our special phrases
           const currentSubstring = botResponseText.substring(charIndex, charIndex + Math.max(slowTypedPhrase.length, creatorPhrase.length));
@@ -177,16 +177,12 @@ const HomePage = () => {
           });
           
           // If we're typing one of our special phrases, slow down even more
-          if (isSlowPart || isCreatorPart) {
-            clearInterval(typingInterval);
-            setTimeout(() => {
-              typingInterval = setInterval(arguments.callee, typingDelay);
-            }, typingDelay);
-          }
-        } else {
-          clearInterval(typingInterval);
+          setTimeout(typingTextWithDelay, typingDelay);
         }
-      }, 150); // Base typing speed
+      };
+      
+      // Start the typing effect
+      typingTextWithDelay();
     }, 1500);
   };
 
@@ -249,7 +245,7 @@ const HomePage = () => {
       let currentText = "";
       let charIndex = 0;
       
-      let typingInterval = setInterval(() => {
+      const typingTextWithDelay = () => {
         if (charIndex < responseText.length) {
           // Check if we're currently typing the creator phrase
           const currentSubstring = responseText.substring(charIndex, charIndex + creatorPhrase.length);
@@ -276,23 +272,20 @@ const HomePage = () => {
             return updatedMessages;
           });
           
-          // Adjust interval if needed
-          if (isCreatorPart) {
-            clearInterval(typingInterval);
-            setTimeout(() => {
-              typingInterval = setInterval(arguments.callee, typingDelay);
-            }, typingDelay);
-          }
+          // Schedule next character
+          setTimeout(typingTextWithDelay, typingDelay);
         } else {
-          clearInterval(typingInterval);
-          
+          // Typing is complete, check if we need to navigate
           if (!isAuthenticated) {
             setTimeout(() => {
               navigate("/login");
             }, 2000);
           }
         }
-      }, 150);
+      };
+      
+      // Start the typing effect
+      typingTextWithDelay();
     }, 1500);
   };
 
