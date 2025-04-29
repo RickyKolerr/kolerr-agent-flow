@@ -98,10 +98,15 @@ const Layout = ({ children }) => {
 
 // Dashboard entry route component with role-based redirection
 const DashboardEntry = () => {
-  const { user } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
+  
+  // Only proceed if we have auth context
+  if (!auth) {
+    return <Navigate to="/login" replace />;
+  }
   
   // Role-based redirection
-  if (user?.role === "kol") {
+  if (auth.user?.role === "kol") {
     return <Navigate to="/dashboard/kol/campaigns" replace />;
   }
   
