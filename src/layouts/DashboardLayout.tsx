@@ -1,8 +1,10 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
-  Settings, FileText, LogOut, Menu, X, Languages 
+  Settings, FileText, LogOut, Menu, X, Languages,
+  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -49,7 +51,8 @@ const DashboardLayout = () => {
     };
   }, [isSidebarOpen]);
 
-  const menuItems = [
+  // Determine menu items based on user role
+  const getBrandMenuItems = () => [
     { 
       icon: LayoutDashboard, 
       name: "Overview", 
@@ -81,6 +84,54 @@ const DashboardLayout = () => {
       description: t('dashboard.contracts')
     },
   ];
+
+  const getKolMenuItems = () => [
+    { 
+      icon: LayoutDashboard, 
+      name: "Overview", 
+      path: "/dashboard/overview",
+      description: "Your dashboard overview"
+    },
+    { 
+      icon: FileSearch, 
+      name: "Available Campaigns", 
+      path: "/dashboard/kol/campaigns",
+      description: "Browse available campaigns"
+    },
+    { 
+      icon: FileText, 
+      name: "My Applications", 
+      path: "/dashboard/kol/applications",
+      description: "Track your campaign applications"
+    },
+    { 
+      icon: TrendingUp, 
+      name: "Performance", 
+      path: "/dashboard/kol/analytics",
+      description: "Your performance analytics"
+    },
+    { 
+      icon: Link, 
+      name: "Referrals", 
+      path: "/dashboard/kol/referrals",
+      description: "Refer other creators"
+    },
+    { 
+      icon: BadgePercent, 
+      name: "Rewards", 
+      path: "/dashboard/kol/rewards",
+      description: "Your reward points and benefits"
+    },
+    { 
+      icon: MessageCircle, 
+      name: "Community", 
+      path: "/dashboard/kol/community",
+      description: "Connect with other creators"
+    },
+  ];
+  
+  // Select the appropriate menu items based on user role
+  const menuItems = user?.role === 'kol' ? getKolMenuItems() : getBrandMenuItems();
   
   const userItems = [
     { 

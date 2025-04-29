@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,6 +48,14 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
+
+// KOL dashboard pages
+import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
+import Applications from "@/pages/dashboard/kol/Applications";
+import Analytics from "@/pages/dashboard/kol/Analytics";
+import Referrals from "@/pages/dashboard/kol/Referrals";
+import Rewards from "@/pages/dashboard/kol/Rewards";
+import Community from "@/pages/dashboard/kol/Community";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -135,11 +144,23 @@ const App = () => {
                     <Route path="/dashboard" element={<DashboardLayout />}>
                       <Route index element={<Navigate to="/dashboard/overview" replace />} />
                       <Route path="overview" element={<Overview />} />
+                      
+                      {/* Brand-specific routes */}
                       <Route path="kols" element={<KOLsPage />} />
                       <Route path="campaigns/create" element={<CreateCampaign />} />
                       <Route path="campaigns" element={<CampaignsPage />} />
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="credits" element={<CreditsPage />} />
+                      
+                      {/* KOL-specific routes */}
+                      <Route path="kol/campaigns" element={<AvailableCampaigns />} />
+                      <Route path="kol/applications" element={<Applications />} />
+                      <Route path="kol/analytics" element={<Analytics />} />
+                      <Route path="kol/referrals" element={<Referrals />} />
+                      <Route path="kol/rewards" element={<Rewards />} />
+                      <Route path="kol/community" element={<Community />} />
+                      
+                      {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />
                       <Route path="billing" element={<BillingPage />} />
                       <Route path="subscription" element={<SubscriptionPage />} />

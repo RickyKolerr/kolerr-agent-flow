@@ -6,7 +6,7 @@ export const useUserAccess = () => {
   const { user, isAuthenticated } = useAuth();
   const { freeCredits, hasPremiumPlan } = useCredits();
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
@@ -19,11 +19,21 @@ export const useUserAccess = () => {
     
     switch (feature) {
       case "campaigns":
-        return (["brand", "admin"].includes(userRole || "") && hasPremiumPlan);
+        // Both brands and KOLs can access campaigns, but with different views
+        return Boolean(userRole);
       case "analytics":
-        return (["brand", "admin"].includes(userRole || "") && hasPremiumPlan);
+        return Boolean(userRole);
       case "contracts":
         return (["brand", "kol", "admin"].includes(userRole || "") && hasPremiumPlan);
+      case "referrals":
+        // KOL-specific feature
+        return userRole === "kol";
+      case "rewards":
+        // KOL-specific feature
+        return userRole === "kol";
+      case "community":
+        // KOL-specific feature
+        return userRole === "kol";
       default:
         return false;
     }
@@ -31,9 +41,16 @@ export const useUserAccess = () => {
 
   const getRedirectPath = () => {
     if (!isAuthenticated) return "/login";
+    
     if (!user?.onboardingStatus || user.onboardingStatus === "incomplete") {
       return `/onboarding/${user.role}`;
     }
+    
+    // Direct KOLs to their specific dashboard
+    if (user?.role === "kol") {
+      return "/dashboard/kol/campaigns";
+    }
+    
     return "/dashboard";
   };
 
