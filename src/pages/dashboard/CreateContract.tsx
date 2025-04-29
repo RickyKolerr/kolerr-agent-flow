@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Calendar, ArrowLeft, FileText } from "lucide-react";
+import { Calendar, ArrowLeft, FileText, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +34,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { toast } from "sonner";
+import { SignaturePreview } from "@/components/contracts/SignaturePreview";
+import { SignatureField, ContractFormValues } from "@/types/contract";
+import { SigningService } from "@/services/SigningService";
 
 // Form schema
 const contractFormSchema = z.object({
@@ -46,8 +49,6 @@ const contractFormSchema = z.object({
   value: z.string().optional(),
   terms: z.string().min(1, "Terms are required"),
 });
-
-type ContractFormValues = z.infer<typeof contractFormSchema>;
 
 // Mock KOLs data
 const mockKols = [
@@ -132,6 +133,9 @@ export default function CreateContract() {
   const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [activeTabKols, setActiveTabKols] = useState("recommended");
+  const [activeStep, setActiveStep] = useState<"details" | "signatures" | "review">("details");
+  const [signatureFields, setSignatureFields] = useState<SignatureField[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const form = useForm<ContractFormValues>({
     resolver: zodResolver(contractFormSchema),
@@ -147,16 +151,68 @@ export default function CreateContract() {
     },
   });
 
-  const onSubmit = (data: ContractFormValues) => {
+  const onSubmit = async (data: ContractFormValues) => {
     console.log("Contract data:", data);
     
-    // Show success message
-    toast.success("Contract created successfully!");
+    setIsSubmitting(true);
     
-    // Navigate back to contracts page
-    setTimeout(() => {
+    try {
+      // Gather KOL data
+      const selectedKol = mockKols.find(kol => kol.id === data.kolId);
+      
+      if (!selectedKol) {
+        toast.error("Selected KOL not found");
+        return;
+      }
+      
+      // Create contract object
+      const contract = {
+        id: `CT-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        title: data.title,
+        type: data.type,
+        kol: {
+          name: selectedKol.name,
+          handle: selectedKol.handle,
+          avatar: selectedKol.avatar,
+          email: `${selectedKol.handle.substring(1)}@example.com` // Mock email
+        },
+        brand: {
+          name: "Your Brand",
+          email: "contracts@yourbrand.com"
+        },
+        campaign: data.campaignId !== "none" ? mockCampaigns.find(c => c.id === data.campaignId)?.name : undefined,
+        createdDate: new Date().toISOString(),
+        startDate: data.startDate,
+        endDate: data.endDate,
+        status: 'draft',
+        value: data.value ? parseFloat(data.value) : undefined,
+        terms: data.terms
+      };
+      
+      // In a real app, you would save this to your database
+      console.log("Created contract:", contract);
+      
+      // Show success message
+      toast.success("Contract created successfully!", { 
+        description: "You can now send it for signatures." 
+      });
+      
+      // Navigate to the contract view page (would use actual contract ID in a real app)
       navigate("/dashboard/contracts");
-    }, 1500);
+    } catch (error) {
+      console.error("Error creating contract:", error);
+      toast.error("Failed to create contract");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const addSignatureField = (field: SignatureField) => {
+    setSignatureFields([...signatureFields, field]);
+  };
+  
+  const removeSignatureField = (index: number) => {
+    setSignatureFields(signatureFields.filter((_, i) => i !== index));
   };
 
   const applyTemplate = (templateId: string) => {
@@ -173,6 +229,415 @@ export default function CreateContract() {
 
   const filteredKols = activeTabKols === "all" ? mockKols : 
     mockKols.filter((_, index) => index < 3); // Just showing first 3 for "recommended"
+    
+  const goToNextStep = () => {
+    if (activeStep === "details") {
+      // Validate the form before moving to signatures step
+      form.trigger().then(isValid => {
+        if (isValid) {
+          setActiveStep("signatures");
+        }
+      });
+    } else if (activeStep === "signatures") {
+      setActiveStep("review");
+    }
+  };
+  
+  const goToPreviousStep = () => {
+    if (activeStep === "signatures") {
+      setActiveStep("details");
+    } else if (activeStep === "review") {
+      setActiveStep("signatures");
+    }
+  };
+  
+  const createAndSendContract = async () => {
+    // First create the contract
+    const formData = form.getValues();
+    
+    setIsSubmitting(true);
+    
+    try {
+      // Gather KOL data
+      const selectedKol = mockKols.find(kol => kol.id === formData.kolId);
+      
+      if (!selectedKol) {
+        toast.error("Selected KOL not found");
+        return;
+      }
+      
+      // Create contract object
+      const contract = {
+        id: `CT-${new Date().getFullYear()}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+        title: formData.title,
+        type: formData.type,
+        kol: {
+          name: selectedKol.name,
+          handle: selectedKol.handle,
+          avatar: selectedKol.avatar,
+          email: `${selectedKol.handle.substring(1)}@example.com` // Mock email
+        },
+        brand: {
+          name: "Your Brand",
+          email: "contracts@yourbrand.com"
+        },
+        campaign: formData.campaignId !== "none" ? mockCampaigns.find(c => c.id === formData.campaignId)?.name : undefined,
+        createdDate: new Date().toISOString(),
+        startDate: formData.startDate,
+        endDate: formData.endDate,
+        status: 'draft' as const,
+        value: formData.value ? parseFloat(formData.value) : undefined,
+        terms: formData.terms
+      };
+      
+      // Send using SignWell
+      await SigningService.prepareContract(contract, signatureFields);
+      
+      toast.success("Contract sent for signature!", {
+        description: "The recipients will receive an email to sign the document."
+      });
+      
+      // Navigate to contracts page
+      navigate("/dashboard/contracts");
+    } catch (error) {
+      console.error("Error creating and sending contract:", error);
+      toast.error("Failed to send contract for signature");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderStepContent = () => {
+    switch (activeStep) {
+      case "details":
+        return (
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="title"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contract Title</FormLabel>
+                      <FormControl>
+                        <Input placeholder="e.g. Summer Collection Promo" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contract Type</FormLabel>
+                      <Select
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select contract type" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="standard">Standard Content Creation</SelectItem>
+                          <SelectItem value="review">Product Review</SelectItem>
+                          <SelectItem value="ambassador">Brand Ambassador</SelectItem>
+                          <SelectItem value="event">Event Appearance</SelectItem>
+                          <SelectItem value="custom">Custom Contract</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="kolId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Select Creator</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a creator" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {mockKols.map((kol) => (
+                          <SelectItem key={kol.id} value={kol.id}>
+                            {kol.name} ({kol.handle})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="campaignId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Associated Campaign (Optional)</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a campaign" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">None</SelectItem>
+                        {mockCampaigns.map((campaign) => (
+                          <SelectItem key={campaign.id} value={campaign.id}>
+                            {campaign.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <FormField
+                  control={form.control}
+                  name="startDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Start Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="date" {...field} />
+                          <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="endDate"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>End Date</FormLabel>
+                      <FormControl>
+                        <div className="relative">
+                          <Input type="date" {...field} />
+                          <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="value"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contract Value ($)</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="1000" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="terms"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contract Terms</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Enter the terms of the agreement..."
+                        className="min-h-[200px]"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex gap-3 pt-4 justify-end">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate("/dashboard/contracts")}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => form.handleSubmit(onSubmit)()}
+                  className="bg-brand-pink hover:bg-brand-pink/90"
+                >
+                  Save as Draft
+                </Button>
+                <Button 
+                  type="button" 
+                  onClick={goToNextStep}
+                >
+                  Continue to Signatures
+                </Button>
+              </div>
+            </form>
+          </Form>
+        );
+
+      case "signatures":
+        return (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">Add Signature Fields</h2>
+            <p className="text-muted-foreground">
+              Place signature fields where the creator and your brand should sign
+            </p>
+            
+            <SignaturePreview 
+              contractTerms={form.getValues().terms}
+              signatureFields={signatureFields}
+              onAddSignatureField={addSignatureField}
+              onRemoveSignatureField={removeSignatureField}
+            />
+            
+            <div className="flex gap-3 pt-4 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goToPreviousStep}
+              >
+                Back
+              </Button>
+              
+              <Button 
+                type="button" 
+                onClick={goToNextStep}
+              >
+                Continue to Review
+              </Button>
+            </div>
+          </div>
+        );
+        
+      case "review":
+        return (
+          <div className="space-y-6">
+            <h2 className="text-lg font-semibold">Review Contract</h2>
+            <p className="text-muted-foreground">
+              Review your contract before sending it for signature
+            </p>
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>{form.getValues().title}</CardTitle>
+                <CardDescription>
+                  {form.getValues().type.charAt(0).toUpperCase() + form.getValues().type.slice(1)} Contract
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Creator</p>
+                    <p className="font-medium">
+                      {mockKols.find(k => k.id === form.getValues().kolId)?.name}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Campaign</p>
+                    <p className="font-medium">
+                      {form.getValues().campaignId !== "none" 
+                        ? mockCampaigns.find(c => c.id === form.getValues().campaignId)?.name 
+                        : "None"}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Start Date</p>
+                    <p className="font-medium">{new Date(form.getValues().startDate).toLocaleDateString()}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">End Date</p>
+                    <p className="font-medium">{new Date(form.getValues().endDate).toLocaleDateString()}</p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Value</p>
+                    <p className="font-medium">
+                      {form.getValues().value ? `$${parseFloat(form.getValues().value).toLocaleString()}` : "N/A"}
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Signature Fields</p>
+                    <p className="font-medium">{signatureFields.length} fields added</p>
+                  </div>
+                </div>
+                
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Contract Terms</p>
+                  <div className="bg-muted/40 p-4 rounded-md whitespace-pre-wrap max-h-[300px] overflow-y-auto">
+                    {form.getValues().terms}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <div className="flex gap-3 pt-4 justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={goToPreviousStep}
+              >
+                Back to Signatures
+              </Button>
+              
+              <Button 
+                type="button" 
+                onClick={() => form.handleSubmit(onSubmit)()}
+                variant="outline"
+              >
+                Save as Draft
+              </Button>
+              
+              <Button 
+                type="button" 
+                onClick={createAndSendContract}
+                className="bg-brand-pink hover:bg-brand-pink/90"
+                disabled={isSubmitting}
+              >
+                <Send className="mr-2 h-4 w-4" />
+                {isSubmitting ? "Sending..." : "Send for Signature"}
+              </Button>
+            </div>
+          </div>
+        );
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -197,194 +662,7 @@ export default function CreateContract() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Form {...form}>
-                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contract Title</FormLabel>
-                          <FormControl>
-                            <Input placeholder="e.g. Summer Collection Promo" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="type"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contract Type</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select contract type" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="standard">Standard Content Creation</SelectItem>
-                              <SelectItem value="review">Product Review</SelectItem>
-                              <SelectItem value="ambassador">Brand Ambassador</SelectItem>
-                              <SelectItem value="event">Event Appearance</SelectItem>
-                              <SelectItem value="custom">Custom Contract</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="kolId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Select Creator</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a creator" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {mockKols.map((kol) => (
-                              <SelectItem key={kol.id} value={kol.id}>
-                                {kol.name} ({kol.handle})
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <FormField
-                    control={form.control}
-                    name="campaignId"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Associated Campaign (Optional)</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a campaign" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="none">None</SelectItem>
-                            {mockCampaigns.map((campaign) => (
-                              <SelectItem key={campaign.id} value={campaign.id}>
-                                {campaign.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="startDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Start Date</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input type="date" {...field} />
-                              <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="endDate"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>End Date</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input type="date" {...field} />
-                              <Calendar className="absolute right-3 top-2.5 h-4 w-4 text-muted-foreground" />
-                            </div>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="value"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contract Value ($)</FormLabel>
-                          <FormControl>
-                            <Input type="number" placeholder="1000" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <FormField
-                    control={form.control}
-                    name="terms"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Contract Terms</FormLabel>
-                        <FormControl>
-                          <Textarea
-                            placeholder="Enter the terms of the agreement..."
-                            className="min-h-[200px]"
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-
-                  <div className="flex gap-3 pt-4">
-                    <Button
-                      type="submit"
-                      className="bg-brand-pink hover:bg-brand-pink/90"
-                    >
-                      Create Contract
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => navigate("/dashboard/contracts")}
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </Form>
+              {renderStepContent()}
             </CardContent>
           </Card>
         </div>

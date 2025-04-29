@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -15,109 +16,115 @@ import {
 } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  Search, FileText, Download, Eye, FilePlus, Check, Clock, CheckCircle2, 
-  AlertCircle, FileWarning
+  Search, FileText, Download, Eye, FilePlus, Send, Clock, CheckCircle2, 
+  AlertCircle, FileWarning, FileCheck
 } from "lucide-react";
 import { toast } from "sonner";
+import { Contract } from "@/types/contract";
+import { SigningService } from "@/services/SigningService";
 
-// Contract interface
-interface Contract {
-  id: string;
-  title: string;
-  kol: {
-    name: string;
-    handle: string;
-    avatar: string;
-  };
-  campaign?: string;
-  createdDate: string;
-  status: 'draft' | 'sent' | 'signed' | 'expired' | 'canceled';
-  value?: number;
-}
+// Mock contracts data with real portrait images
+const mockContracts: Contract[] = [
+  {
+    id: "CT-2023-001",
+    title: "Summer Collection Promo",
+    type: "standard",
+    kol: {
+      name: "Sophia Chen",
+      handle: "@fashionwithsophia",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop"
+    },
+    campaign: "Summer Collection Launch",
+    createdDate: "2023-06-02",
+    status: 'signed',
+    value: 1500,
+    signwellData: {
+      documentId: "doc-123abc",
+      completedAt: "2023-06-05"
+    }
+  },
+  {
+    id: "CT-2023-002",
+    title: "Product Review Agreement",
+    type: "review",
+    kol: {
+      name: "Jake Thomas",
+      handle: "@jakeadventures",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop"
+    },
+    campaign: "New Product Teaser",
+    createdDate: "2023-06-05",
+    status: 'sent',
+    value: 800,
+    signwellData: {
+      documentId: "doc-456def",
+      signLink: "https://app.signwell.com/sign/abc123",
+      expiresAt: "2023-07-05"
+    }
+  },
+  {
+    id: "CT-2023-003",
+    title: "Content Creation Partnership",
+    type: "standard",
+    kol: {
+      name: "Aisha Mohamed",
+      handle: "@aisha_beauty",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop"
+    },
+    campaign: "Holiday Special",
+    createdDate: "2023-06-10",
+    status: 'draft',
+    value: 2500
+  },
+  {
+    id: "CT-2023-004",
+    title: "Fitness Challenge Sponsorship",
+    type: "event",
+    kol: {
+      name: "Mike Wilson",
+      handle: "@mike_fitness",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop"
+    },
+    campaign: "Fitness Challenge",
+    createdDate: "2023-05-15",
+    status: 'signed',
+    value: 1200,
+    signwellData: {
+      documentId: "doc-789ghi",
+      completedAt: "2023-05-20"
+    }
+  },
+  {
+    id: "CT-2023-005",
+    title: "Recipe Collaboration",
+    type: "review",
+    kol: {
+      name: "Priya Singh",
+      handle: "@priyacooks",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop"
+    },
+    createdDate: "2023-05-28",
+    status: 'expired',
+    value: 350
+  },
+  {
+    id: "CT-2023-006",
+    title: "Tech Review Partnership",
+    type: "review",
+    kol: {
+      name: "David Park",
+      handle: "@techwithdavid",
+      avatar: "https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?w=150&h=150&auto=format&fit=crop"
+    },
+    createdDate: "2023-06-12",
+    status: 'draft'
+  }
+];
 
 const ContractsPage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
-  // Mock contracts data with real portrait images
-  const mockContracts: Contract[] = [
-    {
-      id: "CT-2023-001",
-      title: "Summer Collection Promo",
-      kol: {
-        name: "Sophia Chen",
-        handle: "@fashionwithsophia",
-        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop"
-      },
-      campaign: "Summer Collection Launch",
-      createdDate: "2023-06-02",
-      status: 'signed',
-      value: 1500
-    },
-    {
-      id: "CT-2023-002",
-      title: "Product Review Agreement",
-      kol: {
-        name: "Jake Thomas",
-        handle: "@jakeadventures",
-        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop"
-      },
-      campaign: "New Product Teaser",
-      createdDate: "2023-06-05",
-      status: 'sent',
-      value: 800
-    },
-    {
-      id: "CT-2023-003",
-      title: "Content Creation Partnership",
-      kol: {
-        name: "Aisha Mohamed",
-        handle: "@aisha_beauty",
-        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop"
-      },
-      campaign: "Holiday Special",
-      createdDate: "2023-06-10",
-      status: 'draft',
-      value: 2500
-    },
-    {
-      id: "CT-2023-004",
-      title: "Fitness Challenge Sponsorship",
-      kol: {
-        name: "Mike Wilson",
-        handle: "@mike_fitness",
-        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop"
-      },
-      campaign: "Fitness Challenge",
-      createdDate: "2023-05-15",
-      status: 'signed',
-      value: 1200
-    },
-    {
-      id: "CT-2023-005",
-      title: "Recipe Collaboration",
-      kol: {
-        name: "Priya Singh",
-        handle: "@priyacooks",
-        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop"
-      },
-      createdDate: "2023-05-28",
-      status: 'expired',
-      value: 350
-    },
-    {
-      id: "CT-2023-006",
-      title: "Tech Review Partnership",
-      kol: {
-        name: "David Park",
-        handle: "@techwithdavid",
-        avatar: "https://images.unsplash.com/photo-1639149888905-fb39731f2e6c?w=150&h=150&auto=format&fit=crop"
-      },
-      createdDate: "2023-06-12",
-      status: 'draft'
-    }
-  ];
 
   // Filter contracts based on search and active tab
   const filteredContracts = mockContracts
@@ -137,11 +144,40 @@ const ContractsPage = () => {
   };
 
   const handleViewContract = (id: string) => {
-    toast.info(`Viewing contract ${id}...`);
+    navigate(`/dashboard/contracts/${id}`);
   };
 
   const handleDownloadContract = (id: string) => {
-    toast.success(`Downloading contract ${id}...`);
+    const contract = mockContracts.find(c => c.id === id);
+    
+    if (contract?.signwellData?.documentId) {
+      toast.promise(SigningService.downloadContract(contract.signwellData.documentId), {
+        loading: "Downloading contract...",
+        success: "Contract downloaded successfully",
+        error: "Failed to download contract"
+      });
+    } else {
+      toast.error("This contract is not available for download");
+    }
+  };
+  
+  const handleSendContract = (id: string) => {
+    const contract = mockContracts.find(c => c.id === id);
+    if (!contract) return;
+    
+    toast.promise(SigningService.prepareContract(contract), {
+      loading: "Sending contract for signature...",
+      success: "Contract sent successfully",
+      error: "Failed to send contract for signature"
+    });
+  };
+  
+  const handleSignContract = (id: string) => {
+    const contract = mockContracts.find(c => c.id === id);
+    if (!contract?.signwellData?.signLink) return;
+    
+    // In a real app, this would open SignWell's signing page
+    window.open(contract.signwellData.signLink, "_blank");
   };
 
   const formatDate = (dateString: string) => {
@@ -165,7 +201,7 @@ const ContractsPage = () => {
         return (
           <div className="flex items-center">
             <Clock className="h-4 w-4 mr-1 text-yellow-500" />
-            <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/20">Sent</Badge>
+            <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/20">Awaiting Signature</Badge>
           </div>
         );
       case 'signed':
@@ -225,7 +261,7 @@ const ContractsPage = () => {
           <TabsList>
             <TabsTrigger value="all">All</TabsTrigger>
             <TabsTrigger value="draft">Drafts</TabsTrigger>
-            <TabsTrigger value="sent">Sent</TabsTrigger>
+            <TabsTrigger value="sent">Pending</TabsTrigger>
             <TabsTrigger value="signed">Signed</TabsTrigger>
             <TabsTrigger value="expired">Expired</TabsTrigger>
             <TabsTrigger value="canceled">Canceled</TabsTrigger>
@@ -242,6 +278,8 @@ const ContractsPage = () => {
             getStatusBadge={getStatusBadge} 
             onViewContract={handleViewContract}
             onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
         <TabsContent value="draft" className="mt-6">
@@ -251,6 +289,8 @@ const ContractsPage = () => {
             getStatusBadge={getStatusBadge}
             onViewContract={handleViewContract}
             onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
         <TabsContent value="sent" className="mt-6">
@@ -259,7 +299,9 @@ const ContractsPage = () => {
             formatDate={formatDate} 
             getStatusBadge={getStatusBadge}
             onViewContract={handleViewContract}
-            onDownloadContract={handleDownloadContract} 
+            onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
         <TabsContent value="signed" className="mt-6">
@@ -268,7 +310,9 @@ const ContractsPage = () => {
             formatDate={formatDate} 
             getStatusBadge={getStatusBadge}
             onViewContract={handleViewContract}
-            onDownloadContract={handleDownloadContract} 
+            onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
         <TabsContent value="expired" className="mt-6">
@@ -277,7 +321,9 @@ const ContractsPage = () => {
             formatDate={formatDate} 
             getStatusBadge={getStatusBadge}
             onViewContract={handleViewContract}
-            onDownloadContract={handleDownloadContract} 
+            onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
         <TabsContent value="canceled" className="mt-6">
@@ -286,7 +332,9 @@ const ContractsPage = () => {
             formatDate={formatDate} 
             getStatusBadge={getStatusBadge}
             onViewContract={handleViewContract}
-            onDownloadContract={handleDownloadContract} 
+            onDownloadContract={handleDownloadContract}
+            onSendContract={handleSendContract}
+            onSignContract={handleSignContract}
           />
         </TabsContent>
       </Tabs>
@@ -356,9 +404,19 @@ interface ContractsListProps {
   getStatusBadge: (status: Contract['status']) => React.ReactNode;
   onViewContract: (id: string) => void;
   onDownloadContract: (id: string) => void;
+  onSendContract: (id: string) => void;
+  onSignContract: (id: string) => void;
 }
 
-const ContractsList = ({ contracts, formatDate, getStatusBadge, onViewContract, onDownloadContract }: ContractsListProps) => {
+const ContractsList = ({ 
+  contracts, 
+  formatDate, 
+  getStatusBadge, 
+  onViewContract, 
+  onDownloadContract,
+  onSendContract,
+  onSignContract
+}: ContractsListProps) => {
   return (
     <div className="rounded-md border">
       <Table>
@@ -407,19 +465,34 @@ const ContractsList = ({ contracts, formatDate, getStatusBadge, onViewContract, 
                     >
                       <Eye className="h-4 w-4 mr-1" /> View
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => onDownloadContract(contract.id)}
-                    >
-                      <Download className="h-4 w-4 mr-1" /> Download
-                    </Button>
+                    
+                    {contract.status === 'signed' && (
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        onClick={() => onDownloadContract(contract.id)}
+                      >
+                        <Download className="h-4 w-4 mr-1" /> Download
+                      </Button>
+                    )}
+                    
                     {contract.status === 'draft' && (
                       <Button 
                         className="bg-brand-pink hover:bg-brand-pink/90" 
                         size="sm"
+                        onClick={() => onSendContract(contract.id)}
                       >
-                        <Check className="h-4 w-4 mr-1" /> Send
+                        <Send className="h-4 w-4 mr-1" /> Send
+                      </Button>
+                    )}
+                    
+                    {contract.status === 'sent' && (
+                      <Button 
+                        className="bg-brand-pink hover:bg-brand-pink/90" 
+                        size="sm"
+                        onClick={() => onSignContract(contract.id)}
+                      >
+                        <FileCheck className="h-4 w-4 mr-1" /> Sign
                       </Button>
                     )}
                   </div>
