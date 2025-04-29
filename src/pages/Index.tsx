@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -213,7 +212,7 @@ const Index = () => {
     .slice(0, 3);
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient">
+    <div className="min-h-screen flex flex-col relative overflow-hidden hero-gradient pt-16">
       {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
@@ -225,7 +224,7 @@ const Index = () => {
       <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
           {/* Main AI Chat Panel */}
-          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[80vh]">
+          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[75vh] max-h-[800px]">
             {/* Chat header */}
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
