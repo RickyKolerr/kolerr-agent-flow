@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -333,46 +332,6 @@ const Index = () => {
                   Fitness creators
                 </Button>
               </div>
-              
-              {/* Creator Portraits Carousel */}
-              <div className="mt-6 mb-2">
-                <div className="flex items-center mb-3">
-                  <Users className="h-4 w-4 text-brand-pink mr-2" />
-                  <h3 className="text-sm font-medium">Featured Creators</h3>
-                </div>
-                <Carousel 
-                  className="w-full" 
-                  opts={{
-                    align: "start",
-                    loop: true,
-                    startIndex: activeCarouselIndex,
-                  }}
-                  setApi={(api) => {
-                    api?.on("select", () => {
-                      setActiveCarouselIndex(api.selectedScrollSnap());
-                    });
-                  }}
-                >
-                  <CarouselContent>
-                    {allCreators.map((creator) => (
-                      <CarouselItem key={creator.id} className="basis-1/4 md:basis-1/5 lg:basis-1/6">
-                        <div className="p-1">
-                          <div className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-transform cursor-pointer"
-                              onClick={() => navigate(`/creators/${creator.id}`)}
-                          >
-                            <img
-                              src={creator.avatar}
-                              alt={creator.fullName}
-                              className="h-full w-full object-cover"
-                            />
-                          </div>
-                          <p className="text-xs text-center mt-1 truncate">{creator.fullName.split(' ')[0]}</p>
-                        </div>
-                      </CarouselItem>
-                    ))}
-                  </CarouselContent>
-                </Carousel>
-              </div>
             </div>
           </div>
           
@@ -504,6 +463,52 @@ const Index = () => {
               </CardContent>
             </Card>
           </div>
+        </div>
+        
+        {/* Creator Portraits Carousel - Moved out of the chatbot */}
+        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
+          <div className="flex items-center mb-5">
+            <Users className="h-5 w-5 text-brand-pink mr-2" />
+            <h2 className="text-xl font-semibold">Featured Content Creators</h2>
+          </div>
+          
+          <Carousel 
+            className="w-full" 
+            opts={{
+              align: "start",
+              loop: true,
+              startIndex: activeCarouselIndex,
+            }}
+            setApi={(api) => {
+              api?.on("select", () => {
+                setActiveCarouselIndex(api.selectedScrollSnap());
+              });
+            }}
+          >
+            <CarouselContent>
+              {allCreators.map((creator) => (
+                <CarouselItem key={creator.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6">
+                  <div className="p-1">
+                    <div className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-transform cursor-pointer"
+                        onClick={() => navigate(`/creators/${creator.id}`)}
+                    >
+                      <img
+                        src={creator.avatar}
+                        alt={creator.fullName}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="text-center mt-3">
+                      <p className="font-medium">{creator.fullName}</p>
+                      <p className="text-xs text-gray-400">{(creator.followers / 1000000).toFixed(1)}M followers</p>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10" />
+            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10" />
+          </Carousel>
         </div>
       </div>
     </div>
