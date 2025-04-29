@@ -68,8 +68,8 @@ const HomePage = () => {
     highlightSpeed: 400  // Much slower (400ms) for the highlighted phrase
   });
 
-  // Track if messages have been updated
-  const [messagesUpdated, setMessagesUpdated] = useState(false);
+  // Track if messages have been updated specifically by adding a new message
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
 
   // Update the welcome message as it types
   useEffect(() => {
@@ -87,13 +87,13 @@ const HomePage = () => {
     });
   }, [displayedText, isComplete]);
 
-  // Only scroll when messages are actually updated (not on initial load)
+  // Only scroll when new messages are added, not on any click or interaction
   useEffect(() => {
-    if (messagesEndRef.current && messagesUpdated) {
+    if (messagesEndRef.current && shouldScrollToBottom) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-      setMessagesUpdated(false);
+      setShouldScrollToBottom(false); // Reset the flag after scrolling
     }
-  }, [messages, messagesUpdated]);
+  }, [shouldScrollToBottom]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -127,7 +127,7 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
-    setMessagesUpdated(true);
+    setShouldScrollToBottom(true); // Set flag to scroll to bottom
 
     // Use intelligent credit system
     if (!useIntelligentCredit(inputValue)) {
@@ -147,7 +147,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: isSpecific
       }]);
-      setMessagesUpdated(true);
+      setShouldScrollToBottom(true); // Set flag to scroll to bottom
       
       // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
@@ -185,7 +185,11 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
-          setMessagesUpdated(true);
+          
+          // Only scroll if we're near the end of the message to avoid frequent scrolling
+          if (charIndex === botResponseText.length) {
+            setShouldScrollToBottom(true);
+          }
           
           // If we're typing one of our special phrases, slow down even more
           setTimeout(typingTextWithDelay, typingDelay);
@@ -226,7 +230,7 @@ const HomePage = () => {
     };
     
     setMessages(prev => [...prev, searchMessage]);
-    setMessagesUpdated(true);
+    setShouldScrollToBottom(true); // Set flag to scroll to bottom
 
     // Use intelligent credit system (search is always KOL-specific)
     if (!useIntelligentCredit(`find ${searchQuery}`)) {
@@ -252,7 +256,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: true
       }]);
-      setMessagesUpdated(true);
+      setShouldScrollToBottom(true); // Set flag to scroll to bottom
       
       // Use typing effect with variable speed
       let currentText = "";
@@ -284,7 +288,11 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
-          setMessagesUpdated(true);
+          
+          // Only scroll at the end of the message
+          if (charIndex === responseText.length) {
+            setShouldScrollToBottom(true);
+          }
           
           // Schedule next character
           setTimeout(typingTextWithDelay, typingDelay);
