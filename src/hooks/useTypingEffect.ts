@@ -6,6 +6,8 @@ interface UseTypingEffectOptions {
   text: string;
   typingSpeed?: number;
   startDelay?: number;
+  highlightText?: string;
+  highlightSpeed?: number;
 }
 
 /**
@@ -15,8 +17,10 @@ interface UseTypingEffectOptions {
  */
 export function useTypingEffect({ 
   text, 
-  typingSpeed = 150, // Increased from 100 to 150ms for even more realistic typing
-  startDelay = 0 
+  typingSpeed = 150, 
+  startDelay = 0,
+  highlightText = "",
+  highlightSpeed = 300 // Even slower speed for highlighted text
 }: UseTypingEffectOptions) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -32,10 +36,20 @@ export function useTypingEffect({
     return () => clearTimeout(timer);
   }, [startDelay]);
 
-  // Use interval for the typing effect
+  // Use interval for the typing effect with dynamic speed
   useInterval(
     () => {
       if (currentIndex < text.length) {
+        // Get the current substring being typed
+        const currentSubstring = text.substring(currentIndex, currentIndex + highlightText.length);
+        
+        // Check if we're typing the highlighted phrase
+        const isHighlightedPhrase = highlightText && 
+          currentSubstring.toLowerCase().includes(highlightText.toLowerCase().substring(0, Math.min(currentSubstring.length, highlightText.length)));
+        
+        // Use the slower speed if this is part of the highlighted text
+        const currentSpeed = isHighlightedPhrase ? highlightSpeed : typingSpeed;
+        
         setDisplayedText(prev => prev + text.charAt(currentIndex));
         setCurrentIndex(prevIndex => prevIndex + 1);
       }

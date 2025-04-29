@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -27,7 +26,13 @@ interface Message {
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  
+  // Modify the welcome message to make these phrases stand out
   const welcomeMessage = "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?";
+  
+  // Add a special phrase that will be typed extra slowly
+  const slowTypedPhrase = "What type of influencers are you looking for today?";
+  const creatorPhrase = "For Creators";
   
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
@@ -51,11 +56,13 @@ const HomePage = () => {
     generalQuestionsPerCredit
   } = useIntelligentCredits(originalFreeCredits, hasPremiumPlan);
 
-  // Typing effect for the welcome message with a much slower typing speed
+  // Enhanced typing effect with super slow speed for specific phrases
   const { displayedText, isComplete } = useTypingEffect({
     text: welcomeMessage,
-    typingSpeed: 150, // Further slowed down to 150ms per character
-    startDelay: 1000  // Increased delay before typing starts
+    typingSpeed: 150, // Normal speed for regular text
+    startDelay: 1000,
+    highlightText: slowTypedPhrase,
+    highlightSpeed: 400  // Much slower (400ms) for the highlighted phrase
   });
 
   // Update the welcome message as it types
@@ -136,8 +143,22 @@ const HomePage = () => {
       let currentText = "";
       let charIndex = 0;
       
-      const typingInterval = setInterval(() => {
+      // Check if this message contains our special phrases
+      const containsSlowTypedPhrase = botResponseText.includes(slowTypedPhrase);
+      const containsCreatorPhrase = botResponseText.includes(creatorPhrase);
+      
+      let typingInterval = setInterval(() => {
         if (charIndex < botResponseText.length) {
+          // Check if we're currently typing one of our special phrases
+          const currentSubstring = botResponseText.substring(charIndex, charIndex + Math.max(slowTypedPhrase.length, creatorPhrase.length));
+          const isSlowPart = containsSlowTypedPhrase && 
+            currentSubstring.includes(slowTypedPhrase.substring(0, Math.min(currentSubstring.length, slowTypedPhrase.length)));
+          const isCreatorPart = containsCreatorPhrase && 
+            currentSubstring.includes(creatorPhrase.substring(0, Math.min(currentSubstring.length, creatorPhrase.length)));
+          
+          // Adjust typing speed based on what we're typing
+          const typingDelay = isSlowPart || isCreatorPart ? 400 : 150;
+          
           currentText += botResponseText[charIndex];
           charIndex++;
           
@@ -154,13 +175,22 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          
+          // If we're typing one of our special phrases, slow down even more
+          if (isSlowPart || isCreatorPart) {
+            clearInterval(typingInterval);
+            setTimeout(() => {
+              typingInterval = setInterval(arguments.callee, typingDelay);
+            }, typingDelay);
+          }
         } else {
           clearInterval(typingInterval);
         }
-      }, 150); // Further slowed down to 150ms for even more realistic typing speed
-    }, 1500); // Increased from 1000 to 1500ms for a more natural pause before responding
+      }, 150); // Base typing speed
+    }, 1500);
   };
 
+  // Similar update for handleSearch function
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
     
@@ -201,6 +231,9 @@ const HomePage = () => {
         ? `I found several TikTok creators matching "${searchQuery}". Let me analyze their profiles.`
         : "To see detailed analytics and book these creators, please sign in.";
       
+      // Check if this response contains "For Creators" phrase
+      const containsCreatorPhrase = responseText.includes(creatorPhrase);
+      
       const botResponseId = (Date.now() + 1).toString();
       
       // Add empty bot message with typing indicator
@@ -212,12 +245,20 @@ const HomePage = () => {
         isKOLSpecific: true
       }]);
       
-      // Use typing effect to gradually reveal the message with more realistic timing
+      // Use typing effect with variable speed
       let currentText = "";
       let charIndex = 0;
       
-      const typingInterval = setInterval(() => {
+      let typingInterval = setInterval(() => {
         if (charIndex < responseText.length) {
+          // Check if we're currently typing the creator phrase
+          const currentSubstring = responseText.substring(charIndex, charIndex + creatorPhrase.length);
+          const isCreatorPart = containsCreatorPhrase && 
+            currentSubstring.includes(creatorPhrase.substring(0, Math.min(currentSubstring.length, creatorPhrase.length)));
+          
+          // Slow down for creator phrase
+          const typingDelay = isCreatorPart ? 400 : 150;
+          
           currentText += responseText[charIndex];
           charIndex++;
           
@@ -234,6 +275,14 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          
+          // Adjust interval if needed
+          if (isCreatorPart) {
+            clearInterval(typingInterval);
+            setTimeout(() => {
+              typingInterval = setInterval(arguments.callee, typingDelay);
+            }, typingDelay);
+          }
         } else {
           clearInterval(typingInterval);
           
@@ -243,16 +292,17 @@ const HomePage = () => {
             }, 2000);
           }
         }
-      }, 150); // Further slowed down to 150ms for even more realistic typing speed
-    }, 1500); // Increased from 1000 to 1500ms for a more natural pause before responding
+      }, 150);
+    }, 1500);
   };
 
+  // Modify the getResponse function to potentially include our special phrases
   const getResponse = (message: string) => {
     const lowerMsg = message.toLowerCase();
     if (lowerMsg.includes("hello") || lowerMsg.includes("hi ")) {
       return "Hello! How can I assist you with your influencer marketing needs today?";
     } else if (lowerMsg.includes("search") || lowerMsg.includes("find") || lowerMsg.includes("kol") || lowerMsg.includes("influencer")) {
-      return "I can help you find the perfect TikTok creators! Please log in or sign up to access our full KOL search database with analytics.";
+      return `For Creators: I can help you find the perfect TikTok creators! Please log in or sign up to access our full KOL search database with analytics.`;
     } else if (lowerMsg.includes("price") || lowerMsg.includes("cost") || lowerMsg.includes("subscription")) {
       return "We offer flexible pricing plans starting at $99/month. You can view all pricing details and features after creating an account.";
     } else if (lowerMsg.includes("account") || lowerMsg.includes("sign") || lowerMsg.includes("login")) {
