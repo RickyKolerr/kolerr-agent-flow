@@ -8,15 +8,15 @@ import {
   Calendar,
   Receipt,
   Coins,
-  FileContract,
+  FileText,
   Users,
   LineChart,
   Share2,
   Award,
   MessageSquare,
-  FileText,
   PenTool,
   Menu,
+  File,
 } from "lucide-react";
 
 export const Icons = {
@@ -28,13 +28,12 @@ export const Icons = {
   bookings: Calendar,
   campaigns: Receipt,
   credits: Coins,
-  contracts: FileContract,
+  contracts: File, // Changed from FileContract to File
   kols: Users,
   analytics: LineChart,
   referrals: Share2,
   rewards: Award,
   applications: FileText,
   community: MessageSquare,
-  overview: LayoutDashboard,
   menu: Menu,
 };
