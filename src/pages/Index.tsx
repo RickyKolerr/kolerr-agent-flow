@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,7 +29,6 @@ const Index = () => {
   const [showWelcome, setShowWelcome] = useState(true);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   
-  // Auto welcome message
   useEffect(() => {
     if (showWelcome) {
       setTimeout(() => {
@@ -44,20 +42,18 @@ const Index = () => {
     }
   }, [showWelcome]);
 
-  // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
 
-  // Auto-rotate carousel with a smoother, slower transition
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCarouselIndex((prev) => 
         prev === mockCreatorData.length - 1 ? 0 : prev + 1
       );
-    }, 5000); // Increased from 3000 to 5000 for a slower rotation
+    }, 5000);
     
     return () => clearInterval(interval);
   }, []);
@@ -68,9 +64,7 @@ const Index = () => {
       return;
     }
 
-    // Check if the user has enough credits
     if (freeCredits > 0 || hasPremiumPlan) {
-      // Add the search query as a user message
       const userMessage: Message = {
         id: Date.now().toString(),
         type: "user",
@@ -79,10 +73,8 @@ const Index = () => {
       
       setMessages(prev => [...prev, userMessage]);
       
-      // Use a credit for the search
       useFreeCredit();
       
-      // Add bot response about searching
       setTimeout(() => {
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
@@ -91,7 +83,6 @@ const Index = () => {
         };
         setMessages(prev => [...prev, botResponse]);
         
-        // Navigate to search results after a short delay
         setTimeout(() => {
           navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
         }, 1500);
@@ -123,7 +114,6 @@ const Index = () => {
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
     
-    // Check if user has credits for AI responses
     if (!hasPremiumPlan && freeCredits === 0) {
       setTimeout(() => {
         const botResponse: Message = {
@@ -137,42 +127,34 @@ const Index = () => {
       return;
     }
     
-    // Use a credit for the AI interaction
     if (!hasPremiumPlan) {
       useFreeCredit();
     }
     
-    // Analyze the user input to determine intent
     const lowerInput = inputValue.toLowerCase();
     
-    // Simulate AI processing delay
     setTimeout(() => {
       let botResponse: Message;
       
-      // Simple intent detection
       if (lowerInput.includes("find") || lowerInput.includes("search") || lowerInput.includes("looking for")) {
-        // Search intent detected
         botResponse = {
           id: (Date.now() + 1).toString(),
           type: "bot",
           content: `Great! I can help you find creators. Here are some matching your description: ${getCreatorSuggestions(lowerInput)}`
         };
       } else if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("plan")) {
-        // Pricing intent detected
         botResponse = {
           id: (Date.now() + 1).toString(),
           type: "bot",
           content: "We offer flexible pricing plans starting at $99/month with unlimited searches. Would you like to see our pricing details?"
         };
       } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
-        // Greeting intent detected
         botResponse = {
           id: (Date.now() + 1).toString(),
           type: "bot",
           content: "Hello! I'm your AI assistant for finding TikTok creators. How can I help you today? You can ask me to find creators in specific niches, with certain follower counts, or for particular marketing goals."
         };
       } else {
-        // General response
         botResponse = {
           id: (Date.now() + 1).toString(),
           type: "bot",
@@ -187,7 +169,6 @@ const Index = () => {
   const getCreatorSuggestions = (input: string) => {
     let filteredCreators = [...mockCreatorData];
     
-    // Filter by niche if mentioned
     const niches = ["beauty", "fashion", "gaming", "tech", "travel", "fitness", "food", "lifestyle"];
     const mentionedNiches = niches.filter(niche => input.includes(niche));
     
@@ -201,7 +182,6 @@ const Index = () => {
       );
     }
     
-    // Get top 3 filtered creators
     const suggestions = filteredCreators.slice(0, 3);
     
     return suggestions.length > 0 
@@ -227,19 +207,15 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col relative overflow-x-hidden overflow-y-auto hero-gradient pt-16 pb-16">
-      {/* Background effects */}
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
       
-      {/* Animated gradient orbs */}
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
       
       <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
-          {/* Main AI Chat Panel */}
           <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px]">
-            {/* Chat header */}
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
@@ -256,7 +232,6 @@ const Index = () => {
               </div>
             </div>
             
-            {/* Chat messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
               {messages.map(message => (
                 <div 
@@ -288,7 +263,6 @@ const Index = () => {
               <div ref={messagesEndRef} />
             </div>
             
-            {/* Input area */}
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
                 <Input 
@@ -303,7 +277,6 @@ const Index = () => {
                 </Button>
               </div>
               
-              {/* Quick suggestions */}
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button 
                   variant="outline" 
@@ -336,9 +309,7 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right sidebar - Search & Trending */}
           <div className="w-full md:w-1/3 flex flex-col gap-4">
-            {/* Search box */}
             <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
               <CardContent className="p-4">
                 <h2 className="text-xl font-semibold mb-3">Quick Search</h2>
@@ -409,7 +380,6 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            {/* Trending creators */}
             <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
               <CardContent className="p-4">
                 <h2 className="text-xl font-semibold mb-3 flex items-center">
@@ -448,7 +418,6 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            {/* Sign up or upgrade CTA */}
             <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
               <CardContent className="p-4">
                 <h3 className="text-lg font-bold text-white mb-2">Unlock Full Access</h3>
@@ -466,7 +435,6 @@ const Index = () => {
           </div>
         </div>
         
-        {/* Creator Portraits Carousel - Moved out of the chatbot */}
         <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
           <div className="flex items-center mb-5">
             <Users className="h-5 w-5 text-brand-pink mr-2" />
@@ -482,7 +450,7 @@ const Index = () => {
               dragFree: false,
               skipSnaps: false,
               inViewThreshold: 0.6,
-              speed: 30, // Slower speed for smoother transitions (in pixels per animation frame)
+              duration: 30,
             }}
             setApi={(api) => {
               api?.on("select", () => {
