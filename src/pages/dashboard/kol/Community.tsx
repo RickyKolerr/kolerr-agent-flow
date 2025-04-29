@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { 
   MessageCircle, Users, UserPlus, Search, Filter, 
-  MessageSquare, Calendar, Heart, Star, Award
+  MessageSquare, Calendar, Heart, Star, Award, Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
