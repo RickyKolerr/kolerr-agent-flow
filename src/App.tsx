@@ -67,6 +67,9 @@ import AdvancedSearch from "@/pages/search/AdvancedSearch";
 import SearchHistory from "@/pages/search/SearchHistory";
 import CreatorProfile from "@/pages/creators/CreatorProfile";
 
+// Campaign pages
+import CampaignDetail from "@/pages/campaigns/CampaignDetail";
+
 // Components
 import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
@@ -114,6 +117,9 @@ const App = () => {
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/partners" element={<PartnersPage />} />
+                    
+                    {/* Campaign routes - Public but with auth-aware UI */}
+                    <Route path="/campaigns/:campaignId" element={<CampaignDetail />} />
                     
                     {/* Search routes */}
                     <Route path="/search" element={<SearchResults />} />

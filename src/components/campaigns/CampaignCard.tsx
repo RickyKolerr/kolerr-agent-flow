@@ -1,5 +1,5 @@
 
-import { BadgeDollarSign, Calendar, FileText, Check, Loader2 } from "lucide-react";
+import { BadgeDollarSign, Calendar, FileText, Check, Loader2, Eye } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface CampaignCardProps {
   campaign: {
@@ -32,8 +33,10 @@ interface CampaignCardProps {
 
 export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
   const [isApplying, setIsApplying] = useState(false);
+  const navigate = useNavigate();
   
-  const handleApply = async () => {
+  const handleApply = async (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent navigation when clicking apply button
     setIsApplying(true);
     
     // Simulate API call delay to show loading state
@@ -54,8 +57,12 @@ export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
     // }
   };
   
+  const handleViewCampaign = () => {
+    navigate(`/campaigns/${campaign.id}`);
+  };
+  
   return (
-    <Card className="overflow-hidden hover-scale">
+    <Card className="overflow-hidden hover-scale cursor-pointer" onClick={handleViewCampaign}>
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           <div className="w-full md:w-2/3 p-6">
@@ -137,20 +144,34 @@ export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
               </div>
             </div>
             
-            <Button 
-              className="w-full mt-6 bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-              onClick={handleApply}
-              disabled={isApplying}
-            >
-              {isApplying ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  Applying...
-                </>
-              ) : (
-                "Apply Now"
-              )}
-            </Button>
+            <div className="mt-6 space-y-2">
+              <Button 
+                className="w-full bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                onClick={handleApply}
+                disabled={isApplying}
+              >
+                {isApplying ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Applying...
+                  </>
+                ) : (
+                  "Apply Now"
+                )}
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="w-full flex items-center justify-center gap-2"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleViewCampaign();
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                View Details
+              </Button>
+            </div>
           </div>
         </div>
       </CardContent>

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { 
   FileSearch, Filter, 
@@ -15,6 +16,8 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
+import { useNavigate } from "react-router-dom";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 // Mock campaigns
 const mockCampaigns = [
@@ -95,6 +98,8 @@ const AvailableCampaigns = () => {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [budgetFilter, setBudgetFilter] = useState("all");
   const [platformFilter, setPlatformFilter] = useState("all");
+  const navigate = useNavigate();
+  const { isAuthenticated } = useUserAccess();
   
   const filteredCampaigns = mockCampaigns.filter(campaign => {
     // Apply search filter
@@ -125,6 +130,17 @@ const AvailableCampaigns = () => {
   });
   
   const handleApplyCampaign = (campaign: typeof mockCampaigns[0]) => {
+    if (!isAuthenticated) {
+      toast.info("Sign in to apply for this campaign", {
+        description: "Create an account or sign in to apply for campaigns",
+        action: {
+          label: "Sign In",
+          onClick: () => navigate(`/login?redirect=/campaigns/${campaign.id}&action=apply`)
+        }
+      });
+      return;
+    }
+    
     // This function could later be replaced with a backend call
     toast.success(`Applied to "${campaign.title}"`, {
       description: "Your application has been submitted successfully.",
