@@ -15,7 +15,7 @@ interface UseTypingEffectOptions {
  */
 export function useTypingEffect({ 
   text, 
-  typingSpeed = 30, 
+  typingSpeed = 100, // Increased from 30 to 100ms for more realistic typing
   startDelay = 0 
 }: UseTypingEffectOptions) {
   const [displayedText, setDisplayedText] = useState('');

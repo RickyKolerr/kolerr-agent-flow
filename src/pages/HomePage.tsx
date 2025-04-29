@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -39,11 +38,11 @@ const HomePage = () => {
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
   const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
 
-  // Typing effect for the welcome message
+  // Typing effect for the welcome message with a slower typing speed
   const { displayedText, isComplete } = useTypingEffect({
     text: welcomeMessage,
-    typingSpeed: 20,
-    startDelay: 500
+    typingSpeed: 100, // Slowed down to 100ms per character
+    startDelay: 800  // Increased delay before typing starts
   });
 
   // Update the welcome message as it types
@@ -113,7 +112,7 @@ const HomePage = () => {
         isTyping: true
       }]);
       
-      // Use typing effect to gradually reveal the message
+      // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
       let charIndex = 0;
       
@@ -138,8 +137,8 @@ const HomePage = () => {
         } else {
           clearInterval(typingInterval);
         }
-      }, 20);
-    }, 500);
+      }, 100); // Increased from 20 to 100ms for more realistic typing speed
+    }, 1000); // Increased from 500 to 1000ms for a more natural pause before responding
   };
 
   const handleSearch = () => {
@@ -189,7 +188,7 @@ const HomePage = () => {
         isTyping: true
       }]);
       
-      // Use typing effect to gradually reveal the message
+      // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
       let charIndex = 0;
       
@@ -220,8 +219,8 @@ const HomePage = () => {
             }, 2000);
           }
         }
-      }, 20);
-    }, 500);
+      }, 100); // Increased from 20 to 100ms for more realistic typing speed
+    }, 1000); // Increased from 500 to 1000ms for a more natural pause before responding
   };
 
   const getResponse = (message: string) => {
