@@ -1,9 +1,10 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 
 // Context providers
 import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
@@ -11,6 +12,9 @@ import { CreditProvider } from "@/contexts/CreditContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ChatProvider } from "@/contexts/ChatContext";
 import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
+
+// Lazy load ChatPage
+const ChatPage = lazy(() => import('@/components/chat/ChatPage'));
 
 // Pages
 import HomePage from "@/pages/HomePage";
@@ -193,7 +197,9 @@ const App = () => {
                         {/* Chat route */}
                         <Route path="messages" element={
                           <ProtectedRoute>
-                            <React.lazy(() => import('@/components/chat/ChatPage')) />
+                            <Suspense fallback={<div>Loading...</div>}>
+                              <ChatPage />
+                            </Suspense>
                           </ProtectedRoute>
                         } />
                       </Route>
