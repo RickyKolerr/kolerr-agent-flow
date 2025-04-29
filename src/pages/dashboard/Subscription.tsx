@@ -10,6 +10,8 @@ import { CurrentPlanCard } from "@/components/subscription/CurrentPlanCard";
 import { BillingPeriodSelector } from "@/components/subscription/BillingPeriodSelector";
 import { PlanFeatures } from "@/components/subscription/PlanFeatures";
 import { PlanChangeConfirmation } from "@/components/subscription/PlanChangeConfirmation";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { CheckCircle, AlertCircle } from "lucide-react";
 
 interface Plan {
   id: string;
@@ -36,6 +38,7 @@ const SubscriptionPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const actionParam = searchParams.get('action');
   const planParam = searchParams.get('plan');
+  const successParam = searchParams.get('success');
 
   useEffect(() => {
     if (planParam) {
@@ -44,7 +47,14 @@ const SubscriptionPage = () => {
     if (actionParam === 'cancel') {
       handleCancelSubscription();
     }
-  }, [planParam, actionParam]);
+    if (successParam === 'true') {
+      toast.success("Your subscription was updated successfully!", {
+        description: "Thank you for your subscription. Your new plan is now active."
+      });
+      // Clear the URL parameters to prevent showing the message again on refresh
+      navigate('/dashboard/subscription', { replace: true });
+    }
+  }, [planParam, actionParam, successParam, navigate]);
 
   const currentPlan = {
     id: hasPremiumPlan ? "growth" : "free",
@@ -144,7 +154,7 @@ const SubscriptionPage = () => {
       toast.success(`You've ${action} the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
         description: "You'll be redirected to complete the payment process.",
       });
-      navigate(`/dashboard/payment?plan=${selectedPlan}&currentPrice=${currentPlan.price}`);
+      navigate(`/dashboard/payment?plan=${selectedPlan}&billing=${billingPeriod}&currentPrice=${currentPlan.price}&returnPath=/dashboard/subscription?success=true`);
     }
   };
 
@@ -152,7 +162,7 @@ const SubscriptionPage = () => {
     toast.success("Your subscription has been cancelled", {
       description: "Your subscription will remain active until the end of your billing period."
     });
-    navigate('/dashboard/settings');
+    navigate('/dashboard/subscription');
   };
 
   return (
@@ -161,11 +171,31 @@ const SubscriptionPage = () => {
         <h1 className="text-3xl font-bold tracking-tight">Subscription Plans</h1>
       </div>
 
+      {successParam === 'true' && (
+        <Alert className="bg-green-500/10 border-green-500 text-green-500">
+          <CheckCircle className="h-4 w-4" />
+          <AlertTitle>Subscription Updated</AlertTitle>
+          <AlertDescription>
+            Your subscription has been updated successfully. Your new plan is now active.
+          </AlertDescription>
+        </Alert>
+      )}
+      
+      {actionParam === 'failed' && (
+        <Alert className="bg-destructive/10 border-destructive text-destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Payment Failed</AlertTitle>
+          <AlertDescription>
+            There was an issue processing your payment. Please try again or contact support.
+          </AlertDescription>
+        </Alert>
+      )}
+
       <CurrentPlanCard currentPlan={currentPlan} />
 
       <BillingPeriodSelector 
         value={billingPeriod}
-        onValueChange={(value) => setBillingPeriod(value)}
+        onValueChange={(value) => setBillingPeriod(value as 'monthly' | 'yearly')}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -211,11 +241,12 @@ const SubscriptionPage = () => {
             <CardFooter>
               <Button
                 className={`w-full ${plan.id === currentPlan.id ? 'bg-muted hover:bg-muted' : plan.id === 'free' ? '' : 'bg-brand-pink hover:bg-brand-pink/90'}`}
-                disabled={plan.id === currentPlan.id || plan.id === 'free'}
+                disabled={plan.id === currentPlan.id || (plan.id === 'free' && currentPlan.id !== 'free')}
                 onClick={() => plan.id !== 'free' && setSelectedPlan(plan.id)}
                 variant={plan.id === selectedPlan && plan.id !== currentPlan.id ? 'default' : 'outline'}
               >
                 {plan.id === currentPlan.id ? 'Current Plan' : 
+                 plan.id === 'free' && currentPlan.id !== 'free' ? 'Downgrade Not Available' :
                  plan.id === 'free' ? 'Free Plan' :
                  plan.id === selectedPlan ? 'Selected' : 'Select Plan'}
               </Button>
@@ -235,6 +266,28 @@ const SubscriptionPage = () => {
           onCancel={() => setSelectedPlan(null)}
           onConfirm={handlePlanChange}
         />
+      )}
+      
+      {currentPlan.id !== 'free' && (
+        <div className="mt-8 pt-4 border-t border-border">
+          <h2 className="text-xl font-semibold mb-4">Manage Subscription</h2>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard/payment?action=update&returnPath=/dashboard/subscription')}
+              className="flex-1"
+            >
+              Update Payment Method
+            </Button>
+            <Button 
+              variant="destructive"
+              className="flex-1"
+              onClick={() => navigate('/dashboard/subscription?action=cancel')}
+            >
+              Cancel Subscription
+            </Button>
+          </div>
+        </div>
       )}
     </div>
   );

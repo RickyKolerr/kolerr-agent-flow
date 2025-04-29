@@ -4,10 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useContext } from "react";
 
 // Context providers
-import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
+import { AuthProvider, ProtectedRoute, RoleProtectedRoute, AuthContext } from "@/contexts/AuthContext";
 import { CreditProvider } from "@/contexts/CreditContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -67,7 +67,6 @@ import Community from "@/pages/dashboard/kol/Community";
 import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
 
 // Search pages
-import Index from "@/pages/Index";
 import SearchResults from "@/pages/search/SearchResults";
 import AdvancedSearch from "@/pages/search/AdvancedSearch";
 import SearchHistory from "@/pages/search/SearchHistory";
@@ -97,6 +96,19 @@ const Layout = ({ children }) => {
   );
 };
 
+// Dashboard entry route component with role-based redirection
+const DashboardEntry = () => {
+  const { user } = useContext(AuthContext);
+  
+  // Role-based redirection
+  if (user?.role === "kol") {
+    return <Navigate to="/dashboard/kol/campaigns" replace />;
+  }
+  
+  // Default for brands and other roles
+  return <Navigate to="/dashboard/overview" replace />;
+};
+
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
   
@@ -111,9 +123,9 @@ const App = () => {
                 <Sonner />
                 <Layout>
                   <Routes>
-                    {/* Public routes */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/home" element={<HomePage />} />
+                    {/* Public routes - Standardized homepage */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/home" element={<Navigate to="/" replace />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/features" element={<FeaturesPage />} />
                     <Route path="/pricing" element={<PricingPage />} />
@@ -163,9 +175,13 @@ const App = () => {
                       </ProtectedRoute>
                     } />
                     
-                    {/* Protected dashboard routes */}
-                    <Route path="/dashboard" element={<DashboardLayout />}>
-                      <Route index element={<Navigate to="/dashboard/kol/campaigns" replace />} />
+                    {/* Protected dashboard routes with improved entry point */}
+                    <Route path="/dashboard" element={
+                      <ProtectedRoute>
+                        <DashboardLayout />
+                      </ProtectedRoute>
+                    }>
+                      <Route index element={<DashboardEntry />} />
                       <Route path="overview" element={<Overview />} />
                       
                       {/* Brand-specific routes */}
