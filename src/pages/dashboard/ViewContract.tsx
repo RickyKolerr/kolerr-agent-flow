@@ -11,7 +11,10 @@ import {
   CheckCircle2, 
   Calendar, 
   User,
-  FileCheck
+  FileCheck,
+  FileWarning,
+  AlertCircle,
+  DollarSign
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +24,10 @@ import { SigningService } from "@/services/SigningService";
 import { Contract } from "@/types/contract";
 import { toast } from "sonner";
 import { Separator } from "@/components/ui/separator";
+import { useUserAccess } from "@/hooks/useUserAccess";
+import { KOLContractReview } from "@/components/contracts/KOLContractReview";
+import { MobileSigningView } from "@/components/contracts/MobileSigningView";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 // Mock contract data - in a real app, you would fetch this from your API
 const mockContracts: Contract[] = [
@@ -74,8 +81,12 @@ const mockContracts: Contract[] = [
 export default function ViewContract() {
   const { contractId } = useParams<{ contractId: string }>();
   const navigate = useNavigate();
+  const { user } = useUserAccess();
   const [contract, setContract] = useState<Contract | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const isMobile = useMediaQuery("(max-width: 640px)");
+  
+  const isKOL = user?.role === "kol"; // Check if the current user is a KOL
   
   useEffect(() => {
     // Simulate API call to fetch contract
@@ -168,6 +179,18 @@ export default function ViewContract() {
             <CheckCircle2 className="h-3.5 w-3.5 mr-1" /> Signed
           </Badge>
         );
+      case 'expired':
+        return (
+          <Badge variant="outline" className="bg-orange-500/10 text-orange-500 border-orange-500/20">
+            <AlertCircle className="h-3.5 w-3.5 mr-1" /> Expired
+          </Badge>
+        );
+      case 'canceled':
+        return (
+          <Badge variant="outline" className="bg-red-500/10 text-red-500 border-red-500/20">
+            <FileWarning className="h-3.5 w-3.5 mr-1" /> Canceled
+          </Badge>
+        );
       default:
         return (
           <Badge variant="outline">
@@ -187,6 +210,11 @@ export default function ViewContract() {
     });
   };
   
+  const goBack = () => {
+    // Navigate back to the appropriate contracts page based on user role
+    navigate(isKOL ? "/dashboard/kol/contracts" : "/dashboard/contracts");
+  };
+  
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -201,7 +229,7 @@ export default function ViewContract() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => navigate("/dashboard/contracts")}
+          onClick={goBack}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
@@ -214,7 +242,7 @@ export default function ViewContract() {
               <p className="text-muted-foreground mb-4">
                 The contract you're looking for doesn't exist or has been removed.
               </p>
-              <Button onClick={() => navigate("/dashboard/contracts")}>
+              <Button onClick={goBack}>
                 Back to Contracts
               </Button>
             </div>
@@ -224,13 +252,168 @@ export default function ViewContract() {
     );
   }
   
+  // Mobile optimized view for KOLs
+  if (isMobile && isKOL) {
+    return (
+      <MobileSigningView 
+        contract={contract}
+        onSign={handleViewSigningPage}
+        onBack={goBack}
+        onDownload={handleDownload}
+      />
+    );
+  }
+  
+  // KOL-specific desktop view
+  if (isKOL) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={goBack}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Contract Details
+          </h1>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2">
+            <KOLContractReview 
+              contract={contract}
+              onSign={handleViewSigningPage}
+            />
+          </div>
+          
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Brand</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center space-x-4">
+                  <Avatar className="h-10 w-10">
+                    <AvatarFallback>{contract.brand?.name.substring(0, 2) || 'BR'}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <p className="font-medium">{contract.brand?.name || 'Unknown Brand'}</p>
+                    {contract.brand?.email && <p className="text-sm text-muted-foreground">{contract.brand.email}</p>}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            {contract.status === 'signed' && contract.earnings && (
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center">
+                    <DollarSign className="h-5 w-5 mr-2" /> Payment Status
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Amount:</span>
+                    <span className="font-medium">${contract.value?.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Status:</span>
+                    <Badge variant="outline" className={
+                      contract.earnings.status === 'paid' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                      contract.earnings.status === 'processing' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
+                      'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'
+                    }>
+                      {contract.earnings.status === 'paid' ? 'Paid' : 
+                       contract.earnings.status === 'processing' ? 'Processing' : 'Pending'}
+                    </Badge>
+                  </div>
+                  {contract.earnings.paidDate && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Paid on:</span>
+                      <span>{formatDate(contract.earnings.paidDate)}</span>
+                    </div>
+                  )}
+                  {contract.earnings.paymentMethod && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-muted-foreground">Method:</span>
+                      <span>{contract.earnings.paymentMethod}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+            
+            <Card>
+              <CardHeader>
+                <CardTitle>Timeline</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-4">
+                  <li className="flex gap-3">
+                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-background">
+                      <FileText className="h-3 w-3" />
+                    </div>
+                    <div>
+                      <p className="text-sm">Contract created</p>
+                      <p className="text-xs text-muted-foreground">{formatDate(contract.createdDate)}</p>
+                    </div>
+                  </li>
+                  
+                  {contract.status !== 'draft' && (
+                    <li className="flex gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-background">
+                        <Send className="h-3 w-3" />
+                      </div>
+                      <div>
+                        <p className="text-sm">Sent for signature</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(contract.signwellData?.expiresAt ? new Date(new Date(contract.signwellData.expiresAt).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString() : contract.createdDate)}</p>
+                      </div>
+                    </li>
+                  )}
+                  
+                  {contract.status === 'signed' && (
+                    <li className="flex gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-green-500">
+                        <CheckCircle2 className="h-3 w-3 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm">Fully signed</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(contract.signwellData?.completedAt || new Date().toISOString())}</p>
+                      </div>
+                    </li>
+                  )}
+                  
+                  {contract.status === 'signed' && contract.earnings?.status === 'paid' && (
+                    <li className="flex gap-3">
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-green-500">
+                        <DollarSign className="h-3 w-3 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm">Payment completed</p>
+                        <p className="text-xs text-muted-foreground">{formatDate(contract.earnings.paidDate)}</p>
+                      </div>
+                    </li>
+                  )}
+                </ul>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Brand view (original view)
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Button
           variant="outline"
           size="icon"
-          onClick={() => navigate("/dashboard/contracts")}
+          onClick={goBack}
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>

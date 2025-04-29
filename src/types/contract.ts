@@ -14,6 +14,7 @@ export interface Contract {
     email?: string; // Email needed for SignWell
   };
   campaign?: string;
+  campaignId?: string; // Added to connect contracts to campaigns
   createdDate: string;
   startDate?: string;
   endDate?: string;
@@ -25,7 +26,13 @@ export interface Contract {
     signLink?: string;
     completedAt?: string;
     expiresAt?: string;
-  }
+  };
+  kolStatus?: 'pending' | 'viewed' | 'approved' | 'rejected'; // Added for KOL workflow
+  earnings?: {
+    status: 'pending' | 'processing' | 'paid';
+    paidDate?: string;
+    paymentMethod?: string;
+  };
 }
 
 export interface SignatureField {
@@ -49,4 +56,19 @@ export interface ContractFormValues {
   value?: string;
   terms: string;
   signatureFields?: SignatureField[];
+}
+
+// Add KOL contract analytics interface
+export interface KOLContractAnalytics {
+  totalContracts: number;
+  totalEarnings: number;
+  pendingContracts: number;
+  pendingEarnings: number;
+  completedContracts: number;
+  averageValue: number;
+  contractsByMonth: {
+    month: string;
+    count: number;
+    value: number;
+  }[];
 }

@@ -58,6 +58,7 @@ import Analytics from "@/pages/dashboard/kol/Analytics";
 import Referrals from "@/pages/dashboard/kol/Referrals";
 import Rewards from "@/pages/dashboard/kol/Rewards";
 import Community from "@/pages/dashboard/kol/Community";
+import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -166,6 +167,7 @@ const App = () => {
                       <Route path="kol/referrals" element={<Referrals />} />
                       <Route path="kol/rewards" element={<Rewards />} />
                       <Route path="kol/community" element={<Community />} />
+                      <Route path="kol/contracts" element={<KOLContracts />} />
                       
                       {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />
