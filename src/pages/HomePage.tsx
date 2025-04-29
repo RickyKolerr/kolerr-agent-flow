@@ -10,6 +10,7 @@ import { useCredits } from "@/contexts/CreditContext";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 
 interface Message {
   id: string;

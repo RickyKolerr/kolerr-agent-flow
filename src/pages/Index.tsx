@@ -11,6 +11,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { getTimeUntilReset } from "@/hooks/useSearchCredits";
 
 interface Message {
   id: string;

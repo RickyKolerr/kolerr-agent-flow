@@ -2,8 +2,26 @@
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 
-const DAILY_CREDITS = 5;
-const RESET_HOUR = 7; // 7 AM
+export const DAILY_CREDITS = 5;
+export const RESET_HOUR = 7; // 7 AM
+
+export const getTimeUntilReset = (): string => {
+  const now = new Date();
+  const tomorrow = new Date();
+  
+  if (now.getHours() < RESET_HOUR) {
+    tomorrow.setDate(now.getDate());
+  } else {
+    tomorrow.setDate(now.getDate() + 1);
+  }
+  
+  tomorrow.setHours(RESET_HOUR, 0, 0, 0);
+  
+  const hoursLeft = Math.floor((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
+  const minutesLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
+  
+  return `${hoursLeft}h ${minutesLeft}m`;
+};
 
 export const useSearchCredits = () => {
   const [creditsLeft, setCreditsLeft] = useState<number>(() => {
@@ -24,24 +42,6 @@ export const useSearchCredits = () => {
     
     return credits;
   });
-
-  const getTimeUntilReset = (): string => {
-    const now = new Date();
-    const tomorrow = new Date();
-    
-    if (now.getHours() < RESET_HOUR) {
-      tomorrow.setDate(now.getDate());
-    } else {
-      tomorrow.setDate(now.getDate() + 1);
-    }
-    
-    tomorrow.setHours(RESET_HOUR, 0, 0, 0);
-    
-    const hoursLeft = Math.floor((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
-    const minutesLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
-    
-    return `${hoursLeft}h ${minutesLeft}m`;
-  };
 
   useEffect(() => {
     localStorage.setItem('search_credits', JSON.stringify({
