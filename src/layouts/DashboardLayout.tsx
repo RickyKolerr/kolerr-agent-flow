@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -145,17 +144,14 @@ const DashboardLayout = () => {
         >
           <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
             <button 
-              onClick={() => handleNavigation('/')} 
-              className="flex items-center space-x-2 hover:opacity-80 transition-opacity"
+              onClick={() => navigate('/')} 
+              className="flex items-center justify-center hover:opacity-80 transition-opacity"
             >
               <img 
-                src="/lovable-uploads/d4572dc9-629c-46f5-9256-41590c40e030.png" 
+                src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" 
                 alt="Kolerr Logo" 
                 className="h-10 w-10"
               />
-              <span className="font-bold text-2xl bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to bg-clip-text text-transparent">
-                Kolerr
-              </span>
             </button>
             <Button 
               variant="ghost" 
