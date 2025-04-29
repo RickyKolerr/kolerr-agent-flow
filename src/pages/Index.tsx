@@ -2,7 +2,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users } from "lucide-react";
+import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
@@ -14,6 +14,9 @@ import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getTimeUntilReset } from "@/hooks/useSearchCredits";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuth } from "@/contexts/AuthContext";
+import { UserRole } from "@/contexts/AuthContext";
 
 interface Message {
   id: string;
@@ -21,29 +24,90 @@ interface Message {
   content: string;
 }
 
+// Mock campaigns data for KOLs
+const mockCampaigns = [
+  {
+    id: "c1",
+    title: "Summer Fashion Collection",
+    brand: "StyleCo",
+    brandLogo: "https://ui-avatars.com/api/?name=StyleCo&background=0D8ABC&color=fff",
+    budget: "$500-1000",
+    deadline: "July 15, 2023",
+    compatibility: 95,
+    categories: ["fashion", "lifestyle"],
+  },
+  {
+    id: "c2",
+    title: "Gaming Peripherals Review",
+    brand: "TechGear",
+    brandLogo: "https://ui-avatars.com/api/?name=TechGear&background=9C27B0&color=fff",
+    budget: "$300-600",
+    deadline: "July 20, 2023",
+    compatibility: 75,
+    categories: ["tech", "gaming"],
+  },
+  {
+    id: "c3",
+    title: "Vegan Food Challenge",
+    brand: "GreenEats",
+    brandLogo: "https://ui-avatars.com/api/?name=GreenEats&background=4CAF50&color=fff",
+    budget: "$200-400",
+    deadline: "July 25, 2023",
+    compatibility: 88,
+    categories: ["food", "lifestyle"],
+  }
+];
+
+// Mock KOL statistics
+const kolStats = {
+  avgEarnings: "$450",
+  availableCampaigns: 124,
+  avgCompletionTime: "3 days",
+  topEarningNiche: "Tech",
+  topEarningAmount: "$1,200"
+};
+
 const Index = () => {
   const navigate = useNavigate();
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
   const { t } = useLanguage();
+  const { user, isAuthenticated } = useAuth();
   const [searchQuery, setSearchQuery] = useState("");
   const [inputValue, setInputValue] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [showWelcome, setShowWelcome] = useState(true);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
+  const [userView, setUserView] = useState<"brand" | "kol">("brand");
+  
+  // Detect user role and set initial view
+  useEffect(() => {
+    if (isAuthenticated && user?.role === "kol") {
+      setUserView("kol");
+    }
+  }, [isAuthenticated, user]);
   
   useEffect(() => {
     if (showWelcome) {
       setTimeout(() => {
+        const welcomeMessage = userView === "brand" 
+          ? "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
+          : "👋 Welcome to Kolerr! We connect creators like you to amazing paid brand campaigns. Tell me what kind of opportunities you're looking for, and I'll help you find the perfect match!";
+        
         setMessages([{
           id: "welcome",
           type: "bot",
-          content: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
+          content: welcomeMessage
         }]);
         setShowWelcome(false);
       }, 500);
     }
-  }, [showWelcome]);
+  }, [showWelcome, userView]);
+
+  // If user toggles view, reset welcome message
+  useEffect(() => {
+    setShowWelcome(true);
+  }, [userView]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -82,12 +146,18 @@ const Index = () => {
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           type: "bot",
-          content: `Searching for creators matching "${searchQuery}"...`
+          content: userView === "brand" 
+            ? `Searching for creators matching "${searchQuery}"...` 
+            : `Searching for campaigns matching "${searchQuery}"...`
         };
         setMessages(prev => [...prev, botResponse]);
         
         setTimeout(() => {
-          navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+          if (userView === "brand") {
+            navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+          } else {
+            navigate(`/dashboard/kol/campaigns`);
+          }
         }, 1500);
       }, 800);
       
@@ -139,30 +209,60 @@ const Index = () => {
     setTimeout(() => {
       let botResponse: Message;
       
-      if (lowerInput.includes("find") || lowerInput.includes("search") || lowerInput.includes("looking for")) {
-        botResponse = {
-          id: (Date.now() + 1).toString(),
-          type: "bot",
-          content: `Great! I can help you find creators. Here are some matching your description: ${getCreatorSuggestions(lowerInput)}`
-        };
-      } else if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("plan")) {
-        botResponse = {
-          id: (Date.now() + 1).toString(),
-          type: "bot",
-          content: "We offer flexible pricing plans starting at $99/month with unlimited searches. Would you like to see our pricing details?"
-        };
-      } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
-        botResponse = {
-          id: (Date.now() + 1).toString(),
-          type: "bot",
-          content: "Hello! I'm your AI assistant for finding TikTok creators. How can I help you today? You can ask me to find creators in specific niches, with certain follower counts, or for particular marketing goals."
-        };
+      if (userView === "brand") {
+        // Brand-focused response logic
+        if (lowerInput.includes("find") || lowerInput.includes("search") || lowerInput.includes("looking for")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: `Great! I can help you find creators. Here are some matching your description: ${getCreatorSuggestions(lowerInput)}`
+          };
+        } else if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("plan")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: "We offer flexible pricing plans starting at $99/month with unlimited searches. Would you like to see our pricing details?"
+          };
+        } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: "Hello! I'm your AI assistant for finding TikTok creators. How can I help you today? You can ask me to find creators in specific niches, with certain follower counts, or for particular marketing goals."
+          };
+        } else {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: "Thanks for your message! To help you better, could you tell me what type of creators you're looking for? For example, beauty influencers with 100K+ followers or gaming creators with high engagement rates."
+          };
+        }
       } else {
-        botResponse = {
-          id: (Date.now() + 1).toString(),
-          type: "bot",
-          content: "Thanks for your message! To help you better, could you tell me what type of creators you're looking for? For example, beauty influencers with 100K+ followers or gaming creators with high engagement rates."
-        };
+        // KOL-focused response logic
+        if (lowerInput.includes("find") || lowerInput.includes("campaign") || lowerInput.includes("work") || lowerInput.includes("make money")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: `I can help you find paid campaigns! Here are some opportunities that might interest you: ${getCampaignSuggestions(lowerInput)}`
+          };
+        } else if (lowerInput.includes("pay") || lowerInput.includes("earn") || lowerInput.includes("money")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: `Our creators earn an average of ${kolStats.avgEarnings} per campaign, with top earners making over ${kolStats.topEarningAmount} in the ${kolStats.topEarningNiche} niche. Would you like me to find high-paying opportunities for you?`
+          };
+        } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: "Hello! I'm your AI assistant for finding paid brand campaigns. How can I help you today? You can ask me about available campaigns, payment rates, or specific brands looking for creators like you."
+          };
+        } else {
+          botResponse = {
+            id: (Date.now() + 1).toString(),
+            type: "bot",
+            content: "Thanks for your message! To help you find the best opportunities, could you tell me what type of campaigns you're interested in? For example, fashion brand partnerships, tech product reviews, or food promotions."
+          };
+        }
       }
       
       setMessages(prev => [...prev, botResponse]);
@@ -202,6 +302,39 @@ const Index = () => {
       : "I couldn't find creators matching that exact description. Try a broader search or different keywords.";
   };
   
+  const getCampaignSuggestions = (input: string) => {
+    let filteredCampaigns = [...mockCampaigns];
+    
+    const niches = ["beauty", "fashion", "gaming", "tech", "travel", "fitness", "food", "lifestyle"];
+    const mentionedNiches = niches.filter(niche => input.includes(niche));
+    
+    if (mentionedNiches.length > 0) {
+      filteredCampaigns = filteredCampaigns.filter(campaign => 
+        campaign.categories.some(category => 
+          mentionedNiches.some(mentionedNiche => 
+            category.toLowerCase().includes(mentionedNiche)
+          )
+        )
+      );
+    }
+    
+    const suggestions = filteredCampaigns.slice(0, 3);
+    
+    return suggestions.length > 0 
+      ? `<div class="mt-2 space-y-2">${suggestions.map(campaign => 
+          `<div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+              <img src="${campaign.brandLogo}" alt="${campaign.brand}" class="w-full h-full object-cover" />
+            </div>
+            <div>
+              <div class="font-medium">${campaign.title}</div>
+              <div class="text-xs text-gray-500">${campaign.budget} • ${campaign.deadline}</div>
+            </div>
+          </div>`
+        ).join('')}</div>`
+      : "I couldn't find campaigns matching your interests. Try different keywords or check our available campaigns section.";
+  };
+  
   const trendingCreators = mockCreatorData
     .filter(creator => creator.trending)
     .slice(0, 3);
@@ -217,6 +350,22 @@ const Index = () => {
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
       
       <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
+        {!isAuthenticated && (
+          <div className="flex justify-center mb-8">
+            <Tabs 
+              defaultValue="brand" 
+              value={userView} 
+              onValueChange={(value) => setUserView(value as "brand" | "kol")} 
+              className="w-full max-w-md"
+            >
+              <TabsList className="grid grid-cols-2 w-full">
+                <TabsTrigger value="brand">For Brands</TabsTrigger>
+                <TabsTrigger value="kol">For Creators</TabsTrigger>
+              </TabsList>
+            </Tabs>
+          </div>
+        )}
+
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
           <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px]">
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
@@ -225,7 +374,9 @@ const Index = () => {
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
-                  <h1 className="font-semibold text-lg">Influencer AI Agent</h1>
+                  <h1 className="font-semibold text-lg">
+                    {userView === "brand" ? "Influencer AI Agent" : "Campaign Finder AI"}
+                  </h1>
                   <p className="text-xs text-gray-400">
                     {hasPremiumPlan 
                       ? "Premium plan active" 
@@ -269,7 +420,9 @@ const Index = () => {
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
                 <Input 
-                  placeholder="Ask about specific creators, niches or requirements..."
+                  placeholder={userView === "brand" 
+                    ? "Ask about specific creators, niches or requirements..." 
+                    : "Ask about available campaigns, earnings, or opportunities..."}
                   value={inputValue}
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
@@ -281,33 +434,67 @@ const Index = () => {
               </div>
               
               <div className="mt-3 flex flex-wrap gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setInputValue("Find beauty influencers with high engagement")}
-                  className="text-xs bg-black/40 border-white/10"
-                >
-                  <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
-                  Beauty influencers
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setInputValue("Find gaming creators under 100K followers")}
-                  className="text-xs bg-black/40 border-white/10"
-                >
-                  <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
-                  Gaming creators
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={() => setInputValue("Find fitness creators with viral content")}
-                  className="text-xs bg-black/40 border-white/10"
-                >
-                  <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
-                  Fitness creators
-                </Button>
+                {userView === "brand" ? (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("Find beauty influencers with high engagement")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Beauty influencers
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("Find gaming creators under 100K followers")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Gaming creators
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("Find fitness creators with viral content")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Fitness creators
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("Find fashion campaigns that pay well")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Fashion campaigns
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("How much can I earn on tech reviews?")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Tech earnings
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => setInputValue("Find brand sponsorships available now")}
+                      className="text-xs bg-black/40 border-white/10"
+                    >
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      Available sponsorships
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -319,7 +506,7 @@ const Index = () => {
                 <div className="space-y-3">
                   <div className="flex gap-2">
                     <Input 
-                      placeholder="Search for creators or niches..."
+                      placeholder={userView === "brand" ? "Search for creators or niches..." : "Search for campaigns..."}
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       onKeyPress={(e) => e.key === "Enter" && handleSearch()}
@@ -330,48 +517,93 @@ const Index = () => {
                     </Button>
                   </div>
                   
-                  <div className="flex flex-wrap gap-2">
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer bg-black/40 hover:bg-black/60"
-                      onClick={() => {
-                        setSearchQuery("fashion");
-                        handleSearch();
-                      }}
-                    >
-                      fashion
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer bg-black/40 hover:bg-black/60"
-                      onClick={() => {
-                        setSearchQuery("beauty");
-                        handleSearch();
-                      }}
-                    >
-                      beauty
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer bg-black/40 hover:bg-black/60"
-                      onClick={() => {
-                        setSearchQuery("gaming");
-                        handleSearch();
-                      }}
-                    >
-                      gaming
-                    </Badge>
-                    <Badge 
-                      variant="outline" 
-                      className="cursor-pointer bg-black/40 hover:bg-black/60"
-                      onClick={() => {
-                        setSearchQuery("travel");
-                        handleSearch();
-                      }}
-                    >
-                      travel
-                    </Badge>
-                  </div>
+                  {userView === "brand" ? (
+                    <div className="flex flex-wrap gap-2">
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("fashion");
+                          handleSearch();
+                        }}
+                      >
+                        fashion
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("beauty");
+                          handleSearch();
+                        }}
+                      >
+                        beauty
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("gaming");
+                          handleSearch();
+                        }}
+                      >
+                        gaming
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("travel");
+                          handleSearch();
+                        }}
+                      >
+                        travel
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("high paying");
+                          handleSearch();
+                        }}
+                      >
+                        high paying
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("easy to complete");
+                          handleSearch();
+                        }}
+                      >
+                        easy to complete
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("urgent");
+                          handleSearch();
+                        }}
+                      >
+                        urgent
+                      </Badge>
+                      <Badge 
+                        variant="outline" 
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("long term");
+                          handleSearch();
+                        }}
+                      >
+                        long term
+                      </Badge>
+                    </div>
+                  )}
                   
                   <div className="text-xs text-muted-foreground">
                     {hasPremiumPlan ? 
@@ -383,65 +615,194 @@ const Index = () => {
               </CardContent>
             </Card>
             
-            <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
-              <CardContent className="p-4">
-                <h2 className="text-xl font-semibold mb-3 flex items-center">
-                  <Star className="h-4 w-4 text-brand-pink mr-2" />
-                  Trending Creators
-                </h2>
-                
-                <div className="space-y-3">
-                  {trendingCreators.map(creator => (
-                    <div key={creator.id} className="flex items-center gap-3 p-2 hover:bg-black/30 rounded-lg cursor-pointer transition-colors" onClick={() => navigate(`/creators/${creator.id}`)}>
-                      <Avatar className="h-10 w-10">
-                        <img src={creator.avatar} alt={creator.fullName} className="object-cover" />
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="font-medium">{creator.fullName}</div>
-                        <div className="text-xs text-gray-400">
-                          {(creator.followers / 1000000).toFixed(1)}M followers
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {creator.niche[0]}
-                      </Badge>
-                    </div>
-                  ))}
+            {userView === "brand" ? (
+              <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold mb-3 flex items-center">
+                    <Star className="h-4 w-4 text-brand-pink mr-2" />
+                    Trending Creators
+                  </h2>
                   
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full mt-2 border-white/10"
-                    onClick={() => navigate('/search?category=trending')}
-                  >
-                    <MessageCircle className="h-3 w-3 mr-1 text-brand-pink" />
-                    View All Trending
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
+                  <div className="space-y-3">
+                    {trendingCreators.map(creator => (
+                      <div key={creator.id} className="flex items-center gap-3 p-2 hover:bg-black/30 rounded-lg cursor-pointer transition-colors" onClick={() => navigate(`/creators/${creator.id}`)}>
+                        <Avatar className="h-10 w-10">
+                          <img src={creator.avatar} alt={creator.fullName} className="object-cover" />
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="font-medium">{creator.fullName}</div>
+                          <div className="text-xs text-gray-400">
+                            {(creator.followers / 1000000).toFixed(1)}M followers
+                          </div>
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {creator.niche[0]}
+                        </Badge>
+                      </div>
+                    ))}
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full mt-2 border-white/10"
+                      onClick={() => navigate('/search?category=trending')}
+                    >
+                      <MessageCircle className="h-3 w-3 mr-1 text-brand-pink" />
+                      View All Trending
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
+                <CardContent className="p-4">
+                  <h2 className="text-xl font-semibold mb-3 flex items-center">
+                    <FileText className="h-4 w-4 text-brand-pink mr-2" />
+                    Hot Campaigns
+                  </h2>
+                  
+                  <div className="space-y-3">
+                    {mockCampaigns.map(campaign => (
+                      <div 
+                        key={campaign.id} 
+                        className="flex items-center gap-3 p-2 hover:bg-black/30 rounded-lg cursor-pointer transition-colors" 
+                        onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
+                      >
+                        <Avatar className="h-10 w-10">
+                          <img src={campaign.brandLogo} alt={campaign.brand} className="object-cover" />
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="font-medium">{campaign.title}</div>
+                          <div className="text-xs text-gray-400">
+                            {campaign.budget} • Deadline: {campaign.deadline}
+                          </div>
+                        </div>
+                        <Badge 
+                          variant="secondary" 
+                          className={`text-xs ${campaign.compatibility > 90 ? 'bg-green-500/20 text-green-300' : ''}`}
+                        >
+                          {campaign.compatibility}% match
+                        </Badge>
+                      </div>
+                    ))}
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      className="w-full mt-2 border-white/10"
+                      onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
+                    >
+                      <FileText className="h-3 w-3 mr-1 text-brand-pink" />
+                      Browse All Campaigns
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             
-            <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
-              <CardContent className="p-4">
-                <h3 className="text-lg font-bold text-white mb-2">Unlock Full Access</h3>
-                <p className="text-sm text-white/90 mb-3">
-                  Get unlimited AI searches, advanced analytics, and creator booking tools.
-                </p>
-                <Button 
-                  className="w-full bg-white text-brand-pink hover:bg-white/90" 
-                  onClick={() => navigate("/signup")}
-                >
-                  Get Started
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Conditional CTA Card */}
+            {userView === "brand" ? (
+              <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-2">Unlock Full Access</h3>
+                  <p className="text-sm text-white/90 mb-3">
+                    Get unlimited AI searches, advanced analytics, and creator booking tools.
+                  </p>
+                  <Button 
+                    className="w-full bg-white text-brand-pink hover:bg-white/90" 
+                    onClick={() => navigate("/signup")}
+                  >
+                    Get Started
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
+                <CardContent className="p-4">
+                  <h3 className="text-lg font-bold text-white mb-2">Start Earning Today</h3>
+                  <p className="text-sm text-white/90 mb-3">
+                    Join {mockCampaigns.length}+ creators earning an average of {kolStats.avgEarnings} per campaign.
+                  </p>
+                  <Button 
+                    className="w-full bg-white text-brand-pink hover:bg-white/90" 
+                    onClick={() => navigate("/signup")}
+                  >
+                    Create Creator Account
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
         
+        {/* KOL Earning Statistics Section - Only visible for "kol" view */}
+        {userView === "kol" && (
+          <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
+            <div className="flex items-center mb-5">
+              <BadgePercent className="h-5 w-5 text-brand-pink mr-2" />
+              <h2 className="text-xl font-semibold">Creator Earnings & Opportunities</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <Card className="bg-black/20 border-white/10">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
+                    <BadgePercent className="h-6 w-6 text-brand-pink" />
+                  </div>
+                  <h3 className="text-2xl font-bold">{kolStats.avgEarnings}</h3>
+                  <p className="text-sm text-muted-foreground">Average Campaign Payment</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-black/20 border-white/10">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
+                    <FileText className="h-6 w-6 text-brand-pink" />
+                  </div>
+                  <h3 className="text-2xl font-bold">{kolStats.availableCampaigns}</h3>
+                  <p className="text-sm text-muted-foreground">Available Opportunities</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-black/20 border-white/10">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
+                    <Star className="h-6 w-6 text-brand-pink" />
+                  </div>
+                  <h3 className="text-2xl font-bold">{kolStats.topEarningAmount}</h3>
+                  <p className="text-sm text-muted-foreground">Top Creator Earnings</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-black/20 border-white/10">
+                <CardContent className="p-4 flex flex-col items-center text-center">
+                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
+                    <Users className="h-6 w-6 text-brand-pink" />
+                  </div>
+                  <h3 className="text-2xl font-bold">{kolStats.avgCompletionTime}</h3>
+                  <p className="text-sm text-muted-foreground">Average Completion Time</p>
+                </CardContent>
+              </Card>
+            </div>
+            
+            <div className="mt-4 text-center">
+              <Button 
+                onClick={() => navigate(isAuthenticated ? "/dashboard/kol/campaigns" : "/signup")} 
+                className="bg-brand-pink hover:bg-brand-pink/90"
+              >
+                Browse Available Campaigns
+              </Button>
+            </div>
+          </div>
+        )}
+        
+        {/* General carousel section */}
         <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
           <div className="flex items-center mb-5">
             <Users className="h-5 w-5 text-brand-pink mr-2" />
-            <h2 className="text-xl font-semibold">Featured Content Creators</h2>
+            <h2 className="text-xl font-semibold">
+              {userView === "brand" ? "Featured Content Creators" : "Top Earning Creators"}
+            </h2>
           </div>
           
           <Carousel 
