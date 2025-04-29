@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { UserRole } from "@/contexts/AuthContext";
 import { MessageCircle } from 'lucide-react';
 import { useChat } from '@/contexts/ChatContext';
+import { FloatingChatButton } from '@/components/chat/FloatingChatButton';
 
 interface DashboardLayoutProps {
   children?: React.ReactNode;
@@ -250,6 +251,9 @@ const DashboardLayout = () => {
           <Outlet />
         </main>
       </div>
+      
+      {/* Floating chat button */}
+      <FloatingChatButton />
     </div>
   );
 };
