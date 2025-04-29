@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,6 +26,7 @@ interface User {
   role: UserRole;
   onboardingStatus: OnboardingStatus;
   subscription?: Subscription;
+  emailVerified?: boolean;
 }
 
 interface AuthContextType {
@@ -38,6 +38,8 @@ interface AuthContextType {
   signup: (name: string, email: string, password: string, role: UserRole) => Promise<void>;
   logout: () => void;
   forgotPassword: (email: string) => Promise<void>;
+  resetPassword: (token: string, newPassword: string) => Promise<void>;
+  verifyEmail: (token: string) => Promise<void>;
   completeOnboarding: () => void;
   skipOnboarding: () => void;
 }
@@ -190,6 +192,42 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const resetPassword = async (token: string, newPassword: string) => {
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      toast.success("Password has been reset successfully");
+    } catch (error) {
+      toast.error("Failed to reset password");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyEmail = async (token: string) => {
+    setIsLoading(true);
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Update user to mark email as verified
+      if (user) {
+        const updatedUser = { ...user, emailVerified: true };
+        setUser(updatedUser);
+        localStorage.setItem("kolerr_user", JSON.stringify(updatedUser));
+      }
+      
+      toast.success("Email verified successfully");
+    } catch (error) {
+      toast.error("Failed to verify email");
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const completeOnboarding = () => {
     if (user) {
       const updatedUser = { ...user, onboardingStatus: "complete" as OnboardingStatus };
@@ -230,6 +268,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signup,
         logout,
         forgotPassword,
+        resetPassword,
+        verifyEmail,
         completeOnboarding,
         skipOnboarding,
       }}

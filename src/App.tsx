@@ -28,6 +28,8 @@ import SecurityPage from "@/pages/legal/SecurityPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
+import ResetPassword from "@/pages/auth/ResetPassword";
+import EmailVerification from "@/pages/auth/EmailVerification";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import NotFound from "@/pages/NotFound";
 
@@ -136,6 +138,8 @@ const App = () => {
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route path="/verify-email" element={<EmailVerification />} />
                     
                     {/* Onboarding routes */}
                     <Route path="/onboarding/brand" element={
