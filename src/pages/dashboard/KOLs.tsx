@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -50,13 +49,13 @@ const KOLsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activeView, setActiveView] = useState("all");
 
-  // Mock KOL data
+  // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
     {
       id: "kol1",
       name: "Sophia Chen",
       handle: "@fashionwithsophia",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sophia",
+      avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop",
       category: "Fashion",
       followers: 2500000,
       engagement: 4.2,
@@ -70,7 +69,7 @@ const KOLsPage = () => {
       id: "kol2",
       name: "Jake Thomas",
       handle: "@jakeadventures",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jake",
+      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop",
       category: "Travel",
       followers: 1800000,
       engagement: 5.1,
@@ -84,7 +83,7 @@ const KOLsPage = () => {
       id: "kol3",
       name: "Aisha Mohamed",
       handle: "@aisha_beauty",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=aisha",
+      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop",
       category: "Beauty",
       followers: 3200000,
       engagement: 6.4,
@@ -98,7 +97,7 @@ const KOLsPage = () => {
       id: "kol4",
       name: "Mike Wilson",
       handle: "@mike_fitness",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike",
+      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop",
       category: "Fitness",
       followers: 1500000,
       engagement: 3.8,
@@ -112,7 +111,7 @@ const KOLsPage = () => {
       id: "kol5",
       name: "Priya Singh",
       handle: "@priyacooks",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya",
+      avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop",
       category: "Food",
       followers: 1300000,
       engagement: 4.7,
@@ -126,7 +125,7 @@ const KOLsPage = () => {
       id: "kol6",
       name: "David Park",
       handle: "@techwithdavid",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=david",
+      avatar: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&h=150&auto=format&fit=crop",
       category: "Tech",
       followers: 950000,
       engagement: 3.5,
@@ -140,7 +139,7 @@ const KOLsPage = () => {
       id: "kol7",
       name: "Zara Lewis",
       handle: "@zara_artlife",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=zara",
+      avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&auto=format&fit=crop",
       category: "Art",
       followers: 700000,
       engagement: 5.5,
@@ -154,7 +153,7 @@ const KOLsPage = () => {
       id: "kol8",
       name: "Leo Martinez",
       handle: "@leo_gaming",
-      avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=leo",
+      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&auto=format&fit=crop",
       category: "Gaming",
       followers: 4100000,
       engagement: 7.2,
