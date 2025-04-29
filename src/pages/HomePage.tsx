@@ -65,8 +65,10 @@ const HomePage = () => {
     highlightSpeed: 400  // Much slower (400ms) for the highlighted phrase
   });
 
-  // Track if messages have been updated
-  const [messagesUpdated, setMessagesUpdated] = useState(false);
+  // Track if messages have been manually updated by user interaction
+  // This prevents auto-scrolling on initial load or non-user-initiated updates
+  const [userInteraction, setUserInteraction] = useState(false);
+  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
 
   // Update the welcome message as it types
   useEffect(() => {
@@ -82,18 +84,25 @@ const HomePage = () => {
       }
       return newMessages;
     });
+    
+    if (isComplete && !initialLoadComplete) {
+      setInitialLoadComplete(true);
+    }
   }, [displayedText, isComplete]);
 
-  // Only scroll when messages are actually updated (not on initial load)
+  // Only scroll when user has interacted with the chat
+  // and only after the initial load is complete
   useEffect(() => {
-    if (messagesEndRef.current && messagesUpdated) {
+    if (messagesEndRef.current && userInteraction && initialLoadComplete) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-      setMessagesUpdated(false);
     }
-  }, [messages, messagesUpdated]);
+  }, [messages, userInteraction, initialLoadComplete]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
+    
+    // Set user interaction flag to true since this is a user-initiated action
+    setUserInteraction(true);
     
     // Analyze if the message is KOL-specific
     const isSpecific = isKOLSpecificQuery(inputValue);
@@ -124,7 +133,6 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
-    setMessagesUpdated(true);
 
     // Use intelligent credit system
     if (!useIntelligentCredit(inputValue)) {
@@ -144,7 +152,6 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: isSpecific
       }]);
-      setMessagesUpdated(true);
       
       // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
@@ -182,7 +189,6 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
-          setMessagesUpdated(true);
           
           // If we're typing one of our special phrases, slow down even more
           setTimeout(typingTextWithDelay, typingDelay);
@@ -194,9 +200,12 @@ const HomePage = () => {
     }, 1500);
   };
 
-  // Similar update for handleSearch function
+  // Update handleSearch function with similar changes
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
+    
+    // Set user interaction flag to true for search too
+    setUserInteraction(true);
     
     // Search is always considered a KOL-specific query
     if (!hasPremiumPlan && freeCredits === 0) {
@@ -223,7 +232,6 @@ const HomePage = () => {
     };
     
     setMessages(prev => [...prev, searchMessage]);
-    setMessagesUpdated(true);
 
     // Use intelligent credit system (search is always KOL-specific)
     if (!useIntelligentCredit(`find ${searchQuery}`)) {
@@ -249,7 +257,6 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: true
       }]);
-      setMessagesUpdated(true);
       
       // Use typing effect with variable speed
       let currentText = "";
@@ -281,7 +288,6 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
-          setMessagesUpdated(true);
           
           // Schedule next character
           setTimeout(typingTextWithDelay, typingDelay);
@@ -519,9 +525,21 @@ const HomePage = () => {
                 <Input placeholder="Ask about specific creator types, niches, or requirements..." 
                        value={inputValue} 
                        onChange={e => setInputValue(e.target.value)} 
-                       onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
+                       onKeyPress={e => {
+                         if (e.key === "Enter") {
+                           handleSendMessage();
+                           setUserInteraction(true); // Set interaction flag on Enter press
+                         }
+                       }}
                        className="bg-black/60" />
-                <Button onClick={handleSendMessage}>Send</Button>
+                <Button 
+                  onClick={() => {
+                    handleSendMessage();
+                    setUserInteraction(true); // Set interaction flag on button click
+                  }}
+                >
+                  Send
+                </Button>
               </div>
               <div className="flex items-center justify-between mt-3 px-2">
                 <Button variant="ghost" size="sm" className="text-muted-foreground">

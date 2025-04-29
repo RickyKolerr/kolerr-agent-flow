@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -67,7 +66,6 @@ import Community from "@/pages/dashboard/kol/Community";
 import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
 
 // Search pages
-import Index from "@/pages/Index";
 import SearchResults from "@/pages/search/SearchResults";
 import AdvancedSearch from "@/pages/search/AdvancedSearch";
 import SearchHistory from "@/pages/search/SearchHistory";
@@ -111,8 +109,8 @@ const App = () => {
                 <Sonner />
                 <Layout>
                   <Routes>
-                    {/* Public routes */}
-                    <Route path="/" element={<Index />} />
+                    {/* Public routes - REMOVED DUPLICATE INDEX ROUTE */}
+                    <Route path="/" element={<HomePage />} />
                     <Route path="/home" element={<HomePage />} />
                     <Route path="/about" element={<AboutPage />} />
                     <Route path="/features" element={<FeaturesPage />} />
