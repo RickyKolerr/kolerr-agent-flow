@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -66,10 +65,8 @@ const HomePage = () => {
     highlightSpeed: 400  // Much slower (400ms) for the highlighted phrase
   });
 
-  // Track if messages have been manually updated by user interaction
-  // This prevents auto-scrolling on initial load or non-user-initiated updates
-  const [userInteraction, setUserInteraction] = useState(false);
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  // Track if messages have been updated
+  const [messagesUpdated, setMessagesUpdated] = useState(false);
 
   // Update the welcome message as it types
   useEffect(() => {
@@ -85,25 +82,18 @@ const HomePage = () => {
       }
       return newMessages;
     });
-    
-    if (isComplete && !initialLoadComplete) {
-      setInitialLoadComplete(true);
-    }
   }, [displayedText, isComplete]);
 
-  // Only scroll when user has interacted with the chat
-  // and only after the initial load is complete
+  // Only scroll when messages are actually updated (not on initial load)
   useEffect(() => {
-    if (messagesEndRef.current && userInteraction && initialLoadComplete) {
+    if (messagesEndRef.current && messagesUpdated) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      setMessagesUpdated(false);
     }
-  }, [messages, userInteraction, initialLoadComplete]);
+  }, [messages, messagesUpdated]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
-    
-    // Set user interaction flag to true since this is a user-initiated action
-    setUserInteraction(true);
     
     // Analyze if the message is KOL-specific
     const isSpecific = isKOLSpecificQuery(inputValue);
@@ -134,6 +124,7 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+    setMessagesUpdated(true);
 
     // Use intelligent credit system
     if (!useIntelligentCredit(inputValue)) {
@@ -153,6 +144,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: isSpecific
       }]);
+      setMessagesUpdated(true);
       
       // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
@@ -190,6 +182,7 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          setMessagesUpdated(true);
           
           // If we're typing one of our special phrases, slow down even more
           setTimeout(typingTextWithDelay, typingDelay);
@@ -201,12 +194,9 @@ const HomePage = () => {
     }, 1500);
   };
 
-  // Update handleSearch function with similar changes
+  // Similar update for handleSearch function
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
-    
-    // Set user interaction flag to true for search too
-    setUserInteraction(true);
     
     // Search is always considered a KOL-specific query
     if (!hasPremiumPlan && freeCredits === 0) {
@@ -233,6 +223,7 @@ const HomePage = () => {
     };
     
     setMessages(prev => [...prev, searchMessage]);
+    setMessagesUpdated(true);
 
     // Use intelligent credit system (search is always KOL-specific)
     if (!useIntelligentCredit(`find ${searchQuery}`)) {
@@ -258,6 +249,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: true
       }]);
+      setMessagesUpdated(true);
       
       // Use typing effect with variable speed
       let currentText = "";
@@ -289,6 +281,7 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          setMessagesUpdated(true);
           
           // Schedule next character
           setTimeout(typingTextWithDelay, typingDelay);
@@ -453,184 +446,170 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          <div className="lg:w-2/3 w-full">
-            <div className="rounded-2xl overflow-hidden glass-panel shadow-2xl flex flex-col flex-1">
-              <div className="bg-black/70 p-6 border-b border-white/10 flex justify-between items-center">
-                <div className="flex items-center">
-                  <div className="h-16 w-16 rounded-full bg-brand-pink flex items-center justify-center mr-4">
-                    <MessageCircle className="h-8 w-8 text-white" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-2xl">AI KOL Discovery Agent</h2>
-                    <p className="text-lg text-muted-foreground">
-                      {getCreditUsageText()}
-                    </p>
-                  </div>
+        <div className="lg:w-2/3 w-full">
+          <div className="rounded-2xl overflow-hidden glass-panel shadow-2xl flex flex-col flex-1">
+            <div className="bg-black/70 p-6 border-b border-white/10 flex justify-between items-center">
+              <div className="flex items-center">
+                <div className="h-16 w-16 rounded-full bg-brand-pink flex items-center justify-center mr-4">
+                  <MessageCircle className="h-8 w-8 text-white" />
                 </div>
-                {!isAuthenticated ? (
-                  <Button 
-                    variant="ghost" 
-                    size="sm"
-                    onClick={() => navigate("/login")}
-                    className="text-brand-pink hover:text-brand-pink/90"
-                  >
-                    <Lock className="h-4 w-4 mr-2" />
-                    Sign in for full access
-                  </Button>
-                ) : !hasPremiumPlan && (
-                  <CreditBadge variant="detailed" />
-                )}
-              </div>
-
-              <div className="bg-black/40 p-4 border-b border-white/10">
-                <div className="flex gap-2">
-                  <Input placeholder="Quick search for TikTok creators..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="bg-black/60" />
-                  <Button size="icon" variant="secondary" onClick={handleSearch}>
-                    <Search className="h-4 w-4" />
-                  </Button>
+                <div>
+                  <h2 className="font-bold text-2xl">AI KOL Discovery Agent</h2>
+                  <p className="text-lg text-muted-foreground">
+                    {getCreditUsageText()}
+                  </p>
                 </div>
               </div>
+              {!isAuthenticated ? (
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  onClick={() => navigate("/login")}
+                  className="text-brand-pink hover:text-brand-pink/90"
+                >
+                  <Lock className="h-4 w-4 mr-2" />
+                  Sign in for full access
+                </Button>
+              ) : !hasPremiumPlan && (
+                <CreditBadge variant="detailed" />
+              )}
+            </div>
 
-              <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
-                {messages.map(message => (
-                  <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                    {message.type === "bot" && (
-                      <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                        <MessageCircle className="h-4 w-4 text-white" />
-                      </div>
-                    )}
-                    <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                      {message.content}
-                      {message.isTyping && (
-                        <span className="inline-block ml-1 animate-pulse">▌</span>
-                      )}
-                      {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                        <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                      )}
-                      {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                        <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
-                      )}
+            <div className="bg-black/40 p-4 border-b border-white/10">
+              <div className="flex gap-2">
+                <Input placeholder="Quick search for TikTok creators..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="bg-black/60" />
+                <Button size="icon" variant="secondary" onClick={handleSearch}>
+                  <Search className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
+              {messages.map(message => (
+                <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  {message.type === "bot" && (
+                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                      <MessageCircle className="h-4 w-4 text-white" />
                     </div>
-                    {message.type === "user" && (
-                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                        <User className="h-4 w-4" />
-                      </div>
+                  )}
+                  <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
+                    {message.content}
+                    {message.isTyping && (
+                      <span className="inline-block ml-1 animate-pulse">▌</span>
+                    )}
+                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
+                    )}
+                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
                     )}
                   </div>
-                ))}
-                <div ref={messagesEndRef} />
-              </ScrollArea>
-
-              <div className="p-4 border-t border-white/10 bg-black/40">
-                <div className="flex gap-2">
-                  <Input placeholder="Ask about specific creator types, niches, or requirements..." 
-                         value={inputValue} 
-                         onChange={e => setInputValue(e.target.value)} 
-                         onKeyPress={e => {
-                           if (e.key === "Enter") {
-                             handleSendMessage();
-                             setUserInteraction(true); // Set interaction flag on Enter press
-                           }
-                         }}
-                         className="bg-black/60" />
-                  <Button 
-                    onClick={() => {
-                      handleSendMessage();
-                      setUserInteraction(true); // Set interaction flag on button click
-                    }}
-                  >
-                    Send
-                  </Button>
-                </div>
-                <div className="flex items-center justify-between mt-3 px-2">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground">
-                    <Paperclip className="h-4 w-4 mr-2" />
-                    Attach
-                  </Button>
-                  
-                  {!hasPremiumPlan && (
-                    <div className="text-sm text-muted-foreground flex items-center gap-2">
-                      <span>
-                        {isKOLSpecificQuery(inputValue) 
-                          ? "KOL question: Uses 1 credit" 
-                          : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
-                      </span>
-                      <Button 
-                        variant="link" 
-                        size="sm" 
-                        className="text-brand-pink p-0 h-auto" 
-                        onClick={() => navigate("/pricing")}
-                      >
-                        Upgrade
-                      </Button>
+                  {message.type === "user" && (
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                      <User className="h-4 w-4" />
                     </div>
                   )}
                 </div>
+              ))}
+              <div ref={messagesEndRef} />
+            </ScrollArea>
+
+            <div className="p-4 border-t border-white/10 bg-black/40">
+              <div className="flex gap-2">
+                <Input placeholder="Ask about specific creator types, niches, or requirements..." 
+                       value={inputValue} 
+                       onChange={e => setInputValue(e.target.value)} 
+                       onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
+                       className="bg-black/60" />
+                <Button onClick={handleSendMessage}>Send</Button>
+              </div>
+              <div className="flex items-center justify-between mt-3 px-2">
+                <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Paperclip className="h-4 w-4 mr-2" />
+                  Attach
+                </Button>
+                
+                {!hasPremiumPlan && (
+                  <div className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span>
+                      {isKOLSpecificQuery(inputValue) 
+                        ? "KOL question: Uses 1 credit" 
+                        : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
+                    </span>
+                    <Button 
+                      variant="link" 
+                      size="sm" 
+                      className="text-brand-pink p-0 h-auto" 
+                      onClick={() => navigate("/pricing")}
+                    >
+                      Upgrade
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="lg:w-1/3 w-full">
-            <div className="rounded-2xl glass-panel p-8 shadow-2xl">
-              <h2 className="text-3xl font-bold mb-8">Discover TikTok Creators</h2>
-              <div className="space-y-6">
-                <p className="text-muted-foreground">
-                  Chat with our AI to find the perfect creators for your brand. You can:
-                </p>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
-                      <Search className="h-3 w-3 text-brand-pink" />
-                    </div>
-                    <span>Search by niche, audience, or engagement</span>
-                  </li>
-                  <li className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
-                      <MessageCircle className="h-3 w-3 text-brand-pink" />
-                    </div>
-                    <span>Get instant creator recommendations</span>
-                  </li>
-                </ul>
-                <div className="mt-8">
-                  <Button onClick={() => navigate("/signup")} className="w-full bg-brand-pink hover:bg-brand-pink/90 py-3 text-lg">
-                    Get Started
-                  </Button>
-                </div>
+        <div className="lg:w-1/3 w-full mt-8 lg:mt-0">
+          <div className="rounded-2xl glass-panel p-8 shadow-2xl">
+            <h2 className="text-3xl font-bold mb-8">Discover TikTok Creators</h2>
+            <div className="space-y-6">
+              <p className="text-muted-foreground">
+                Chat with our AI to find the perfect creators for your brand. You can:
+              </p>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
+                    <Search className="h-3 w-3 text-brand-pink" />
+                  </div>
+                  <span>Search by niche, audience, or engagement</span>
+                </li>
+                <li className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-full bg-brand-pink/20 flex items-center justify-center">
+                    <MessageCircle className="h-3 w-3 text-brand-pink" />
+                  </div>
+                  <span>Get instant creator recommendations</span>
+                </li>
+              </ul>
+              <div className="mt-8">
+                <Button onClick={() => navigate("/signup")} className="w-full bg-brand-pink hover:bg-brand-pink/90 py-3 text-lg">
+                  Get Started
+                </Button>
               </div>
             </div>
-            
-            {/* Update the Credit Usage Info Card */}
-            <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6">
-              <h3 className="text-lg font-bold mb-3 flex items-center">
-                <MessageCircle className="h-4 w-4 text-brand-pink mr-2" />
-                Understanding Credits
-              </h3>
-              <div className="space-y-3 text-sm">
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span>KOL specific questions:</span>
-                  <span className="font-medium">1 credit each</span>
-                </div>
-                <div className="flex justify-between items-center pb-2 border-b border-white/10">
-                  <span>General questions:</span>
-                  <span className="font-medium">{generalQuestionsPerCredit} for 1 credit</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span>Your remaining:</span>
-                  <span className="font-medium">
-                    {freeCredits} credits + {remainingGeneralQuestions} general questions
-                  </span>
-                </div>
-                {!hasPremiumPlan && (
-                  <Button 
-                    variant="outline" 
-                    className="w-full mt-2 text-brand-pink border-brand-pink/30 hover:bg-brand-pink/10"
-                    onClick={() => navigate("/pricing")}
-                  >
-                    Get Unlimited With Premium
-                  </Button>
-                )}
+          </div>
+          
+          {/* Update the Credit Usage Info Card */}
+          <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6">
+            <h3 className="text-lg font-bold mb-3 flex items-center">
+              <MessageCircle className="h-4 w-4 text-brand-pink mr-2" />
+              Understanding Credits
+            </h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                <span>KOL specific questions:</span>
+                <span className="font-medium">1 credit each</span>
               </div>
+              <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                <span>General questions:</span>
+                <span className="font-medium">{generalQuestionsPerCredit} for 1 credit</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Your remaining:</span>
+                <span className="font-medium">
+                  {freeCredits} credits + {remainingGeneralQuestions} general questions
+                </span>
+              </div>
+              {!hasPremiumPlan && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2 text-brand-pink border-brand-pink/30 hover:bg-brand-pink/10"
+                  onClick={() => navigate("/pricing")}
+                >
+                  Get Unlimited With Premium
+                </Button>
+              )}
             </div>
           </div>
         </div>
