@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -58,6 +57,100 @@ const mockCampaigns = [
   }
 ];
 
+// Mock global brands data
+const mockBrands = [
+  {
+    id: "b1",
+    name: "Nike",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/nike-4-logo-png-transparent.png",
+    industry: "Sports & Apparel",
+    campaignTypes: ["Product Launch", "Influencer Endorsement", "Sports Events"],
+    budget: "$5,000-25,000",
+    popularity: 98
+  },
+  {
+    id: "b2",
+    name: "Apple",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/apple-logo-png-transparent.png",
+    industry: "Technology",
+    campaignTypes: ["Product Reviews", "Tech Tutorials", "Unboxing Videos"],
+    budget: "$10,000-50,000",
+    popularity: 99
+  },
+  {
+    id: "b3",
+    name: "Coca-Cola",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/coca-cola-logo-png-transparent.png",
+    industry: "Beverages",
+    campaignTypes: ["Lifestyle Content", "Holiday Campaigns", "Summer Promos"],
+    budget: "$3,000-20,000",
+    popularity: 95
+  },
+  {
+    id: "b4",
+    name: "Amazon",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/amazon-dark-logo-png-transparent.png",
+    industry: "E-Commerce",
+    campaignTypes: ["Product Reviews", "Unboxing", "Prime Day Promotions"],
+    budget: "$2,500-15,000",
+    popularity: 97
+  },
+  {
+    id: "b5",
+    name: "Google",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/google-logo-png-transparent.png",
+    industry: "Technology",
+    campaignTypes: ["Tech Reviews", "How-To Content", "Product Tutorials"],
+    budget: "$8,000-30,000",
+    popularity: 96
+  },
+  {
+    id: "b6",
+    name: "Samsung",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/samsung-logo-png-transparent.png",
+    industry: "Technology",
+    campaignTypes: ["Product Reviews", "Tech Comparisons", "Lifestyle Tech"],
+    budget: "$5,000-25,000",
+    popularity: 94
+  },
+  {
+    id: "b7",
+    name: "Adidas",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/adidas-logo-png-transparent.png",
+    industry: "Sports & Apparel",
+    campaignTypes: ["Athletic Endorsements", "Fitness Content", "Product Launches"],
+    budget: "$4,000-20,000",
+    popularity: 93
+  },
+  {
+    id: "b8",
+    name: "Microsoft",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/microsoft-logo-png-transparent.png",
+    industry: "Technology",
+    campaignTypes: ["Software Reviews", "Productivity Tips", "Gaming Content"],
+    budget: "$6,000-35,000",
+    popularity: 92
+  },
+  {
+    id: "b9",
+    name: "Disney",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/disney-logo-png-transparent.png",
+    industry: "Entertainment",
+    campaignTypes: ["Family Content", "Travel", "Movie Promotions"],
+    budget: "$7,000-40,000",
+    popularity: 95
+  },
+  {
+    id: "b10",
+    name: "Netflix",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/netflix-logo-png-transparent.png",
+    industry: "Entertainment",
+    campaignTypes: ["Show Reviews", "Watch Parties", "Premiere Events"],
+    budget: "$5,000-30,000",
+    popularity: 96
+  }
+];
+
 // Mock KOL statistics
 const kolStats = {
   avgEarnings: "$450",
@@ -103,18 +196,18 @@ const Index = () => {
       }, 500);
     }
   }, [showWelcome, userView]);
-
+  
   // If user toggles view, reset welcome message
   useEffect(() => {
     setShowWelcome(true);
   }, [userView]);
-
+  
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
-
+  
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCarouselIndex((prev) => 
@@ -124,13 +217,13 @@ const Index = () => {
     
     return () => clearInterval(interval);
   }, []);
-
+  
   const handleSearch = () => {
     if (!searchQuery.trim()) {
       toast.error("Please enter a search term");
       return;
     }
-
+    
     if (freeCredits > 0 || hasPremiumPlan) {
       const userMessage: Message = {
         id: Date.now().toString(),
@@ -340,6 +433,7 @@ const Index = () => {
     .slice(0, 3);
 
   const allCreators = mockCreatorData.slice(0, 10);
+  const topBrands = mockBrands.slice(0, 10);
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
@@ -801,7 +895,7 @@ const Index = () => {
           <div className="flex items-center mb-5">
             <Users className="h-5 w-5 text-brand-pink mr-2" />
             <h2 className="text-xl font-semibold">
-              {userView === "brand" ? "Featured Content Creators" : "Top Earning Creators"}
+              {userView === "brand" ? "Featured Content Creators" : "Top Brands"}
             </h2>
           </div>
           
@@ -823,33 +917,74 @@ const Index = () => {
             }}
           >
             <CarouselContent className="transition-transform duration-700 ease-in-out">
-              {allCreators.map((creator) => (
-                <CarouselItem 
-                  key={creator.id} 
-                  className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
-                >
-                  <div className="p-1">
-                    <div 
-                      className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
-                      onClick={() => navigate(`/creators/${creator.id}`)}
-                    >
-                      <img
-                        src={creator.avatar}
-                        alt={creator.fullName}
-                        className="h-full w-full object-cover transition-transform duration-500"
-                      />
+              {userView === "brand" ? (
+                // Show creators in brand view
+                allCreators.map((creator) => (
+                  <CarouselItem 
+                    key={creator.id} 
+                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
+                  >
+                    <div className="p-1">
+                      <div 
+                        className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
+                        onClick={() => navigate(`/creators/${creator.id}`)}
+                      >
+                        <img
+                          src={creator.avatar}
+                          alt={creator.fullName}
+                          className="h-full w-full object-cover transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="text-center mt-3">
+                        <p className="font-medium">{creator.fullName}</p>
+                        <p className="text-xs text-gray-400">{(creator.followers / 1000000).toFixed(1)}M followers</p>
+                      </div>
                     </div>
-                    <div className="text-center mt-3">
-                      <p className="font-medium">{creator.fullName}</p>
-                      <p className="text-xs text-gray-400">{(creator.followers / 1000000).toFixed(1)}M followers</p>
+                  </CarouselItem>
+                ))
+              ) : (
+                // Show brands in KOL view
+                topBrands.map((brand) => (
+                  <CarouselItem 
+                    key={brand.id} 
+                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
+                  >
+                    <div className="p-1">
+                      <div 
+                        className="overflow-hidden rounded-lg aspect-square border border-white/10 bg-white hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center p-4"
+                        onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
+                      >
+                        <img
+                          src={brand.logo}
+                          alt={brand.name}
+                          className="h-full w-full object-contain transition-transform duration-500"
+                        />
+                      </div>
+                      <div className="text-center mt-3">
+                        <p className="font-medium">{brand.name}</p>
+                        <p className="text-xs text-gray-400">{brand.industry}</p>
+                        <Badge className="mt-1 bg-brand-pink/40 text-xs">{brand.campaignTypes[0]}</Badge>
+                      </div>
                     </div>
-                  </div>
-                </CarouselItem>
-              ))}
+                  </CarouselItem>
+                ))
+              )}
             </CarouselContent>
             <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
             <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
           </Carousel>
+          
+          {/* View all button for brands */}
+          {userView === "kol" && (
+            <div className="mt-4 text-center">
+              <Button 
+                onClick={() => navigate(isAuthenticated ? "/dashboard/kol/campaigns" : "/signup")} 
+                className="bg-brand-pink hover:bg-brand-pink/90"
+              >
+                View All Brand Campaigns
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>
