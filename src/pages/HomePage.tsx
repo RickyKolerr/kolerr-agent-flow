@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,25 +13,54 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
+import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface Message {
   id: string;
   type: "user" | "bot";
   content: string;
+  isTyping?: boolean;
 }
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const welcomeMessage = "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?";
+  
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
     type: "bot",
-    content: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
+    content: welcomeMessage,
+    isTyping: true
   }]);
+  
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
   const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
+
+  // Typing effect for the welcome message
+  const { displayedText, isComplete } = useTypingEffect({
+    text: welcomeMessage,
+    typingSpeed: 20,
+    startDelay: 500
+  });
+
+  // Update the welcome message as it types
+  useEffect(() => {
+    setMessages(prevMessages => {
+      const newMessages = [...prevMessages];
+      const welcomeMessageIndex = newMessages.findIndex(msg => msg.id === "welcome");
+      if (welcomeMessageIndex !== -1) {
+        newMessages[welcomeMessageIndex] = {
+          ...newMessages[welcomeMessageIndex],
+          content: displayedText,
+          isTyping: !isComplete
+        };
+      }
+      return newMessages;
+    });
+  }, [displayedText, isComplete]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -70,14 +100,46 @@ const HomePage = () => {
       useFreeCredit();
     }
 
+    // Add a small delay before AI starts typing
     setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
+      const botResponseText = getResponse(inputValue);
+      const botResponseId = (Date.now() + 1).toString();
+      
+      // Add empty bot message with typing indicator
+      setMessages(prev => [...prev, {
+        id: botResponseId,
         type: "bot",
-        content: getResponse(inputValue)
-      };
-      setMessages(prev => [...prev, botResponse]);
-    }, 1000);
+        content: "",
+        isTyping: true
+      }]);
+      
+      // Use typing effect to gradually reveal the message
+      let currentText = "";
+      let charIndex = 0;
+      
+      const typingInterval = setInterval(() => {
+        if (charIndex < botResponseText.length) {
+          currentText += botResponseText[charIndex];
+          charIndex++;
+          
+          // Update the message with the current text
+          setMessages(prev => {
+            const updatedMessages = [...prev];
+            const messageIndex = updatedMessages.findIndex(msg => msg.id === botResponseId);
+            if (messageIndex !== -1) {
+              updatedMessages[messageIndex] = {
+                ...updatedMessages[messageIndex],
+                content: currentText,
+                isTyping: charIndex < botResponseText.length
+              };
+            }
+            return updatedMessages;
+          });
+        } else {
+          clearInterval(typingInterval);
+        }
+      }, 20);
+    }, 500);
   };
 
   const handleSearch = () => {
@@ -111,22 +173,55 @@ const HomePage = () => {
       useFreeCredit();
     }
 
+    // Add a small delay before AI starts typing
     setTimeout(() => {
-      const botResponse: Message = {
-        id: (Date.now() + 1).toString(),
+      const responseText = isAuthenticated 
+        ? `I found several TikTok creators matching "${searchQuery}". Let me analyze their profiles.`
+        : "To see detailed analytics and book these creators, please sign in.";
+      
+      const botResponseId = (Date.now() + 1).toString();
+      
+      // Add empty bot message with typing indicator
+      setMessages(prev => [...prev, {
+        id: botResponseId,
         type: "bot",
-        content: isAuthenticated 
-          ? `I found several TikTok creators matching "${searchQuery}". Let me analyze their profiles.`
-          : "To see detailed analytics and book these creators, please sign in."
-      };
-      setMessages(prev => [...prev, botResponse]);
-
-      if (!isAuthenticated) {
-        setTimeout(() => {
-          navigate("/login");
-        }, 2000);
-      }
-    }, 1000);
+        content: "",
+        isTyping: true
+      }]);
+      
+      // Use typing effect to gradually reveal the message
+      let currentText = "";
+      let charIndex = 0;
+      
+      const typingInterval = setInterval(() => {
+        if (charIndex < responseText.length) {
+          currentText += responseText[charIndex];
+          charIndex++;
+          
+          // Update the message with the current text
+          setMessages(prev => {
+            const updatedMessages = [...prev];
+            const messageIndex = updatedMessages.findIndex(msg => msg.id === botResponseId);
+            if (messageIndex !== -1) {
+              updatedMessages[messageIndex] = {
+                ...updatedMessages[messageIndex],
+                content: currentText,
+                isTyping: charIndex < responseText.length
+              };
+            }
+            return updatedMessages;
+          });
+        } else {
+          clearInterval(typingInterval);
+          
+          if (!isAuthenticated) {
+            setTimeout(() => {
+              navigate("/login");
+            }, 2000);
+          }
+        }
+      }, 20);
+    }, 500);
   };
 
   const getResponse = (message: string) => {
@@ -308,23 +403,36 @@ const HomePage = () => {
             </div>
 
             <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
-              {messages.map(message => <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.type === "bot" && <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+              {messages.map(message => (
+                <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  {message.type === "bot" && (
+                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
                       <MessageCircle className="h-4 w-4 text-white" />
-                    </div>}
+                    </div>
+                  )}
                   <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
                     {message.content}
+                    {message.isTyping && (
+                      <span className="inline-block ml-1 animate-pulse">▌</span>
+                    )}
                   </div>
-                  {message.type === "user" && <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                  {message.type === "user" && (
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
                       <User className="h-4 w-4" />
-                    </div>}
-                </div>)}
+                    </div>
+                  )}
+                </div>
+              ))}
               <div ref={messagesEndRef} />
             </ScrollArea>
 
             <div className="p-4 border-t border-white/10 bg-black/40">
               <div className="flex gap-2">
-                <Input placeholder="Ask about specific creator types, niches, or requirements..." value={inputValue} onChange={e => setInputValue(e.target.value)} onKeyPress={e => e.key === "Enter" && handleSendMessage()} className="bg-black/60" />
+                <Input placeholder="Ask about specific creator types, niches, or requirements..." 
+                       value={inputValue} 
+                       onChange={e => setInputValue(e.target.value)} 
+                       onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
+                       className="bg-black/60" />
                 <Button onClick={handleSendMessage}>Send</Button>
               </div>
               <div className="flex items-center justify-between mt-3 px-2">
