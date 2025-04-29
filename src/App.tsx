@@ -25,6 +25,10 @@ import HelpCenter from "@/pages/help/HelpCenter";
 import TermsPage from "@/pages/legal/Terms";
 import PrivacyPage from "@/pages/legal/Privacy";
 import SecurityPage from "@/pages/legal/SecurityPage";
+import CompliancePage from "@/pages/legal/CompliancePage";
+import CareersPage from "@/pages/company/CareersPage";
+import PressPage from "@/pages/company/PressPage";
+import SustainabilityPage from "@/pages/company/SustainabilityPage";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import ForgotPasswordPage from "@/pages/auth/ForgotPasswordPage";
@@ -120,6 +124,11 @@ const App = () => {
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/partners" element={<PartnersPage />} />
                     
+                    {/* New company pages */}
+                    <Route path="/careers" element={<CareersPage />} />
+                    <Route path="/press" element={<PressPage />} />
+                    <Route path="/sustainability" element={<SustainabilityPage />} />
+                    
                     {/* Campaign routes - Public but with auth-aware UI */}
                     <Route path="/campaigns/:campaignId" element={<CampaignDetail />} />
                     
@@ -133,6 +142,7 @@ const App = () => {
                     <Route path="/terms" element={<TermsPage />} />
                     <Route path="/privacy" element={<PrivacyPage />} />
                     <Route path="/security" element={<SecurityPage />} />
+                    <Route path="/compliance" element={<CompliancePage />} />
                     
                     {/* Auth routes */}
                     <Route path="/login" element={<LoginPage />} />

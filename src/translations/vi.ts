@@ -1,3 +1,4 @@
+
 export default {
   mainNav: {
     about: 'Giới thiệu',
@@ -80,6 +81,16 @@ export default {
       accountTermsDesc: 'Bạn phải tạo một tài khoản để truy cập dịch vụ của Kolerr. Bạn chịu trách nhiệm duy trì bảo mật tài khoản và mọi hoạt động xảy ra trong tài khoản của mình.',
       serviceTerms: '2. Điều khoản dịch vụ',
       serviceTermsDesc: 'Dịch vụ của chúng tôi được cung cấp "nguyên trạng". Chúng tôi có quyền sửa đổi hoặc ngừng bất kỳ dịch vụ nào vào bất kỳ lúc nào, có hoặc không có thông báo.'
+    },
+    compliance: {
+      title: 'Tuân thủ',
+      description: 'Tìm hiểu cách Kolerr tuân thủ các quy định và tiêu chuẩn của ngành để đảm bảo một nền tảng đáng tin cậy.',
+      standards: 'Tiêu chuẩn quy định',
+      standardsDesc: 'Chúng tôi duy trì sự tuân thủ với GDPR, CCPA và các quy định bảo vệ dữ liệu và quyền riêng tư có liên quan trên tất cả các thị trường chúng tôi hoạt động.',
+      dataHandling: 'Thực tiễn xử lý dữ liệu',
+      dataHandlingDesc: 'Nền tảng của chúng tôi triển khai các giao thức xử lý dữ liệu nghiêm ngặt để đảm bảo tất cả dữ liệu người dùng và người sáng tạo được xử lý và lưu trữ theo tiêu chuẩn bảo mật dữ liệu quốc tế.',
+      certifications: 'Chứng nhận',
+      certificationsDesc: 'Kolerr đã đạt được chứng nhận ISO 27001 về quản lý an ninh thông tin và thường xuyên trải qua các cuộc kiểm tra bảo mật từ bên thứ ba.'
     }
   },
   blog: {
@@ -138,5 +149,66 @@ export default {
     title: 'Trung tâm trợ giúp',
     description: 'Tìm câu trả lời cho các câu hỏi của bạn về việc sử dụng Kolerr',
     searchPlaceholder: 'Tìm kiếm bài viết trợ giúp...'
+  },
+  company: {
+    careers: {
+      title: 'Cơ hội nghề nghiệp tại Kolerr',
+      description: 'Tham gia đội ngũ của chúng tôi và giúp định hình tương lai của tiếp thị người ảnh hưởng',
+      innovative: 'Công việc sáng tạo',
+      innovativeDesc: 'Làm việc với công nghệ tiên tiến đang định hình lại cách thương hiệu kết nối với những người sáng tạo số',
+      flexible: 'Môi trường linh hoạt',
+      flexibleDesc: 'Văn hóa ưu tiên từ xa với giờ làm việc và địa điểm linh hoạt trên khắp Đông Nam Á',
+      supportive: 'Văn hóa hỗ trợ',
+      supportiveDesc: 'Môi trường hòa nhập tập trung vào phát triển, học hỏi và cân bằng công việc-cuộc sống',
+      openPositions: 'Vị trí đang tuyển',
+      apply: 'Ứng tuyển ngay',
+      noPositions: 'Không thấy vị trí phù hợp?',
+      speculative: 'Chúng tôi luôn tìm kiếm những cá nhân tài năng. Gửi CV của bạn cho chúng tôi để có cơ hội trong tương lai.',
+      sendCV: 'Gửi CV của bạn'
+    },
+    press: {
+      title: 'Báo chí & Truyền thông',
+      description: 'Tin tức, thông báo và tài nguyên truyền thông mới nhất từ Kolerr',
+      mediaKit: 'Bộ công cụ truyền thông',
+      mediaKitDesc: 'Tải xuống bộ công cụ báo chí của chúng tôi có chứa thông tin, sự kiện công ty và tiểu sử lãnh đạo.',
+      brandAssets: 'Tài sản thương hiệu',
+      brandAssetsDesc: 'Truy cập logo, hướng dẫn thương hiệu và hình ảnh được phê duyệt để sử dụng cho truyền thông.',
+      download: 'Tải xuống bộ công cụ truyền thông',
+      downloadAssets: 'Tải xuống tài sản thương hiệu',
+      recentReleases: 'Thông cáo báo chí gần đây',
+      readFull: 'Đọc toàn bộ thông cáo',
+      contact: 'Liên hệ truyền thông',
+      contactDesc: 'Để biết thêm thông tin về báo chí, phỏng vấn với đội ngũ lãnh đạo của chúng tôi, hoặc thông tin bổ sung về Kolerr.',
+      email: 'Email'
+    },
+    sustainability: {
+      title: 'Phát triển bền vững',
+      description: 'Cam kết của chúng tôi đối với các hoạt động kinh doanh có trách nhiệm và tác động xã hội tích cực',
+      commitment: 'Cam kết của chúng tôi',
+      commitmentDesc1: 'Tại Kolerr, phát triển bền vững không chỉ là một từ khóa thời thượng—mà là một phần cốt lõi trong chiến lược kinh doanh và văn hóa công ty của chúng tôi.',
+      commitmentDesc2: 'Chúng tôi cam kết thúc đẩy các hoạt động tiếp thị kỹ thuật số có trách nhiệm trong khi giảm thiểu dấu chân môi trường và hỗ trợ các cộng đồng mà chúng tôi phục vụ.',
+      environmental: {
+        title: 'Tác động môi trường',
+        description: 'Chúng tôi cam kết giảm dấu chân môi trường trong tất cả các hoạt động.',
+        goal1: 'Hoạt động dữ liệu trung hòa carbon vào năm 2026',
+        goal2: 'Giảm tiêu thụ năng lượng trong văn phòng của chúng tôi 30%',
+        goal3: 'Thực hiện các hoạt động mua sắm bền vững'
+      },
+      social: {
+        title: 'Trách nhiệm xã hội',
+        description: 'Chúng tôi tin vào việc sử dụng nền tảng để tạo ra thay đổi xã hội tích cực.',
+        goal1: 'Thúc đẩy đa dạng và hòa nhập trong mạng lưới người sáng tạo của chúng tôi',
+        goal2: 'Các sáng kiến giáo dục cho những người sáng tạo mới nổi ở các thị trường chưa phát triển',
+        goal3: 'Hỗ trợ các hoạt động tiếp thị đạo đức và minh bạch'
+      },
+      governance: {
+        title: 'Quản trị & Đạo đức',
+        description: 'Chúng tôi duy trì các tiêu chuẩn cao nhất về quản trị doanh nghiệp và hành vi đạo đức.',
+        goal1: 'Báo cáo minh bạch về số liệu nền tảng và tác động',
+        goal2: 'Phát triển AI có đạo đức và thực tiễn dữ liệu có trách nhiệm',
+        goal3: 'Duy trì các tiêu chuẩn quyền riêng tư và bảo mật nghiêm ngặt'
+      },
+      progress: 'Hành trình phát triển bền vững của chúng tôi đang tiếp diễn. Chúng tôi xuất bản báo cáo phát triển bền vững hàng năm để theo dõi tiến trình và giữ trách nhiệm đối với các cam kết của mình.'
+    }
   }
 };

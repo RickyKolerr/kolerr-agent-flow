@@ -1,3 +1,4 @@
+
 export default {
   mainNav: {
     about: 'About',
@@ -80,6 +81,16 @@ export default {
       accountTermsDesc: 'You must create an account to access Kolerr\'s services. You are responsible for maintaining the security of your account and any activities that occur under your account.',
       serviceTerms: '2. Service Terms',
       serviceTermsDesc: 'Our services are provided "as is". We reserve the right to modify or discontinue any service at any time, with or without notice.'
+    },
+    compliance: {
+      title: 'Compliance',
+      description: 'Learn how Kolerr adheres to industry regulations and standards to ensure a trustworthy platform.',
+      standards: 'Regulatory Standards',
+      standardsDesc: 'We maintain compliance with GDPR, CCPA, and other relevant data protection and privacy regulations across all markets we operate in.',
+      dataHandling: 'Data Handling Practices',
+      dataHandlingDesc: 'Our platform implements strict data handling protocols to ensure all user and creator data is processed and stored according to international data security standards.',
+      certifications: 'Certifications',
+      certificationsDesc: 'Kolerr has obtained ISO 27001 certification for information security management and undergoes regular third-party security audits.'
     }
   },
   blog: {
@@ -138,5 +149,66 @@ export default {
     title: 'Help Center',
     description: 'Find answers to your questions about using Kolerr',
     searchPlaceholder: 'Search for help articles...'
+  },
+  company: {
+    careers: {
+      title: 'Careers at Kolerr',
+      description: 'Join our team and help shape the future of influencer marketing',
+      innovative: 'Innovative Work',
+      innovativeDesc: 'Work on cutting-edge technology that's reshaping how brands connect with digital creators',
+      flexible: 'Flexible Environment',
+      flexibleDesc: 'Remote-first culture with flexible hours and locations across Southeast Asia',
+      supportive: 'Supportive Culture',
+      supportiveDesc: 'Inclusive environment focused on growth, learning, and work-life balance',
+      openPositions: 'Open Positions',
+      apply: 'Apply Now',
+      noPositions: 'Don't see the right position?',
+      speculative: 'We're always looking for talented individuals. Send us your CV for future opportunities.',
+      sendCV: 'Send Your CV'
+    },
+    press: {
+      title: 'Press & Media',
+      description: 'The latest news, announcements, and media resources from Kolerr',
+      mediaKit: 'Media Kit',
+      mediaKitDesc: 'Download our press kit containing information, company facts, and leadership bios.',
+      brandAssets: 'Brand Assets',
+      brandAssetsDesc: 'Access our logos, brand guidelines, and approved imagery for media use.',
+      download: 'Download Media Kit',
+      downloadAssets: 'Download Brand Assets',
+      recentReleases: 'Recent Press Releases',
+      readFull: 'Read Full Release',
+      contact: 'Media Contact',
+      contactDesc: 'For press inquiries, interviews with our leadership team, or additional information about Kolerr.',
+      email: 'Email'
+    },
+    sustainability: {
+      title: 'Sustainability',
+      description: 'Our commitment to responsible business practices and positive social impact',
+      commitment: 'Our Commitment',
+      commitmentDesc1: 'At Kolerr, sustainability isn't just a buzzword—it's a core part of our business strategy and company culture.',
+      commitmentDesc2: 'We're dedicated to promoting responsible digital marketing practices while minimizing our environmental footprint and supporting the communities we serve.',
+      environmental: {
+        title: 'Environmental Impact',
+        description: 'We're committed to reducing our environmental footprint across all operations.',
+        goal1: 'Carbon-neutral data operations by 2026',
+        goal2: 'Reducing energy consumption in our offices by 30%',
+        goal3: 'Implementing sustainable procurement practices'
+      },
+      social: {
+        title: 'Social Responsibility',
+        description: 'We believe in using our platform to create positive social change.',
+        goal1: 'Promoting diversity and inclusion across our creator network',
+        goal2: 'Educational initiatives for emerging creators in underserved markets',
+        goal3: 'Supporting ethical marketing practices and transparency'
+      },
+      governance: {
+        title: 'Governance & Ethics',
+        description: 'We maintain the highest standards of corporate governance and ethical conduct.',
+        goal1: 'Transparent reporting on platform metrics and impact',
+        goal2: 'Ethical AI development and responsible data practices',
+        goal3: 'Maintaining rigorous privacy and security standards'
+      },
+      progress: 'Our sustainability journey is ongoing. We publish annual sustainability reports to track our progress and hold ourselves accountable to our commitments.'
+    }
   }
 };
