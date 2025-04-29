@@ -156,7 +156,7 @@ export const mockCreatorData = [
     username: "crypto_guru",
     fullName: "Crypto Master",
     bio: "Cryptocurrency expert sharing market insights, investment tips, and blockchain technology updates! 💰📊",
-    avatar: "https://images.unsplash.com/photo-1613114571719-e9c1bbcd9e86?w=150&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
+    avatar: "https://images.unsplash.com/photo-1516245834210-c4c142787335?w=150&h=150&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
     followers: 750000,
     engagementRate: 0.082,
     niche: ["Finance", "Cryptocurrency", "Technology"],
