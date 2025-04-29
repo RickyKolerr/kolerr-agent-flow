@@ -57,7 +57,7 @@ const mockCampaigns = [
   }
 ];
 
-// Mock global brands data
+// Mock global brands data - expanded to 20 popular TikTok and Instagram brands
 const mockBrands = [
   {
     id: "b1",
@@ -148,6 +148,96 @@ const mockBrands = [
     campaignTypes: ["Show Reviews", "Watch Parties", "Premiere Events"],
     budget: "$5,000-30,000",
     popularity: 96
+  },
+  {
+    id: "b11",
+    name: "Fashion Nova",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/fashion-nova-logo-png-transparent.png",
+    industry: "Fashion",
+    campaignTypes: ["Try-On Hauls", "OOTD Content", "Collection Launches"],
+    budget: "$2,000-15,000",
+    popularity: 94
+  },
+  {
+    id: "b12",
+    name: "Gymshark",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/gymshark-logo-png-transparent.png",
+    industry: "Fitness Apparel",
+    campaignTypes: ["Workout Videos", "Transformation Stories", "Product Showcases"],
+    budget: "$3,000-18,000",
+    popularity: 92
+  },
+  {
+    id: "b13",
+    name: "Sephora",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/sephora-logo-png-transparent.png",
+    industry: "Beauty & Cosmetics",
+    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Beauty Tips"],
+    budget: "$4,000-20,000",
+    popularity: 93
+  },
+  {
+    id: "b14",
+    name: "Shein",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/shein-logo-png-transparent.png",
+    industry: "Fast Fashion",
+    campaignTypes: ["Haul Videos", "Styling Tips", "Discount Promotions"],
+    budget: "$1,500-10,000",
+    popularity: 91
+  },
+  {
+    id: "b15",
+    name: "Zara",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/zara-logo-png-transparent.png",
+    industry: "Fashion",
+    campaignTypes: ["Lookbooks", "Styling Videos", "Collection Reveals"],
+    budget: "$3,500-22,000",
+    popularity: 90
+  },
+  {
+    id: "b16",
+    name: "H&M",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/hm-logo-png-transparent.png",
+    industry: "Fashion",
+    campaignTypes: ["Sustainable Fashion", "Style Guides", "Collection Showcases"],
+    budget: "$2,500-18,000",
+    popularity: 89
+  },
+  {
+    id: "b17",
+    name: "Fenty Beauty",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/fenty-beauty-logo-png-transparent.png",
+    industry: "Beauty & Cosmetics",
+    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Inclusive Beauty"],
+    budget: "$5,000-25,000",
+    popularity: 94
+  },
+  {
+    id: "b18",
+    name: "Supreme",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/supreme-logo-png-transparent.png",
+    industry: "Streetwear",
+    campaignTypes: ["Drop Announcements", "Styling Videos", "Exclusive Access"],
+    budget: "$4,500-30,000",
+    popularity: 95
+  },
+  {
+    id: "b19",
+    name: "Gucci",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/gucci-logo-png-transparent.png",
+    industry: "Luxury Fashion",
+    campaignTypes: ["Lifestyle Content", "Premium Unboxings", "Collection Features"],
+    budget: "$10,000-50,000",
+    popularity: 97
+  },
+  {
+    id: "b20",
+    name: "Louis Vuitton",
+    logo: "https://cdn.freebiesupply.com/logos/large/2x/louis-vuitton-1-logo-png-transparent.png",
+    industry: "Luxury Fashion",
+    campaignTypes: ["Luxury Lifestyle", "Product Showcases", "Heritage Stories"],
+    budget: "$12,000-60,000",
+    popularity: 98
   }
 ];
 
@@ -433,7 +523,9 @@ const Index = () => {
     .slice(0, 3);
 
   const allCreators = mockCreatorData.slice(0, 10);
-  const topBrands = mockBrands.slice(0, 10);
+  
+  // Update to use all 20 brands
+  const topBrands = mockBrands;
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
