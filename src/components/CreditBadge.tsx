@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCredits } from "@/contexts/CreditContext";
 import { CreditCard } from "lucide-react";
+import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 
 interface CreditBadgeProps {
   variant?: "default" | "compact";
@@ -10,7 +11,15 @@ interface CreditBadgeProps {
 }
 
 export const CreditBadge = ({ variant = "default", showTooltip = true }: CreditBadgeProps) => {
-  const { freeCredits, premiumCredits, timeUntilReset, hasPremiumPlan } = useCredits();
+  const { freeCredits: originalCredits, premiumCredits, timeUntilReset, hasPremiumPlan } = useCredits();
+  
+  // Use the intelligent credits hook to get the updated credit count and general question counter
+  const { 
+    freeCredits, 
+    generalQuestionCounter,
+    remainingGeneralQuestions,
+    generalQuestionsPerCredit
+  } = useIntelligentCredits(originalCredits, hasPremiumPlan);
   
   const badgeContent = (
     <Badge 
@@ -41,6 +50,9 @@ export const CreditBadge = ({ variant = "default", showTooltip = true }: CreditB
             <p className="font-medium">Credits Summary</p>
             <p>{freeCredits} free daily credits left</p>
             {hasPremiumPlan && <p>{premiumCredits} premium credits left</p>}
+            {!hasPremiumPlan && (
+              <p>{remainingGeneralQuestions}/{generalQuestionsPerCredit} general questions until next credit use</p>
+            )}
             <p className="text-xs text-muted-foreground">Resets in {timeUntilReset}</p>
           </div>
         </TooltipContent>

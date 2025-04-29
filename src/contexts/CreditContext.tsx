@@ -2,6 +2,7 @@
 import { createContext, useContext, ReactNode, useState, useEffect } from "react";
 import { useSearchCredits } from "@/hooks/useSearchCredits";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 
 interface CreditContextType {
   freeCredits: number;
@@ -22,6 +23,12 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   
   // Detect if user has premium plan
   const hasPremiumPlan = isAuthenticated && user?.subscription?.plan !== "free";
+  
+  // Initialize intelligent credits system
+  const { 
+    freeCredits,
+    useIntelligentCredit
+  } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // Load premium credits from localStorage or set default
   useEffect(() => {
@@ -49,8 +56,11 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [premiumCredits, isAuthenticated]);
   
+  // New useFreeCredit that uses the intelligent system
   const useFreeCredit = () => {
-    return useCredit();
+    // Direct use of a credit bypassing the question classification
+    // This is for backward compatibility with other components
+    return useIntelligentCredit("find creator");
   };
   
   const usePremiumCredit = (amount: number) => {
@@ -61,12 +71,12 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
   
-  const totalCredits = creditsLeft + premiumCredits;
+  const totalCredits = freeCredits + premiumCredits;
   const timeUntilReset = getTimeUntilReset();
   
   return (
     <CreditContext.Provider value={{
-      freeCredits: creditsLeft,
+      freeCredits,
       premiumCredits,
       totalCredits,
       useFreeCredit,

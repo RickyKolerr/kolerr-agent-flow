@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,12 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
+import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 
 interface Message {
   id: string;
   type: "user" | "bot";
   content: string;
   isTyping?: boolean;
+  isKOLSpecific?: boolean;
 }
 
 const HomePage = () => {
@@ -36,7 +39,17 @@ const HomePage = () => {
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
-  const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
+  const { freeCredits: originalFreeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
+  
+  // Initialize intelligent credit system
+  const { 
+    freeCredits,
+    generalQuestionCounter, 
+    remainingGeneralQuestions,
+    useIntelligentCredit,
+    isKOLSpecificQuery,
+    generalQuestionsPerCredit
+  } = useIntelligentCredits(originalFreeCredits, hasPremiumPlan);
 
   // Typing effect for the welcome message with a much slower typing speed
   const { displayedText, isComplete } = useTypingEffect({
@@ -70,6 +83,10 @@ const HomePage = () => {
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
     
+    // Analyze if the message is KOL-specific
+    const isSpecific = isKOLSpecificQuery(inputValue);
+    
+    // Check if we have enough credits
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         navigate("/login");
@@ -89,14 +106,16 @@ const HomePage = () => {
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: inputValue
+      content: inputValue,
+      isKOLSpecific: isSpecific
     };
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
 
-    if (!hasPremiumPlan) {
-      useFreeCredit();
+    // Use intelligent credit system
+    if (!useIntelligentCredit(inputValue)) {
+      return; // Stop if we couldn't use a credit
     }
 
     // Add a small delay before AI starts typing
@@ -109,7 +128,8 @@ const HomePage = () => {
         id: botResponseId,
         type: "bot",
         content: "",
-        isTyping: true
+        isTyping: true,
+        isKOLSpecific: isSpecific
       }]);
       
       // Use typing effect to gradually reveal the message with more realistic timing
@@ -144,6 +164,7 @@ const HomePage = () => {
   const handleSearch = () => {
     if (searchQuery.trim() === "") return;
     
+    // Search is always considered a KOL-specific query
     if (!hasPremiumPlan && freeCredits === 0) {
       if (!isAuthenticated) {
         navigate("/login");
@@ -163,13 +184,15 @@ const HomePage = () => {
     const searchMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: `Search for: ${searchQuery}`
+      content: `Search for: ${searchQuery}`,
+      isKOLSpecific: true
     };
     
     setMessages(prev => [...prev, searchMessage]);
 
-    if (!hasPremiumPlan) {
-      useFreeCredit();
+    // Use intelligent credit system (search is always KOL-specific)
+    if (!useIntelligentCredit(`find ${searchQuery}`)) {
+      return; // Stop if we couldn't use a credit
     }
 
     // Add a small delay before AI starts typing
@@ -185,7 +208,8 @@ const HomePage = () => {
         id: botResponseId,
         type: "bot",
         content: "",
-        isTyping: true
+        isTyping: true,
+        isKOLSpecific: true
       }]);
       
       // Use typing effect to gradually reveal the message with more realistic timing
@@ -249,6 +273,13 @@ const HomePage = () => {
   const viralCreators = mockCreatorData
     .sort((a, b) => b.engagementRate - a.engagementRate)
     .slice(0, 6);
+
+  // Helper function to get appropriate credit usage text
+  const getCreditUsageText = () => {
+    if (hasPremiumPlan) return "Premium plan activated";
+    
+    return `${freeCredits} free ${freeCredits === 1 ? 'search' : 'searches'} remaining • ${remainingGeneralQuestions} general ${remainingGeneralQuestions === 1 ? 'question' : 'questions'} left`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col overflow-auto hero-gradient">
@@ -371,9 +402,7 @@ const HomePage = () => {
                 <div>
                   <h2 className="font-bold text-2xl">AI KOL Discovery Agent</h2>
                   <p className="text-lg text-muted-foreground">
-                    {freeCredits > 0 
-                      ? `${freeCredits} free ${freeCredits === 1 ? 'search' : 'searches'} remaining today` 
-                      : hasPremiumPlan ? 'Premium plan activated' : 'Out of free searches today'}
+                    {getCreditUsageText()}
                   </p>
                 </div>
               </div>
@@ -414,6 +443,12 @@ const HomePage = () => {
                     {message.isTyping && (
                       <span className="inline-block ml-1 animate-pulse">▌</span>
                     )}
+                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
+                    )}
+                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                    )}
                   </div>
                   {message.type === "user" && (
                     <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
@@ -442,7 +477,11 @@ const HomePage = () => {
                 
                 {!hasPremiumPlan && (
                   <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>Free tier: {freeCredits}/5 searches</span>
+                    <span>
+                      {isKOLSpecificQuery(inputValue) 
+                        ? "KOL question: Uses 1 credit" 
+                        : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
+                    </span>
                     <Button 
                       variant="link" 
                       size="sm" 
@@ -484,6 +523,39 @@ const HomePage = () => {
                   Get Started
                 </Button>
               </div>
+            </div>
+          </div>
+          
+          {/* New Credit Usage Info Card */}
+          <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6">
+            <h3 className="text-lg font-bold mb-3 flex items-center">
+              <MessageCircle className="h-4 w-4 text-brand-pink mr-2" />
+              Understanding Credits
+            </h3>
+            <div className="space-y-3 text-sm">
+              <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                <span>KOL specific questions:</span>
+                <span className="font-medium">1 credit each</span>
+              </div>
+              <div className="flex justify-between items-center pb-2 border-b border-white/10">
+                <span>General questions:</span>
+                <span className="font-medium">{generalQuestionsPerCredit} for 1 credit</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span>Your remaining:</span>
+                <span className="font-medium">
+                  {freeCredits} credits + {remainingGeneralQuestions} general questions
+                </span>
+              </div>
+              {!hasPremiumPlan && (
+                <Button 
+                  variant="outline" 
+                  className="w-full mt-2 text-brand-pink border-brand-pink/30 hover:bg-brand-pink/10"
+                  onClick={() => navigate("/pricing")}
+                >
+                  Get Unlimited With Premium
+                </Button>
+              )}
             </div>
           </div>
         </div>
