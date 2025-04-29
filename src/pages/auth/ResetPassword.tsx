@@ -1,11 +1,10 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Check, AlertCircle, Lock, Eye, EyeOff, Shield } from "lucide-react";
+import { ArrowLeft, Check, AlertCircle, Lock, Eye, EyeOff, Loader } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import { Progress } from "@/components/ui/progress";
@@ -267,7 +266,7 @@ const ResetPassword = () => {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader className="mr-2 h-4 w-4 animate-spin" />
                     Resetting...
                   </>
                 ) : "Reset Password"}
