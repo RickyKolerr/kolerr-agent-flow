@@ -38,11 +38,11 @@ const HomePage = () => {
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();
   const { freeCredits, useFreeCredit, hasPremiumPlan } = useCredits();
 
-  // Typing effect for the welcome message with a slower typing speed
+  // Typing effect for the welcome message with a much slower typing speed
   const { displayedText, isComplete } = useTypingEffect({
     text: welcomeMessage,
-    typingSpeed: 100, // Slowed down to 100ms per character
-    startDelay: 800  // Increased delay before typing starts
+    typingSpeed: 150, // Further slowed down to 150ms per character
+    startDelay: 1000  // Increased delay before typing starts
   });
 
   // Update the welcome message as it types
@@ -137,8 +137,8 @@ const HomePage = () => {
         } else {
           clearInterval(typingInterval);
         }
-      }, 100); // Increased from 20 to 100ms for more realistic typing speed
-    }, 1000); // Increased from 500 to 1000ms for a more natural pause before responding
+      }, 150); // Further slowed down to 150ms for even more realistic typing speed
+    }, 1500); // Increased from 1000 to 1500ms for a more natural pause before responding
   };
 
   const handleSearch = () => {
@@ -219,8 +219,8 @@ const HomePage = () => {
             }, 2000);
           }
         }
-      }, 100); // Increased from 20 to 100ms for more realistic typing speed
-    }, 1000); // Increased from 500 to 1000ms for a more natural pause before responding
+      }, 150); // Further slowed down to 150ms for even more realistic typing speed
+    }, 1500); // Increased from 1000 to 1500ms for a more natural pause before responding
   };
 
   const getResponse = (message: string) => {
