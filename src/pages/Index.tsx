@@ -527,6 +527,12 @@ const Index = () => {
   // Update to use all 20 brands
   const topBrands = mockBrands;
 
+  // Handle image loading errors
+  const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    // Replace with a default placeholder when logo fails to load
+    event.currentTarget.src = "https://ui-avatars.com/api/?name=Brand&background=0D8ABC&color=fff";
+  };
+
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
@@ -1024,6 +1030,7 @@ const Index = () => {
                         <img
                           src={creator.avatar}
                           alt={creator.fullName}
+                          onError={handleImageError}
                           className="h-full w-full object-cover transition-transform duration-500"
                         />
                       </div>
@@ -1049,6 +1056,7 @@ const Index = () => {
                         <img
                           src={brand.logo}
                           alt={brand.name}
+                          onError={handleImageError}
                           className="h-full w-full object-contain transition-transform duration-500"
                         />
                       </div>
