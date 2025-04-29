@@ -302,3 +302,187 @@ export const mockCreatorData = [
     collaborationStyle: "Energetic"
   }
 ];
+
+// Mock global brands data - expanded to 20 popular TikTok and Instagram brands
+const mockBrands = [
+  {
+    id: "b1",
+    name: "Nike",
+    logo: "https://1000logos.net/wp-content/uploads/2021/11/Nike-Logo.png",
+    industry: "Sports & Apparel",
+    campaignTypes: ["Product Launch", "Influencer Endorsement", "Sports Events"],
+    budget: "$5,000-25,000",
+    popularity: 98
+  },
+  {
+    id: "b2",
+    name: "Apple",
+    logo: "https://1000logos.net/wp-content/uploads/2016/10/Apple-Logo.png",
+    industry: "Technology",
+    campaignTypes: ["Product Reviews", "Tech Tutorials", "Unboxing Videos"],
+    budget: "$10,000-50,000",
+    popularity: 99
+  },
+  {
+    id: "b3",
+    name: "Coca-Cola",
+    logo: "https://1000logos.net/wp-content/uploads/2016/11/Coca-Cola-Logo.png",
+    industry: "Beverages",
+    campaignTypes: ["Lifestyle Content", "Holiday Campaigns", "Summer Promos"],
+    budget: "$3,000-20,000",
+    popularity: 95
+  },
+  {
+    id: "b4",
+    name: "Amazon",
+    logo: "https://1000logos.net/wp-content/uploads/2016/10/Amazon-logo.png",
+    industry: "E-Commerce",
+    campaignTypes: ["Product Reviews", "Unboxing", "Prime Day Promotions"],
+    budget: "$2,500-15,000",
+    popularity: 97
+  },
+  {
+    id: "b5",
+    name: "Google",
+    logo: "https://1000logos.net/wp-content/uploads/2021/05/Google-logo.png",
+    industry: "Technology",
+    campaignTypes: ["Tech Reviews", "How-To Content", "Product Tutorials"],
+    budget: "$8,000-30,000",
+    popularity: 96
+  },
+  {
+    id: "b6",
+    name: "Samsung",
+    logo: "https://1000logos.net/wp-content/uploads/2017/06/Samsung-Logo.png",
+    industry: "Technology",
+    campaignTypes: ["Product Reviews", "Tech Comparisons", "Lifestyle Tech"],
+    budget: "$5,000-25,000",
+    popularity: 94
+  },
+  {
+    id: "b7",
+    name: "Adidas",
+    logo: "https://1000logos.net/wp-content/uploads/2019/06/Adidas-Logo.png",
+    industry: "Sports & Apparel",
+    campaignTypes: ["Athletic Endorsements", "Fitness Content", "Product Launches"],
+    budget: "$4,000-20,000",
+    popularity: 93
+  },
+  {
+    id: "b8",
+    name: "Microsoft",
+    logo: "https://1000logos.net/wp-content/uploads/2017/04/Microsoft-logo.png",
+    industry: "Technology",
+    campaignTypes: ["Software Reviews", "Productivity Tips", "Gaming Content"],
+    budget: "$6,000-35,000",
+    popularity: 92
+  },
+  {
+    id: "b9",
+    name: "Disney",
+    logo: "https://1000logos.net/wp-content/uploads/2017/03/Walt-Disney-logo.png",
+    industry: "Entertainment",
+    campaignTypes: ["Family Content", "Travel", "Movie Promotions"],
+    budget: "$7,000-40,000",
+    popularity: 95
+  },
+  {
+    id: "b10",
+    name: "Netflix",
+    logo: "https://1000logos.net/wp-content/uploads/2017/05/Netflix-Logo.png",
+    industry: "Entertainment",
+    campaignTypes: ["Show Reviews", "Watch Parties", "Premiere Events"],
+    budget: "$5,000-30,000",
+    popularity: 96
+  },
+  {
+    id: "b11",
+    name: "Fashion Nova",
+    logo: "https://1000logos.net/wp-content/uploads/2021/04/Fashion-Nova-logo.png",
+    industry: "Fashion",
+    campaignTypes: ["Try-On Hauls", "OOTD Content", "Collection Launches"],
+    budget: "$2,000-15,000",
+    popularity: 94
+  },
+  {
+    id: "b12",
+    name: "Gymshark",
+    logo: "https://1000logos.net/wp-content/uploads/2020/04/Gymshark-Logo.png",
+    industry: "Fitness Apparel",
+    campaignTypes: ["Workout Videos", "Transformation Stories", "Product Showcases"],
+    budget: "$3,000-18,000",
+    popularity: 92
+  },
+  {
+    id: "b13",
+    name: "Sephora",
+    logo: "https://1000logos.net/wp-content/uploads/2017/08/Sephora-Logo.png",
+    industry: "Beauty & Cosmetics",
+    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Beauty Tips"],
+    budget: "$4,000-20,000",
+    popularity: 93
+  },
+  {
+    id: "b14",
+    name: "Shein",
+    logo: "https://1000logos.net/wp-content/uploads/2021/04/SHEIN-logo.png",
+    industry: "Fast Fashion",
+    campaignTypes: ["Haul Videos", "Styling Tips", "Discount Promotions"],
+    budget: "$1,500-10,000",
+    popularity: 91
+  },
+  {
+    id: "b15",
+    name: "Zara",
+    logo: "https://1000logos.net/wp-content/uploads/2016/10/Zara-Logo.png",
+    industry: "Fashion",
+    campaignTypes: ["Lookbooks", "Styling Videos", "Collection Reveals"],
+    budget: "$3,500-22,000",
+    popularity: 90
+  },
+  {
+    id: "b16",
+    name: "H&M",
+    logo: "https://1000logos.net/wp-content/uploads/2017/02/HM-Logo.png",
+    industry: "Fashion",
+    campaignTypes: ["Sustainable Fashion", "Style Guides", "Collection Showcases"],
+    budget: "$2,500-18,000",
+    popularity: 89
+  },
+  {
+    id: "b17",
+    name: "Fenty Beauty",
+    logo: "https://1000logos.net/wp-content/uploads/2020/09/Fenty-Beauty-Logo.png",
+    industry: "Beauty & Cosmetics",
+    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Inclusive Beauty"],
+    budget: "$5,000-25,000",
+    popularity: 94
+  },
+  {
+    id: "b18",
+    name: "Supreme",
+    logo: "https://1000logos.net/wp-content/uploads/2017/06/Supreme-Logo.png",
+    industry: "Streetwear",
+    campaignTypes: ["Drop Announcements", "Styling Videos", "Exclusive Access"],
+    budget: "$4,500-30,000",
+    popularity: 95
+  },
+  {
+    id: "b19",
+    name: "Gucci",
+    logo: "https://1000logos.net/wp-content/uploads/2017/04/Gucci-Logo.png",
+    industry: "Luxury Fashion",
+    campaignTypes: ["Lifestyle Content", "Premium Unboxings", "Collection Features"],
+    budget: "$10,000-50,000",
+    popularity: 97
+  },
+  {
+    id: "b20",
+    name: "Louis Vuitton",
+    logo: "https://1000logos.net/wp-content/uploads/2018/09/Louis-Vuitton-Logo.png",
+    industry: "Luxury Fashion",
+    campaignTypes: ["Luxury Lifestyle", "Product Showcases", "Heritage Stories"],
+    budget: "$12,000-60,000",
+    popularity: 98
+  }
+];
