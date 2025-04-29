@@ -1,11 +1,12 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CreditCard, Lock } from "lucide-react";
+import { CreditCard, Lock, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
@@ -17,6 +18,7 @@ const PaymentPage = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { hasPremiumPlan } = useCredits();
+  const [currentPlanPrice, setCurrentPlanPrice] = useState(0);
 
   const plans = {
     starter: {
@@ -42,6 +44,27 @@ const PaymentPage = () => {
   const searchParams = new URLSearchParams(location.search);
   const selectedPlanId = searchParams.get('plan') || (hasPremiumPlan ? "growth" : "starter");
   const selectedPlan = plans[selectedPlanId] || plans.growth;
+
+  // Determine current plan price
+  useEffect(() => {
+    if (hasPremiumPlan) {
+      // Fetch current plan price based on user's plan
+      // For demo purposes, we're assuming Growth plan ($200)
+      setCurrentPlanPrice(200);
+    } else {
+      setCurrentPlanPrice(0);
+    }
+  }, [hasPremiumPlan]);
+
+  // Calculate the amount due (difference between plans)
+  const calculateAmountDue = () => {
+    const difference = selectedPlan.price - currentPlanPrice;
+    return difference > 0 ? difference : 0;
+  };
+
+  const amountDue = calculateAmountDue();
+  const isUpgrade = selectedPlan.price > currentPlanPrice;
+  const isDowngrade = selectedPlan.price < currentPlanPrice && currentPlanPrice > 0;
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 10 }, (_, i) => (currentYear + i).toString());
@@ -127,14 +150,42 @@ const PaymentPage = () => {
               </div>
               <p className="font-medium">${selectedPlan.price}</p>
             </div>
+            
+            {hasPremiumPlan && (
+              <div className="flex justify-between items-center py-4 border-b border-border">
+                <div>
+                  <p className="font-medium">Current Plan</p>
+                  <p className="text-sm text-muted-foreground">Your existing subscription</p>
+                </div>
+                <p className="font-medium">-${currentPlanPrice}</p>
+              </div>
+            )}
+            
             <div className="flex justify-between items-center py-4">
               <p>Subtotal</p>
-              <p>${selectedPlan.price}</p>
+              <p>${amountDue}</p>
             </div>
+            
             <div className="flex justify-between items-center pt-4 border-t border-border text-lg">
               <p className="font-medium">Total</p>
-              <p className="font-bold">${selectedPlan.price}</p>
+              <p className="font-bold">${amountDue}</p>
             </div>
+            
+            {isUpgrade && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-md">
+                <p className="text-sm text-green-700">
+                  You're upgrading your plan. You'll be charged the difference of ${amountDue}.
+                </p>
+              </div>
+            )}
+            
+            {isDowngrade && (
+              <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                <p className="text-sm text-blue-700">
+                  You're downgrading your plan. Your new rate will be ${selectedPlan.price} starting next billing cycle.
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -231,10 +282,21 @@ const PaymentPage = () => {
                 </div>
               </div>
 
-              <div className="pt-2 border-t border-border">
+              <div className="pt-4 space-y-4">
+                <div className="p-4 bg-gray-50 border rounded-md">
+                  <div className="flex items-center text-sm gap-2">
+                    <ShieldCheck className="h-5 w-5 text-green-600" />
+                    <span className="font-medium">Secure Payment Processing</span>
+                  </div>
+                  <p className="mt-2 text-sm text-muted-foreground">
+                    Your payment information is encrypted and securely processed by Stripe, a PCI-DSS Level 1 certified payment processor.
+                    Kolerr never stores your full card details.
+                  </p>
+                </div>
+                
                 <div className="text-sm text-muted-foreground flex items-center">
                   <Lock className="h-4 w-4 mr-1" />
-                  <span>Your payment information is secure. We use SSL encryption.</span>
+                  <span>Your payment is protected with industry-standard SSL encryption.</span>
                 </div>
               </div>
             </CardContent>
@@ -251,7 +313,7 @@ const PaymentPage = () => {
                 className="bg-brand-pink hover:bg-brand-pink/90"
                 disabled={isProcessing}
               >
-                {isProcessing ? "Processing..." : `Pay $${selectedPlan.price}`}
+                {isProcessing ? "Processing..." : `Pay $${amountDue}`}
               </Button>
             </CardFooter>
           </form>
@@ -268,7 +330,7 @@ const PaymentPage = () => {
         onConfirm={handleConfirmPayment}
         planName={selectedPlan.name}
         credits={selectedPlan.credits}
-        amount={selectedPlan.price}
+        amount={amountDue}
         isProcessing={isProcessing}
       />
     </>
