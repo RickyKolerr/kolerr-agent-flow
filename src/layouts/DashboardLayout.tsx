@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
-  LayoutDashboard, Users, BarChart, Calendar, CreditCard, 
+  LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, FileText, LogOut, Menu, X, Languages 
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -61,12 +61,6 @@ const DashboardLayout = () => {
       name: "KOLs", 
       path: "/dashboard/kols",
       description: t('dashboard.kols')
-    },
-    {
-      icon: BarChart,
-      name: "Analytics",
-      path: "/dashboard/analytics",
-      description: t('dashboard.analytics')
     },
     { 
       icon: Calendar, 
