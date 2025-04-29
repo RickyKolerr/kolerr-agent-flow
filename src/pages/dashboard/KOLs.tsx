@@ -25,8 +25,9 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, Star, Users, BarChart3, Calendar, Plus } from "lucide-react";
+import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 // Define KOL interface
 interface KOL {
@@ -48,6 +49,7 @@ const KOLsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activeView, setActiveView] = useState("all");
+  const navigate = useNavigate();
 
   // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
@@ -200,6 +202,10 @@ const KOLsPage = () => {
   const handleBookSlot = (kolId: string) => {
     toast.success("Redirecting to booking page...");
   };
+  
+  const handleViewProfile = (kolId: string) => {
+    navigate(`/creators/${kolId}`);
+  };
 
   return (
     <div className="space-y-6">
@@ -265,6 +271,7 @@ const KOLsPage = () => {
             onAddToList={handleAddToList}
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
+            onViewProfile={handleViewProfile}
           />
         </TabsContent>
 
@@ -275,6 +282,7 @@ const KOLsPage = () => {
             onAddToList={handleAddToList}
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
+            onViewProfile={handleViewProfile}
           />
         </TabsContent>
 
@@ -285,6 +293,7 @@ const KOLsPage = () => {
             onAddToList={handleAddToList}
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
+            onViewProfile={handleViewProfile}
           />
         </TabsContent>
       </Tabs>
@@ -298,9 +307,10 @@ interface KOLsTableProps {
   onAddToList: (kolId: string) => void;
   onContactKOL: (kolId: string) => void;
   onBookSlot: (kolId: string) => void;
+  onViewProfile: (kolId: string) => void;
 }
 
-const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlot }: KOLsTableProps) => {
+const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlot, onViewProfile }: KOLsTableProps) => {
   return (
     <div className="rounded-md border">
       <Table>
@@ -351,11 +361,21 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     <Button 
                       variant="ghost" 
                       size="sm"
+                      onClick={() => onViewProfile(kol.id)}
+                    >
+                      <Eye className="h-4 w-4 mr-1" />
+                      View
+                    </Button>
+                    
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
                       onClick={() => onAddToList(kol.id)}
                     >
                       <Plus className="h-4 w-4 mr-1" />
                       List
                     </Button>
+                    
                     <Button 
                       variant="outline" 
                       size="sm"
@@ -363,6 +383,7 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     >
                       Contact
                     </Button>
+                    
                     <Button 
                       size="sm"
                       className="bg-brand-pink hover:bg-brand-pink/90"

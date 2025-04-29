@@ -472,13 +472,21 @@ const Index = () => {
     
     return suggestions.length > 0 
       ? `<div class="mt-2 space-y-2">${suggestions.map(creator => 
-          `<div class="flex items-center gap-2">
+          `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
             <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
               <img src="${creator.avatar}" alt="${creator.fullName}" class="w-full h-full object-cover" />
             </div>
-            <div>
+            <div class="flex-1">
               <div class="font-medium">${creator.fullName}</div>
               <div class="text-xs text-gray-500">${(creator.followers / 1000000).toFixed(1)}M followers</div>
+            </div>
+            <div class="ml-2">
+              <button 
+                onclick="window.navigateToCreator('${creator.id}')" 
+                class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded"
+              >
+                View Profile
+              </button>
             </div>
           </div>`
         ).join('')}</div>`
@@ -532,6 +540,17 @@ const Index = () => {
     // Replace with a default placeholder when logo fails to load
     event.currentTarget.src = "https://ui-avatars.com/api/?name=Brand&background=0D8ABC&color=fff";
   };
+
+  // Add a global function to handle navigation from the injected HTML
+  useEffect(() => {
+    window.navigateToCreator = (creatorId) => {
+      navigate(`/creators/${creatorId}`);
+    };
+    
+    return () => {
+      delete window.navigateToCreator;
+    };
+  }, [navigate]);
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
