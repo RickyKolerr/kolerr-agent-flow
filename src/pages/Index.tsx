@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -346,8 +347,10 @@ const Index = () => {
                     loop: true,
                     startIndex: activeCarouselIndex,
                   }}
-                  onSelect={(api) => {
-                    if (api) setActiveCarouselIndex(api.selectedScrollSnap());
+                  setApi={(api) => {
+                    api?.on("select", () => {
+                      setActiveCarouselIndex(api.selectedScrollSnap());
+                    });
                   }}
                 >
                   <CarouselContent>
