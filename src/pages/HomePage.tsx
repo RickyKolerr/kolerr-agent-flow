@@ -1,5 +1,4 @@
-
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,16 +7,15 @@ import { useUserAccess } from "@/hooks/useUserAccess";
 import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useCredits } from "@/contexts/CreditContext";
-import { useChat } from "@/contexts/ChatContext";
+import { useChat, Message } from "@/contexts/ChatContext";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useState } from "react";
 
 const HomePage = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
-  const { messages, setMessages, showWelcomeMessage, setShowWelcomeMessage } = useChat();
+  const { messages, setMessages, addMessage, showWelcomeMessage, setShowWelcomeMessage } = useChat();
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isAuthenticated, canAccessFeature, getRedirectPath } = useUserAccess();

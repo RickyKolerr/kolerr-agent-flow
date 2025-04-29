@@ -1,4 +1,5 @@
-import { useRef, useEffect } from "react";
+
+import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users } from "lucide-react";
@@ -6,20 +7,21 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useChat } from "@/contexts/ChatContext";
+import { useChat, Message } from "@/contexts/ChatContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const { messages, setMessages, addMessage, showWelcomeMessage, setShowWelcomeMessage } = useChat();
+  const [inputValue, setInputValue] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
   const { t } = useLanguage();
-  const { messages, setMessages, showWelcomeMessage, setShowWelcomeMessage } = useChat();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   
   useEffect(() => {
