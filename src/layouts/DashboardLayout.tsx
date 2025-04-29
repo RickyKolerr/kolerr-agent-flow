@@ -26,13 +26,10 @@ const DashboardLayout = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
-  // Auto-hide sidebar on login/initial load
   useEffect(() => {
-    // Start with sidebar closed on mobile, open on desktop
     setIsSidebarOpen(window.innerWidth >= 768);
   }, []);
 
-  // Handle clicks outside sidebar to close it on mobile
   useEffect(() => {
     const handleOutsideClick = (event: MouseEvent) => {
       if (window.innerWidth < 768 && 

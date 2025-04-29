@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -47,6 +48,7 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
+import AnalyticsPage from "@/pages/dashboard/Analytics";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -140,6 +142,7 @@ const App = () => {
                       <Route path="campaigns" element={<CampaignsPage />} />
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="credits" element={<CreditsPage />} />
+                      <Route path="analytics" element={<AnalyticsPage />} />
                       <Route path="profile" element={<ProfilePage />} />
                       <Route path="billing" element={<BillingPage />} />
                       <Route path="subscription" element={<SubscriptionPage />} />
