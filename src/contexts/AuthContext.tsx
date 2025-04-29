@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -43,6 +44,24 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
+// Collection of real portrait images from Unsplash
+const portraitImages = [
+  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&auto=format&fit=crop"
+];
+
+// Function to get a random portrait from the collection
+const getRandomPortrait = (): string => {
+  const randomIndex = Math.floor(Math.random() * portraitImages.length);
+  return portraitImages[randomIndex];
+};
+
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -68,7 +87,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id: "user-123",
         email,
         name: "Demo User",
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        avatar: getRandomPortrait(), // Use random real portrait instead of cartoon avatar
         role: "brand" as UserRole,
         onboardingStatus: "incomplete" as OnboardingStatus
       };
@@ -102,7 +121,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id: `user-${provider}-${Math.random().toString(36).substring(2, 9)}`,
         email: `user_${Math.random().toString(36).substring(2, 7)}@example.com`,
         name: `${provider.charAt(0).toUpperCase() + provider.slice(1)} User`,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${provider}${Math.random()}`,
+        avatar: getRandomPortrait(), // Use random real portrait instead of cartoon avatar
         role: "kol" as UserRole, // Default role for social logins
         onboardingStatus: "incomplete" as OnboardingStatus
       };
@@ -131,7 +150,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         id: "user-" + Math.random().toString(36).substring(2, 9),
         name,
         email,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${email}`,
+        avatar: getRandomPortrait(), // Use random real portrait instead of cartoon avatar
         role,
         onboardingStatus: "incomplete" as OnboardingStatus
       };
