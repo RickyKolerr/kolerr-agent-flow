@@ -1,5 +1,4 @@
-
-import { useRef, useEffect, useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users } from "lucide-react";
@@ -7,35 +6,41 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useChat, Message } from "@/contexts/ChatContext";
 import { Badge } from "@/components/ui/badge";
 import { Avatar } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { mockCreatorData } from "@/data/mockCreators";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 
+interface Message {
+  id: string;
+  type: "user" | "bot";
+  content: string;
+}
+
 const Index = () => {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-  const { messages, setMessages, addMessage, showWelcomeMessage, setShowWelcomeMessage } = useChat();
-  const [inputValue, setInputValue] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const { useFreeCredit, freeCredits, hasPremiumPlan } = useCredits();
   const { t } = useLanguage();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [messages, setMessages] = useState<Message[]>([]);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [showWelcome, setShowWelcome] = useState(true);
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   
   useEffect(() => {
-    if (showWelcomeMessage && messages.length === 0) {
+    if (showWelcome) {
       setTimeout(() => {
         setMessages([{
           id: "welcome",
           type: "bot",
           content: "👋 Welcome to the world's first Influencer Marketing AI Agent! I can help you discover the perfect TikTok creators for your brand. What type of influencers are you looking for today?"
         }]);
-        setShowWelcomeMessage(false);
+        setShowWelcome(false);
       }, 500);
     }
-  }, [showWelcomeMessage, messages.length, setMessages, setShowWelcomeMessage]);
+  }, [showWelcome]);
 
   useEffect(() => {
     if (messagesEndRef.current) {
