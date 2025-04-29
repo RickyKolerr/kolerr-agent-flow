@@ -17,9 +17,5 @@ console.error = function(...args) {
 
 const root = createRoot(document.getElementById("root")!);
 
-// Handle page reloads
-window.addEventListener('load', () => {
-  root.render(<App />);
-});
-
+// Render the app only once
 root.render(<App />);

@@ -40,7 +40,10 @@
 @layer base {
   * {
     @apply border-border;
-    scroll-behavior: smooth;
+  }
+  
+  html {
+    height: 100%;
   }
   
   body {
@@ -50,11 +53,6 @@
       rgba(23, 27, 35, 1) 0%,
       rgba(16, 20, 28, 1) 100%
     );
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  html {
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
@@ -108,7 +106,7 @@
     animation-delay: 700ms;
   }
 
-  /* Improve scrolling experience */
+  /* Make scroll-smooth class-specific rather than global */
   .scroll-smooth {
     scroll-behavior: smooth;
   }

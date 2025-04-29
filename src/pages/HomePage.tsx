@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -65,6 +66,9 @@ const HomePage = () => {
     highlightSpeed: 400  // Much slower (400ms) for the highlighted phrase
   });
 
+  // Track if messages have been updated
+  const [messagesUpdated, setMessagesUpdated] = useState(false);
+
   // Update the welcome message as it types
   useEffect(() => {
     setMessages(prevMessages => {
@@ -81,11 +85,13 @@ const HomePage = () => {
     });
   }, [displayedText, isComplete]);
 
+  // Only scroll when messages are actually updated (not on initial load)
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && messagesUpdated) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      setMessagesUpdated(false);
     }
-  }, [messages]);
+  }, [messages, messagesUpdated]);
 
   const handleSendMessage = () => {
     if (inputValue.trim() === "") return;
@@ -119,6 +125,7 @@ const HomePage = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+    setMessagesUpdated(true);
 
     // Use intelligent credit system
     if (!useIntelligentCredit(inputValue)) {
@@ -138,6 +145,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: isSpecific
       }]);
+      setMessagesUpdated(true);
       
       // Use typing effect to gradually reveal the message with more realistic timing
       let currentText = "";
@@ -175,6 +183,7 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          setMessagesUpdated(true);
           
           // If we're typing one of our special phrases, slow down even more
           setTimeout(typingTextWithDelay, typingDelay);
@@ -215,6 +224,7 @@ const HomePage = () => {
     };
     
     setMessages(prev => [...prev, searchMessage]);
+    setMessagesUpdated(true);
 
     // Use intelligent credit system (search is always KOL-specific)
     if (!useIntelligentCredit(`find ${searchQuery}`)) {
@@ -240,6 +250,7 @@ const HomePage = () => {
         isTyping: true,
         isKOLSpecific: true
       }]);
+      setMessagesUpdated(true);
       
       // Use typing effect with variable speed
       let currentText = "";
@@ -271,6 +282,7 @@ const HomePage = () => {
             }
             return updatedMessages;
           });
+          setMessagesUpdated(true);
           
           // Schedule next character
           setTimeout(typingTextWithDelay, typingDelay);
