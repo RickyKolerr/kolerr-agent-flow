@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 interface PlanChangeConfirmationProps {
   currentPlan: string;
@@ -29,9 +30,13 @@ export const PlanChangeConfirmation = ({
   onCancel,
   onConfirm,
 }: PlanChangeConfirmationProps) => {
+  const isMobile = useIsMobile();
+  
   // Calculate plan price difference logic
   const isNewUser = currentPlan === "Free";
-  const planChangeType = isNewUser ? "Subscribe" : newPrice > 0 ? "Upgrade" : "Downgrade";
+  const isUpgrade = newPrice > 0;
+  const isDowngrade = !isNewUser && !isUpgrade;
+  const planChangeType = isNewUser ? "Subscribe" : isUpgrade ? "Upgrade" : "Downgrade";
   const actionText = isNewUser ? "Start Subscription" : "Change Plan";
   
   return (
@@ -47,23 +52,25 @@ export const PlanChangeConfirmation = ({
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="flex justify-between items-center p-4 bg-muted rounded-md">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-muted rounded-md gap-4">
             <div>
               <p className="font-medium">From: {currentPlan} ({currentBilling})</p>
               <p className="text-sm text-muted-foreground">
                 To: {selectedPlan} ({billingPeriod})
               </p>
             </div>
-            <div className="text-right">
+            <div className={isMobile ? "" : "text-right"}>
               <p className="font-medium">
-                {isNewUser || newPrice > 0 ? (
-                  <>New price: ${newPrice} / month</>
+                {isNewUser ? (
+                  <>New price: ${newPrice} / {billingPeriod}</>
+                ) : isUpgrade ? (
+                  <>Amount due today: ${newPrice}</>
                 ) : (
-                  <>New price will apply at next billing cycle</>
+                  <>New price: ${newPrice} / {billingPeriod}</>
                 )}
               </p>
               <p className="text-sm text-muted-foreground">
-                {isNewUser || newPrice > 0 ? "Effective immediately" : "No charge today"}
+                {isNewUser || isUpgrade ? "Effective immediately" : "At next billing cycle"}
               </p>
             </div>
           </div>
@@ -83,7 +90,7 @@ export const PlanChangeConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
             onClick={onConfirm}
           >
-            {newPrice > 0 ? `Proceed to Payment` : actionText}
+            {isUpgrade ? `Proceed to Payment` : actionText}
           </Button>
         </CardFooter>
       </Card>
