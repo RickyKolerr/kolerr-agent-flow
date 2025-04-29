@@ -37,7 +37,7 @@ const Index = () => {
         setMessages([{
           id: "welcome",
           type: "bot",
-          content: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you find creators all around the world. I can help you discover the perfect TikTok creators for your brand. What type of influencers are you looking for today?"
+          content: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
         }]);
         setShowWelcome(false);
       }, 500);

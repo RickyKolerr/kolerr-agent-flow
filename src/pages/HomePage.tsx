@@ -25,7 +25,7 @@ const HomePage = () => {
   const [messages, setMessages] = useState<Message[]>([{
     id: "welcome",
     type: "bot",
-    content: "👋 Hi! I'm your AI agent for influencer discovery. As a Strategic Partner of TikTok and Meta, Kolerr can help you find creators all around the world. You have 5 free searches per day. What kind of TikTok creator are you looking for?"
+    content: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
   }]);
   const [inputValue, setInputValue] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
