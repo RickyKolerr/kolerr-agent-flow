@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useMemo } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -147,6 +146,7 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   useEffect(() => {
     setIsMounted(true);
@@ -173,7 +173,7 @@ const DashboardLayout = () => {
   return (
     <div className="flex h-screen bg-gray-100 text-gray-700">
       {/* Sidebar navigation */}
-      <Sheet>
+      <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="md:hidden">
             <Icons.menu className="h-6 w-6" />
@@ -195,7 +195,10 @@ const DashboardLayout = () => {
                     "justify-start px-6",
                     location.pathname === item.href ? "font-semibold" : "font-normal"
                   )}
-                  onClick={() => navigate(item.href)}
+                  onClick={() => {
+                    navigate(item.href);
+                    setIsMobileMenuOpen(false);
+                  }}
                 >
                   <item.icon className="h-4 w-4 mr-2" />
                   {item.name}
@@ -220,12 +223,14 @@ const DashboardLayout = () => {
         {/* Header */}
         <header className="w-full h-16 flex items-center justify-between border-b p-4 md:pl-6">
           <div className="flex items-center space-x-4">
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="md:hidden">
-                <Icons.menu className="h-6 w-6" />
-                <span className="sr-only">Open navigation menu</span>
-              </Button>
-            </SheetTrigger>
+            <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Icons.menu className="h-6 w-6" />
+                  <span className="sr-only">Open navigation menu</span>
+                </Button>
+              </SheetTrigger>
+            </Sheet>
             <div className="hidden md:flex">
               <MainNav />
             </div>
