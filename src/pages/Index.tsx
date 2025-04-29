@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -50,13 +51,13 @@ const Index = () => {
     }
   }, [messages]);
 
-  // Auto-rotate carousel
+  // Auto-rotate carousel with a smoother, slower transition
   useEffect(() => {
     const interval = setInterval(() => {
       setActiveCarouselIndex((prev) => 
         prev === mockCreatorData.length - 1 ? 0 : prev + 1
       );
-    }, 3000);
+    }, 5000); // Increased from 3000 to 5000 for a slower rotation
     
     return () => clearInterval(interval);
   }, []);
@@ -478,6 +479,10 @@ const Index = () => {
               align: "start",
               loop: true,
               startIndex: activeCarouselIndex,
+              dragFree: false,
+              skipSnaps: false,
+              inViewThreshold: 0.6,
+              speed: 30, // Slower speed for smoother transitions (in pixels per animation frame)
             }}
             setApi={(api) => {
               api?.on("select", () => {
@@ -485,17 +490,21 @@ const Index = () => {
               });
             }}
           >
-            <CarouselContent>
+            <CarouselContent className="transition-transform duration-700 ease-in-out">
               {allCreators.map((creator) => (
-                <CarouselItem key={creator.id} className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6">
+                <CarouselItem 
+                  key={creator.id} 
+                  className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
+                >
                   <div className="p-1">
-                    <div className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-transform cursor-pointer"
-                        onClick={() => navigate(`/creators/${creator.id}`)}
+                    <div 
+                      className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
+                      onClick={() => navigate(`/creators/${creator.id}`)}
                     >
                       <img
                         src={creator.avatar}
                         alt={creator.fullName}
-                        className="h-full w-full object-cover"
+                        className="h-full w-full object-cover transition-transform duration-500"
                       />
                     </div>
                     <div className="text-center mt-3">
@@ -506,8 +515,8 @@ const Index = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10" />
-            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10" />
+            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
+            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
           </Carousel>
         </div>
       </div>
