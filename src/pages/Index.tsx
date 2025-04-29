@@ -17,6 +17,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/contexts/AuthContext";
 
+// Add type definition for the window object at the top level of the file
+declare global {
+  interface Window {
+    navigateToCreator: (creatorId: string) => void;
+    navigateToCampaign: (campaignId: string) => void;
+    handleChatApply: (campaignId: string) => void;
+  }
+}
+
 interface Message {
   id: string;
   type: "user" | "bot";
@@ -584,15 +593,6 @@ const Index = () => {
       delete window.handleChatApply;
     };
   }, [navigate, isAuthenticated, user]);
-
-  // Add type definition for the window object
-  declare global {
-    interface Window {
-      navigateToCreator: (creatorId: string) => void;
-      navigateToCampaign: (campaignId: string) => void;
-      handleChatApply: (campaignId: string) => void;
-    }
-  }
 
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
