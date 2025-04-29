@@ -3,8 +3,8 @@ import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
-  Settings, FileText, LogOut, Menu, X, Languages,
-  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch
+  Settings, LogOut, Menu, X, Languages,
+  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -86,7 +86,6 @@ const DashboardLayout = () => {
   ];
 
   const getKolMenuItems = () => [
-    // Removed Overview menu item
     { 
       icon: FileSearch, 
       name: "Available Campaigns", 
@@ -104,6 +103,12 @@ const DashboardLayout = () => {
       name: "Performance", 
       path: "/dashboard/kol/analytics",
       description: "Your performance analytics"
+    },
+    { 
+      icon: FileText, 
+      name: "Contracts", 
+      path: "/dashboard/kol/contracts", 
+      description: "Manage your contracts"
     },
     { 
       icon: Link, 
