@@ -86,12 +86,7 @@ const DashboardLayout = () => {
   ];
 
   const getKolMenuItems = () => [
-    { 
-      icon: LayoutDashboard, 
-      name: "Overview", 
-      path: "/dashboard/overview",
-      description: "Your dashboard overview"
-    },
+    // Removed Overview menu item
     { 
       icon: FileSearch, 
       name: "Available Campaigns", 

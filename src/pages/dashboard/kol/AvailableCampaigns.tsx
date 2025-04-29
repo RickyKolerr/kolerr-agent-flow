@@ -100,9 +100,9 @@ const mockCampaigns = [
 
 const AvailableCampaigns = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
-  const [budgetFilter, setBudgetFilter] = useState("");
-  const [platformFilter, setPlatformFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [budgetFilter, setBudgetFilter] = useState("all");
+  const [platformFilter, setPlatformFilter] = useState("all");
   
   const filteredCampaigns = mockCampaigns.filter(campaign => {
     // Apply search filter
@@ -112,12 +112,12 @@ const AvailableCampaigns = () => {
     }
     
     // Apply category filter
-    if (categoryFilter && !campaign.categories.includes(categoryFilter)) {
+    if (categoryFilter && categoryFilter !== "all" && !campaign.categories.includes(categoryFilter)) {
       return false;
     }
     
     // Apply budget filter
-    if (budgetFilter) {
+    if (budgetFilter && budgetFilter !== "all") {
       const [min, max] = campaign.budget.split("-").map(Number);
       if (budgetFilter === "low" && min >= 300) return false;
       if (budgetFilter === "medium" && (min < 300 || min >= 600)) return false;
@@ -125,7 +125,7 @@ const AvailableCampaigns = () => {
     }
     
     // Apply platform filter
-    if (platformFilter && !campaign.platforms.includes(platformFilter)) {
+    if (platformFilter && platformFilter !== "all" && !campaign.platforms.includes(platformFilter)) {
       return false;
     }
     
@@ -163,7 +163,7 @@ const AvailableCampaigns = () => {
             <SelectValue placeholder="Category" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Categories</SelectItem>
+            <SelectItem value="all">All Categories</SelectItem>
             <SelectItem value="fashion">Fashion</SelectItem>
             <SelectItem value="beauty">Beauty</SelectItem>
             <SelectItem value="tech">Tech</SelectItem>
@@ -180,7 +180,7 @@ const AvailableCampaigns = () => {
             <SelectValue placeholder="Platform" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Platforms</SelectItem>
+            <SelectItem value="all">All Platforms</SelectItem>
             <SelectItem value="tiktok">TikTok</SelectItem>
             <SelectItem value="instagram">Instagram</SelectItem>
             <SelectItem value="youtube">YouTube</SelectItem>
@@ -192,7 +192,7 @@ const AvailableCampaigns = () => {
             <SelectValue placeholder="Budget" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Budgets</SelectItem>
+            <SelectItem value="all">All Budgets</SelectItem>
             <SelectItem value="low">Under $300</SelectItem>
             <SelectItem value="medium">$300-$600</SelectItem>
             <SelectItem value="high">$600+</SelectItem>

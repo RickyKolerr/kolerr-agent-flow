@@ -90,7 +90,7 @@ const Layout = ({ children }) => {
 
 const App = () => {
   const [queryClient] = useState(() => new QueryClient());
-
+  
   return (
     <QueryClientProvider client={queryClient}>
       <HashRouter>
@@ -145,7 +145,7 @@ const App = () => {
                     
                     {/* Protected dashboard routes */}
                     <Route path="/dashboard" element={<DashboardLayout />}>
-                      <Route index element={<Navigate to="/dashboard/overview" replace />} />
+                      <Route index element={<Navigate to="/dashboard/kol/campaigns" replace />} />
                       <Route path="overview" element={<Overview />} />
                       
                       {/* Brand-specific routes */}

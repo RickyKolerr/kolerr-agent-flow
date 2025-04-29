@@ -26,7 +26,7 @@ interface CreatorsTabProps {
 
 export const CreatorsTab = ({ creators, onConnectCreator }: CreatorsTabProps) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
   
   const filteredCreators = creators.filter(creator => {
     if (searchQuery) {
@@ -39,7 +39,7 @@ export const CreatorsTab = ({ creators, onConnectCreator }: CreatorsTabProps) =>
       }
     }
     
-    if (categoryFilter && !creator.niche.includes(categoryFilter)) {
+    if (categoryFilter && categoryFilter !== "all" && !creator.niche.includes(categoryFilter)) {
       return false;
     }
     
@@ -65,7 +65,7 @@ export const CreatorsTab = ({ creators, onConnectCreator }: CreatorsTabProps) =>
             <SelectValue placeholder="Filter by niche" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All Niches</SelectItem>
+            <SelectItem value="all">All Niches</SelectItem>
             <SelectItem value="fashion">Fashion</SelectItem>
             <SelectItem value="beauty">Beauty</SelectItem>
             <SelectItem value="gaming">Gaming</SelectItem>
