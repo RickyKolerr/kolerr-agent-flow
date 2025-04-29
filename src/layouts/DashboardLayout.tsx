@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, BarChart, Calendar, CreditCard, 
@@ -23,7 +24,31 @@ const DashboardLayout = () => {
   const { language, setLanguage, t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
+  // Auto-hide sidebar on login/initial load
+  useEffect(() => {
+    // Start with sidebar closed on mobile, open on desktop
+    setIsSidebarOpen(window.innerWidth >= 768);
+  }, []);
+
+  // Handle clicks outside sidebar to close it on mobile
+  useEffect(() => {
+    const handleOutsideClick = (event: MouseEvent) => {
+      if (window.innerWidth < 768 && 
+          isSidebarOpen && 
+          sidebarRef.current && 
+          !sidebarRef.current.contains(event.target as Node)) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [isSidebarOpen]);
 
   const menuItems = [
     { 
@@ -102,18 +127,20 @@ const DashboardLayout = () => {
         <Button 
           variant="ghost" 
           size="icon" 
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          onClick={toggleSidebar}
           className="fixed top-4 right-4 z-50 md:hidden"
         >
           {isSidebarOpen ? <X className="h-5 w-5"/> : <Menu className="h-5 w-5"/>}
         </Button>
 
         <aside 
+          ref={sidebarRef}
           className={cn(
             "fixed inset-y-0 left-0 z-40 w-64 transform transition-transform duration-300 ease-in-out",
             "bg-gradient-to-b from-brand-navy to-brand-dark border-r border-white/10",
             isSidebarOpen ? "translate-x-0" : "-translate-x-full",
-            "md:translate-x-0"
+            "md:translate-x-0 md:transition-all md:ease-in-out md:duration-300",
+            !isSidebarOpen && "md:w-0 md:border-none md:overflow-hidden"
           )}
         >
           <div className="h-16 flex items-center justify-between px-6 border-b border-white/10">
@@ -225,7 +252,16 @@ const DashboardLayout = () => {
             isSidebarOpen ? "md:ml-64" : "ml-0"
           )}
         >
-          <div className="container mx-auto p-6">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={toggleSidebar}
+            className="fixed top-4 left-4 z-30 hidden md:flex"
+          >
+            <Menu className="h-5 w-5" />
+          </Button>
+          
+          <div className="container mx-auto p-6 pt-16 md:pt-6">
             <Outlet />
           </div>
         </main>
