@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -10,6 +9,8 @@ import { useState } from "react";
 import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
 import { CreditProvider } from "@/contexts/CreditContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { ChatProvider } from "@/contexts/ChatContext";
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
 
 // Pages
 import HomePage from "@/pages/HomePage";
@@ -102,98 +103,108 @@ const App = () => {
         <LanguageProvider>
           <AuthProvider>
             <CreditProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <Layout>
-                  <Routes>
-                    {/* Public routes */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/home" element={<HomePage />} />
-                    <Route path="/about" element={<AboutPage />} />
-                    <Route path="/features" element={<FeaturesPage />} />
-                    <Route path="/pricing" element={<PricingPage />} />
-                    <Route path="/docs" element={<DocsPage />} />
-                    <Route path="/api" element={<APIPage />} />
-                    <Route path="/blog" element={<BlogPage />} />
-                    <Route path="/help" element={<HelpCenter />} />
-                    <Route path="/contact" element={<ContactPage />} />
-                    <Route path="/partners" element={<PartnersPage />} />
-                    
-                    {/* Campaign routes - Public but with auth-aware UI */}
-                    <Route path="/campaigns/:campaignId" element={<CampaignDetail />} />
-                    
-                    {/* Search routes */}
-                    <Route path="/search" element={<SearchResults />} />
-                    <Route path="/search/advanced" element={<AdvancedSearch />} />
-                    <Route path="/search/history" element={<SearchHistory />} />
-                    <Route path="/creators/:creatorId" element={<CreatorProfile />} />
-                    
-                    {/* Legal routes */}
-                    <Route path="/terms" element={<TermsPage />} />
-                    <Route path="/privacy" element={<PrivacyPage />} />
-                    <Route path="/security" element={<SecurityPage />} />
-                    
-                    {/* Auth routes */}
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/signup" element={<SignupPage />} />
-                    <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/verify-email" element={<EmailVerification />} />
-                    
-                    {/* Onboarding routes */}
-                    <Route path="/onboarding/brand" element={
-                      <ProtectedRoute>
-                        <OnboardingBrand />
-                      </ProtectedRoute>
-                    } />
-                    <Route path="/onboarding/kol" element={
-                      <ProtectedRoute>
-                        <OnboardingKOL />
-                      </ProtectedRoute>
-                    } />
-                    
-                    {/* Protected dashboard routes */}
-                    <Route path="/dashboard" element={<DashboardLayout />}>
-                      <Route index element={<Navigate to="/dashboard/kol/campaigns" replace />} />
-                      <Route path="overview" element={<Overview />} />
+              <ChatProvider>
+                <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <Layout>
+                    <Routes>
+                      {/* Public routes */}
+                      <Route path="/" element={<Index />} />
+                      <Route path="/home" element={<HomePage />} />
+                      <Route path="/about" element={<AboutPage />} />
+                      <Route path="/features" element={<FeaturesPage />} />
+                      <Route path="/pricing" element={<PricingPage />} />
+                      <Route path="/docs" element={<DocsPage />} />
+                      <Route path="/api" element={<APIPage />} />
+                      <Route path="/blog" element={<BlogPage />} />
+                      <Route path="/help" element={<HelpCenter />} />
+                      <Route path="/contact" element={<ContactPage />} />
+                      <Route path="/partners" element={<PartnersPage />} />
                       
-                      {/* Brand-specific routes */}
-                      <Route path="kols" element={<KOLsPage />} />
-                      <Route path="campaigns/create" element={<CreateCampaign />} />
-                      <Route path="campaigns" element={<CampaignsPage />} />
-                      <Route path="bookings" element={<BookingsPage />} />
-                      <Route path="credits" element={<CreditsPage />} />
+                      {/* Campaign routes - Public but with auth-aware UI */}
+                      <Route path="/campaigns/:campaignId" element={<CampaignDetail />} />
                       
-                      {/* Contract routes */}
-                      <Route path="contracts" element={<ContractsPage />} />
-                      <Route path="contracts/create" element={<CreateContract />} />
-                      <Route path="contracts/:contractId" element={<ViewContract />} />
+                      {/* Search routes */}
+                      <Route path="/search" element={<SearchResults />} />
+                      <Route path="/search/advanced" element={<AdvancedSearch />} />
+                      <Route path="/search/history" element={<SearchHistory />} />
+                      <Route path="/creators/:creatorId" element={<CreatorProfile />} />
                       
-                      {/* KOL-specific routes */}
-                      <Route path="kol/campaigns" element={<AvailableCampaigns />} />
-                      <Route path="kol/applications" element={<Applications />} />
-                      <Route path="kol/analytics" element={<Analytics />} />
-                      <Route path="kol/referrals" element={<Referrals />} />
-                      <Route path="kol/rewards" element={<Rewards />} />
-                      <Route path="kol/community" element={<Community />} />
-                      <Route path="kol/contracts" element={<KOLContracts />} />
+                      {/* Legal routes */}
+                      <Route path="/terms" element={<TermsPage />} />
+                      <Route path="/privacy" element={<PrivacyPage />} />
+                      <Route path="/security" element={<SecurityPage />} />
                       
-                      {/* Common routes */}
-                      <Route path="profile" element={<ProfilePage />} />
-                      <Route path="billing" element={<BillingPage />} />
-                      <Route path="subscription" element={<SubscriptionPage />} />
-                      <Route path="settings" element={<SettingsPage />} />
-                      <Route path="settings/billing" element={<SettingsPage />} />
-                      <Route path="settings/billing/preferences" element={<SettingsPage />} />
-                      <Route path="payment" element={<PaymentPage />} />
-                    </Route>
-                    
-                    {/* Catch all route */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Layout>
-              </TooltipProvider>
+                      {/* Auth routes */}
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/signup" element={<SignupPage />} />
+                      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/verify-email" element={<EmailVerification />} />
+                      
+                      {/* Onboarding routes */}
+                      <Route path="/onboarding/brand" element={
+                        <ProtectedRoute>
+                          <OnboardingBrand />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="/onboarding/kol" element={
+                        <ProtectedRoute>
+                          <OnboardingKOL />
+                        </ProtectedRoute>
+                      } />
+                      
+                      {/* Protected dashboard routes */}
+                      <Route path="/dashboard" element={<DashboardLayout />}>
+                        <Route index element={<Navigate to="/dashboard/kol/campaigns" replace />} />
+                        <Route path="overview" element={<Overview />} />
+                        
+                        {/* Brand-specific routes */}
+                        <Route path="kols" element={<KOLsPage />} />
+                        <Route path="campaigns/create" element={<CreateCampaign />} />
+                        <Route path="campaigns" element={<CampaignsPage />} />
+                        <Route path="bookings" element={<BookingsPage />} />
+                        <Route path="credits" element={<CreditsPage />} />
+                        
+                        {/* Contract routes */}
+                        <Route path="contracts" element={<ContractsPage />} />
+                        <Route path="contracts/create" element={<CreateContract />} />
+                        <Route path="contracts/:contractId" element={<ViewContract />} />
+                        
+                        {/* KOL-specific routes */}
+                        <Route path="kol/campaigns" element={<AvailableCampaigns />} />
+                        <Route path="kol/applications" element={<Applications />} />
+                        <Route path="kol/analytics" element={<Analytics />} />
+                        <Route path="kol/referrals" element={<Referrals />} />
+                        <Route path="kol/rewards" element={<Rewards />} />
+                        <Route path="kol/community" element={<Community />} />
+                        <Route path="kol/contracts" element={<KOLContracts />} />
+                        
+                        {/* Common routes */}
+                        <Route path="profile" element={<ProfilePage />} />
+                        <Route path="billing" element={<BillingPage />} />
+                        <Route path="subscription" element={<SubscriptionPage />} />
+                        <Route path="settings" element={<SettingsPage />} />
+                        <Route path="settings/billing" element={<SettingsPage />} />
+                        <Route path="settings/billing/preferences" element={<SettingsPage />} />
+                        <Route path="payment" element={<PaymentPage />} />
+                        
+                        {/* Chat route */}
+                        <Route path="messages" element={
+                          <ProtectedRoute>
+                            <React.lazy(() => import('@/components/chat/ChatPage')) />
+                          </ProtectedRoute>
+                        } />
+                      </Route>
+                      
+                      {/* Catch all route */}
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                    <FloatingChatButton />
+                  </Layout>
+                </TooltipProvider>
+              </ChatProvider>
             </CreditProvider>
           </AuthProvider>
         </LanguageProvider>

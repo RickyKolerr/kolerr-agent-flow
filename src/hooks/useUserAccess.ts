@@ -6,12 +6,17 @@ export const useUserAccess = () => {
   const { user, isAuthenticated } = useAuth();
   const { freeCredits, hasPremiumPlan } = useCredits();
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "chat") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
     if (feature === "search") {
       return freeCredits > 0 || hasPremiumPlan;
+    }
+
+    // Chat is available to all authenticated users
+    if (feature === "chat") {
+      return true;
     }
 
     // Role-based feature access and premium plan checks
