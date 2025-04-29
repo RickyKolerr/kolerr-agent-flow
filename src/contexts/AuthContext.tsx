@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -45,8 +44,7 @@ interface AuthContextType {
   skipOnboarding: () => void;
 }
 
-// Export the AuthContext so it can be imported elsewhere
-export const AuthContext = createContext<AuthContextType | null>(null);
+const AuthContext = createContext<AuthContextType | null>(null);
 
 // Collection of real portrait images from Unsplash
 const portraitImages = [
