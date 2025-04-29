@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Settings as SettingsIcon, CreditCard } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { SettingsGeneral } from "@/components/settings/SettingsGeneral";
 import { SettingsBilling } from "@/components/settings/SettingsBilling";
 import { BillingPreferences } from "@/components/settings/BillingPreferences";
