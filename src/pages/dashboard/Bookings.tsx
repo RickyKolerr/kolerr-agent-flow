@@ -35,7 +35,7 @@ interface Booking {
 const BookingsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Mock bookings data
+  // Mock bookings data with real portrait images
   const mockBookings: Booking[] = [
     {
       id: "book1",
@@ -43,7 +43,7 @@ const BookingsPage = () => {
         id: "kol1",
         name: "Sophia Chen",
         handle: "@fashionwithsophia",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=sophia"
+        avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop"
       },
       date: "2023-06-15",
       time: "10:00 AM",
@@ -57,7 +57,7 @@ const BookingsPage = () => {
         id: "kol2",
         name: "Jake Thomas",
         handle: "@jakeadventures",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=jake"
+        avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop"
       },
       date: "2023-06-18",
       time: "2:30 PM",
@@ -71,7 +71,7 @@ const BookingsPage = () => {
         id: "kol3",
         name: "Aisha Mohamed",
         handle: "@aisha_beauty",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=aisha"
+        avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&h=150&auto=format&fit=crop"
       },
       date: "2023-05-28",
       time: "11:15 AM",
@@ -85,7 +85,7 @@ const BookingsPage = () => {
         id: "kol4",
         name: "Mike Wilson",
         handle: "@mike_fitness",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=mike"
+        avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&auto=format&fit=crop"
       },
       date: "2023-06-12",
       time: "4:00 PM",
@@ -99,7 +99,7 @@ const BookingsPage = () => {
         id: "kol5",
         name: "Priya Singh",
         handle: "@priyacooks",
-        avatar: "https://api.dicebear.com/7.x/avataaars/svg?seed=priya"
+        avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=150&h=150&auto=format&fit=crop"
       },
       date: "2023-06-20",
       time: "1:00 PM",
