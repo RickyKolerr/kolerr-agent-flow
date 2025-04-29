@@ -30,6 +30,7 @@ interface CreatorCardProps {
 
 export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [message, setMessage] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
 
   const handleSendMessage = () => {
@@ -39,6 +40,12 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
       description: "They will be notified of your message."
     });
     setMessage("");
+    setIsDialogOpen(false);
+  };
+
+  const handleOpenDialog = (creator: Creator) => {
+    setSelectedCreator(creator);
+    setIsDialogOpen(true);
   };
 
   return (
@@ -78,13 +85,13 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
         </div>
       </CardContent>
       <CardFooter className="flex justify-between pt-2 border-t">
-        <Dialog>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button 
               variant="outline" 
               size="sm"
               className="text-xs"
-              onClick={() => setSelectedCreator(creator)}
+              onClick={() => handleOpenDialog(creator)}
             >
               <MessageSquare className="h-3 w-3 mr-1" />
               Message
