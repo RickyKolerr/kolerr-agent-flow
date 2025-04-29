@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ interface Contract {
 }
 
 const ContractsPage = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("all");
 
@@ -131,7 +133,7 @@ const ContractsPage = () => {
     });
 
   const handleCreateContract = () => {
-    toast.success("Creating new contract...");
+    navigate("/dashboard/contracts/create");
   };
 
   const handleViewContract = (id: string) => {

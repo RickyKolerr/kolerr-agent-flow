@@ -48,6 +48,7 @@ import ContractsPage from "@/pages/dashboard/Contracts";
 import SettingsPage from "@/pages/dashboard/Settings";
 import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
+import CreateContract from "@/pages/dashboard/CreateContract";
 
 // KOL dashboard pages
 import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
@@ -152,6 +153,10 @@ const App = () => {
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="credits" element={<CreditsPage />} />
                       
+                      {/* Contract routes */}
+                      <Route path="contracts" element={<ContractsPage />} />
+                      <Route path="contracts/create" element={<CreateContract />} />
+                      
                       {/* KOL-specific routes */}
                       <Route path="kol/campaigns" element={<AvailableCampaigns />} />
                       <Route path="kol/applications" element={<Applications />} />
@@ -164,7 +169,6 @@ const App = () => {
                       <Route path="profile" element={<ProfilePage />} />
                       <Route path="billing" element={<BillingPage />} />
                       <Route path="subscription" element={<SubscriptionPage />} />
-                      <Route path="contracts" element={<ContractsPage />} />
                       <Route path="settings" element={<SettingsPage />} />
                       <Route path="settings/billing" element={<SettingsPage />} />
                       <Route path="settings/billing/preferences" element={<SettingsPage />} />
