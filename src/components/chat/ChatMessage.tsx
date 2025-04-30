@@ -30,7 +30,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     startDelay: 300,
     // Highlight important phrases with slower typing
     highlightText: isOwnMessage ? "" : "Kolerr",
-    highlightSpeed: 100,  // Slower speed for brand name and important terms
+    highlightSpeed: 150,  // Slower speed for brand name and important terms
   });
 
   const getStatusIcon = () => {
@@ -82,7 +82,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           {content}
           
           {!isComplete && !isOwnMessage && animateTyping && (
-            <span className="typing-cursor inline-block h-4 w-1 bg-white/70 ml-1"></span>
+            <span className="typing-cursor"></span>
           )}
           
           {message.attachments && message.attachments.length > 0 && (

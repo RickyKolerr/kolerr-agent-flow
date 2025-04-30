@@ -17,10 +17,10 @@ interface UseTypingEffectOptions {
  */
 export function useTypingEffect({ 
   text, 
-  typingSpeed = 150, 
+  typingSpeed = 50, 
   startDelay = 0,
   highlightText = "",
-  highlightSpeed = 300 // Even slower speed for highlighted text
+  highlightSpeed = 150 // Slower speed for highlighted text
 }: UseTypingEffectOptions) {
   const [displayedText, setDisplayedText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);

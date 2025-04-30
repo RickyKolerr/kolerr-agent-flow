@@ -85,6 +85,11 @@
 }
 
 .typing-cursor {
+  display: inline-block;
+  width: 4px;
+  height: 16px;
+  background-color: rgba(255, 255, 255, 0.7);
+  margin-left: 2px;
   animation: blink 0.8s infinite;
 }
 
@@ -92,3 +97,4 @@
 .typing-highlight {
   animation-duration: 0.3s;
 }
+
