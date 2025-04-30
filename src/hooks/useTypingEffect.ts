@@ -40,43 +40,46 @@ export function useTypingEffect({
   useEffect(() => {
     setDisplayedText('');
     setCurrentIndex(0);
-  }, [text]);
+    setStarted(false);
+    
+    const timer = setTimeout(() => {
+      setStarted(true);
+    }, startDelay);
+    
+    return () => clearTimeout(timer);
+  }, [text, startDelay]);
 
-  // Use interval for the typing effect with dynamic speed
-  useInterval(
-    () => {
-      if (currentIndex < text.length) {
-        // Get the current substring being typed
-        const currentSubstring = text.substring(currentIndex, currentIndex + highlightText.length);
-        
-        // Check if we're typing the highlighted phrase
-        const isHighlightedPhrase = highlightText && 
-          currentSubstring.toLowerCase().includes(highlightText.toLowerCase().substring(0, Math.min(currentSubstring.length, highlightText.length)));
-        
-        // Use the slower speed if this is part of the highlighted text
-        const currentSpeed = isHighlightedPhrase ? highlightSpeed : typingSpeed;
-        
-        // Add random variation to typing speed (±20%) to make it feel more human
-        const speedVariation = Math.random() * 0.4 - 0.2; // -20% to +20%
-        
-        // Add longer pause after punctuation
-        const currentChar = text.charAt(currentIndex);
-        let extraDelay = 0;
-        if (['.', '!', '?'].includes(currentChar)) {
-          extraDelay = 300; // Longer pause after sentence end
-        } else if ([',', ';', ':'].includes(currentChar)) {
-          extraDelay = 150; // Medium pause after comma, etc.
-        }
-
-        // Set the next character with delay
-        setTimeout(() => {
-          setDisplayedText(prev => prev + text.charAt(currentIndex));
-          setCurrentIndex(prevIndex => prevIndex + 1);
-        }, extraDelay);
+  // Use interval for the typing effect
+  useInterval(() => {
+    if (currentIndex < text.length) {
+      const currentChar = text.charAt(currentIndex);
+      const nextFewChars = text.substring(currentIndex, currentIndex + highlightText.length);
+      
+      // Check if we're typing the highlighted phrase
+      const isHighlightedPhrase = highlightText && 
+        nextFewChars.toLowerCase().includes(highlightText.toLowerCase().substring(0, Math.min(nextFewChars.length, highlightText.length)));
+      
+      // Add longer pause after punctuation
+      let extraDelay = 0;
+      if (['.', '!', '?'].includes(currentChar)) {
+        extraDelay = 200; // Longer pause after sentence end
+      } else if ([',', ';', ':'].includes(currentChar)) {
+        extraDelay = 100; // Medium pause after comma, etc.
       }
-    },
-    started && !isComplete ? typingSpeed : null
-  );
+      
+      // Set the next character
+      setDisplayedText(text.substring(0, currentIndex + 1));
+      
+      // Increment index after delay if needed
+      if (extraDelay > 0 || isHighlightedPhrase) {
+        setTimeout(() => {
+          setCurrentIndex(prevIndex => prevIndex + 1);
+        }, isHighlightedPhrase ? highlightSpeed : extraDelay);
+      } else {
+        setCurrentIndex(prevIndex => prevIndex + 1);
+      }
+    }
+  }, started && !isComplete ? typingSpeed : null);
 
   return { displayedText, isComplete };
 }

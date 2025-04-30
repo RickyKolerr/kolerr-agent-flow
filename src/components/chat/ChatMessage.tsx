@@ -56,6 +56,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     }
   };
 
+  // Only use the animation for non-user messages when animateTyping is true
   const content = animateTyping && !isOwnMessage ? displayedText : message.content;
 
   return (
@@ -81,7 +82,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
           {content}
           
           {!isComplete && !isOwnMessage && animateTyping && (
-            <span className="typing-cursor inline-block h-4 w-1 bg-white/70 ml-1 animate-pulse"></span>
+            <span className="typing-cursor inline-block h-4 w-1 bg-white/70 ml-1"></span>
           )}
           
           {message.attachments && message.attachments.length > 0 && (
