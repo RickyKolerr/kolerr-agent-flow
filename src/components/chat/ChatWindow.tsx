@@ -9,7 +9,11 @@ import { mockConversations, mockMessages } from "./mockChatData";
 import { Button } from "@/components/ui/button";
 import { MessageSquare } from "lucide-react";
 
-export const ChatWindow: React.FC = () => {
+interface ChatWindowProps {
+  onBackClick?: () => void;
+}
+
+export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   const { conversationId } = useParams<{ conversationId: string }>();
   const [messages, setMessages] = useState<any[]>([]);
   const [conversation, setConversation] = useState<any>(null);
@@ -86,7 +90,7 @@ export const ChatWindow: React.FC = () => {
     <div className="flex-1 flex flex-col h-full">
       {conversationId && conversation ? (
         <>
-          <ChatHeader participant={otherParticipant} />
+          <ChatHeader participant={otherParticipant} onBackClick={onBackClick} />
           <ScrollArea className="flex-1 p-4">
             {messages.length > 0 ? (
               <div className="space-y-4">

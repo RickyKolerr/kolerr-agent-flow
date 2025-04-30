@@ -8,9 +8,10 @@ import { ChatUser } from "./types";
 
 interface ChatHeaderProps {
   participant: ChatUser;
+  onBackClick?: () => void;
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ participant }) => {
+export const ChatHeader: React.FC<ChatHeaderProps> = ({ participant, onBackClick }) => {
   if (!participant) return null;
 
   return (
@@ -34,10 +35,10 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({ participant }) => {
         </div>
       </div>
       <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full md:flex hidden">
           <Phone className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" size="icon" className="rounded-full">
+        <Button variant="ghost" size="icon" className="rounded-full md:flex hidden">
           <Video className="h-4 w-4" />
         </Button>
         <Button variant="ghost" size="icon" className="rounded-full">

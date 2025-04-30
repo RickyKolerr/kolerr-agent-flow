@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 interface Creator {
   id: string;
@@ -32,6 +33,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [message, setMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const navigate = useNavigate();
 
   const handleSendMessage = () => {
     if (!message.trim() || !selectedCreator) return;
@@ -41,6 +43,10 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
     });
     setMessage("");
     setIsDialogOpen(false);
+    
+    // Navigate to chat with this creator
+    // In a real app, we'd create a conversation or find an existing one first
+    navigate(`/chat?message=${encodeURIComponent(message)}&recipient=${selectedCreator.name}`);
   };
 
   const handleOpenDialog = (creator: Creator) => {

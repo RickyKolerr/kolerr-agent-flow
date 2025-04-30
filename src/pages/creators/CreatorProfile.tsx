@@ -34,6 +34,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { mockCreatorData } from "@/data/mockCreators";
+import { mockConversations } from "@/components/chat/mockChatData";
 import { useCredits } from "@/contexts/CreditContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
 
@@ -134,7 +135,7 @@ const CreatorProfile = () => {
     }
   };
   
-  // Handle contact request for guest users
+  // Handle contact request for creators
   const handleContactCreator = () => {
     if (!isAuthenticated) {
       toast.error("Create an account to contact creators", {
@@ -146,7 +147,50 @@ const CreatorProfile = () => {
       return;
     }
     
-    toast.success("Contact request initiated");
+    // Check if a conversation with this creator already exists
+    const existingConversation = mockConversations.find(conv => 
+      conv.participants.some(p => p.name === creator.fullName)
+    );
+    
+    if (existingConversation) {
+      // Navigate to existing conversation
+      navigate(`/chat/${existingConversation.id}`);
+      toast.success(`Continuing conversation with ${creator.fullName}`);
+    } else {
+      // In a real app, we would create a new conversation here
+      // For now, just navigate to chat and show a message
+      toast.success(`Starting conversation with ${creator.fullName}`);
+      navigate(`/chat`);
+    }
+  };
+  
+  // Handle collaboration request
+  const handleRequestCollab = () => {
+    if (!isAuthenticated) {
+      toast.error("Create an account to request collaborations", {
+        action: {
+          label: "Sign Up",
+          onClick: () => navigate("/signup")
+        }
+      });
+      return;
+    }
+    
+    // Check if a conversation with this creator already exists
+    const existingConversation = mockConversations.find(conv => 
+      conv.participants.some(p => p.name === creator.fullName)
+    );
+    
+    if (existingConversation) {
+      // Navigate to existing conversation with pre-filled collab request
+      navigate(`/chat/${existingConversation.id}?message=Hi ${creator.fullName}, I'm interested in collaborating with you on a project. Would you be available to discuss details?`);
+      toast.success(`Sending collaboration request to ${creator.fullName}`);
+    } else {
+      // In a real app, we would create a new conversation here
+      // For now, just navigate to chat and show a message
+      toast.success(`Requesting collaboration with ${creator.fullName}`);
+      navigate(`/chat`);
+    }
   };
 
   if (loading) {
@@ -382,7 +426,7 @@ const CreatorProfile = () => {
               <CardFooter>
                 <Button 
                   className="w-full"
-                  onClick={isAuthenticated ? () => toast.success("Collaboration request sent!") : () => navigate("/signup")}
+                  onClick={handleRequestCollab}
                 >
                   {isAuthenticated ? "Request Collab" : (
                     <>

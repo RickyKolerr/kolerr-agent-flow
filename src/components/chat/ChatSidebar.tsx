@@ -10,7 +10,11 @@ import { mockConversations } from "./mockChatData";
 import { OnlineIndicator } from "./OnlineIndicator";
 import { useNavigate, useParams } from "react-router-dom";
 
-export const ChatSidebar: React.FC = () => {
+interface ChatSidebarProps {
+  onConversationSelect?: () => void;
+}
+
+export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { conversationId } = useParams();
   const navigate = useNavigate();
@@ -22,8 +26,15 @@ export const ChatSidebar: React.FC = () => {
       )
   );
 
+  const handleConversationClick = (id: string) => {
+    navigate(`/chat/${id}`);
+    if (onConversationSelect) {
+      onConversationSelect();
+    }
+  };
+
   return (
-    <div className="w-80 border-r border-white/10 flex flex-col h-full">
+    <div className="w-full md:w-80 border-r border-white/10 flex flex-col h-full">
       <div className="p-4 border-b border-white/10">
         <h2 className="text-xl font-bold mb-4">Messages</h2>
         <div className="relative">
@@ -49,7 +60,7 @@ export const ChatSidebar: React.FC = () => {
                 className={`p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors ${
                   isActive ? "bg-brand-pink/20" : "hover:bg-black/20"
                 }`}
-                onClick={() => navigate(`/chat/${conversation.id}`)}
+                onClick={() => handleConversationClick(conversation.id)}
               >
                 <div className="relative">
                   <Avatar className="h-10 w-10 border border-white/10">
