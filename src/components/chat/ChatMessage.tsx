@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Check } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { mockConversations } from "./mockChatData";
@@ -18,10 +18,10 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
     .flatMap((c) => c.participants)
     .find((p) => p.id === message.senderId);
 
-  // Check if message comes from chatbot in the initial greeting
-  const isBotGreeting = !isOwnMessage && message.id === "welcome";
+  // Check if message comes from agent in the welcome message
+  const isAgentMessage = message.senderId === "agent" || (!isOwnMessage && message.id === "welcome");
   
-  // Use typing effect for bot greeting messages with more human typing parameters
+  // Use typing effect for agent greeting messages with more human typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
     typingSpeed: 55,  // Slightly slower base speed for more realism
@@ -62,7 +62,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
     >
       {!isOwnMessage && (
         <Avatar className="h-8 w-8">
-          <img src={sender?.avatar} alt={sender?.name} />
+          {isAgentMessage ? (
+            <img src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" alt="Kolerr AI Agent" />
+          ) : (
+            <img src={sender?.avatar} alt={sender?.name} />
+          )}
         </Avatar>
       )}
 
@@ -74,7 +78,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
               : "bg-black/30 border border-white/10 rounded-bl-none"
           }`}
         >
-          {isBotGreeting ? (
+          {isAgentMessage ? (
             <div 
               className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}
               dangerouslySetInnerHTML={{ 

@@ -3,6 +3,7 @@ import React from "react";
 import { ChatLayout } from "@/components/chat/ChatLayout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Navigate } from "react-router-dom";
+import { AgentChatWrapper } from "@/components/dashboard/AgentChatWrapper";
 
 const KolMessagesPage: React.FC = () => {
   const { user, isAuthenticated } = useAuth();
@@ -30,6 +31,9 @@ const KolMessagesPage: React.FC = () => {
           <ChatLayout isDashboardChat={true} />
         </div>
       </div>
+      
+      {/* Agent Chat - Positioned with fixed positioning */}
+      <AgentChatWrapper />
     </div>
   );
 };
