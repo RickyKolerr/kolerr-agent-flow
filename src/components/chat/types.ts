@@ -4,7 +4,7 @@ export interface ChatUser {
   name: string;
   avatar: string;
   role: 'brand' | 'kol';
-  status: 'online' | 'offline' | 'away';
+  status: 'online' | 'offline' | 'away' | 'busy';
   lastSeen?: string;
 }
 
@@ -27,6 +27,7 @@ export interface Conversation {
   lastMessage?: ChatMessage;
   unreadCount: number;
   updatedAt: string;
+  messages?: ChatMessage[]; // Adding messages array property
 }
 
 export interface Attachment {

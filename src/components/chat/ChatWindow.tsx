@@ -2,11 +2,12 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
-import { ChatMessage } from "./ChatMessage";
+import { ChatMessage as ChatMessageComponent } from "./ChatMessage";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { mockConversations } from "./mockChatData";
+import { mockConversations, mockMessages } from "./mockChatData";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext"; 
+import { ChatMessage } from "./types";
 
 interface ChatWindowProps {
   onBackClick?: () => void;
@@ -14,7 +15,7 @@ interface ChatWindowProps {
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   const { conversationId } = useParams();
-  const [messages, setMessages] = useState<any[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversation, setConversation] = useState<any>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
@@ -51,7 +52,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
 
     if (foundConversation) {
       setConversation(foundConversation);
-      setMessages(foundConversation.messages || []);
+      // Get messages for this conversation from mockMessages
+      const conversationMessages = mockMessages.filter(
+        (msg) => msg.conversationId === conversationId
+      );
+      setMessages(conversationMessages || []);
     } else if (conversationId) {
       // If we have an ID but no conversation, redirect somewhere appropriate
       navigate(isDashboardChat ? getDashboardPath() : "/chat");
@@ -155,4 +160,3 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
     </div>
   );
 };
-

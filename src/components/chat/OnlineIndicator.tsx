@@ -2,7 +2,7 @@
 import React from "react";
 
 interface OnlineIndicatorProps {
-  status: "online" | "offline" | "away";
+  status: "online" | "offline" | "away" | "busy";
 }
 
 export const OnlineIndicator: React.FC<OnlineIndicatorProps> = ({ status }) => {
@@ -12,6 +12,8 @@ export const OnlineIndicator: React.FC<OnlineIndicatorProps> = ({ status }) => {
     bgColor = "bg-green-500";
   } else if (status === "away") {
     bgColor = "bg-yellow-500";
+  } else if (status === "busy") {
+    bgColor = "bg-red-500";
   }
   
   return (

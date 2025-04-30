@@ -1,20 +1,13 @@
-
 import React from "react";
 import { ChevronLeft, LayoutDashboard, MoreVertical, Phone, Video } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { OnlineIndicator } from "./OnlineIndicator";
 import { Link } from "react-router-dom";
-
-interface Participant {
-  id: string;
-  name: string;
-  avatar?: string;
-  status?: "online" | "offline" | "away" | "busy";
-}
+import { ChatUser } from "./types";
 
 interface ChatHeaderProps {
-  participant: Participant | null;
+  participant: ChatUser | null;
   onBackClick?: () => void;
   isDashboardChat?: boolean;
   dashboardUrl?: string;
@@ -85,4 +78,3 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
     </div>
   );
 };
-
