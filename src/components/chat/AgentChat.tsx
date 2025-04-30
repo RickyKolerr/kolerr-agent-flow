@@ -8,11 +8,13 @@ import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
+// Updated interface to align with the ChatMessage type from types.ts
 interface Message {
   id: string;
   senderId: string;
   content: string;
   timestamp: string;
+  conversationId?: string; // Made optional to support internal messages
   status?: "sending" | "sent" | "delivered" | "read";
 }
 
@@ -37,6 +39,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ title, subtitle, initialMe
           senderId: "agent",
           content: initialMessage,
           timestamp: new Date().toISOString(),
+          conversationId: "agent-chat", // Added conversationId
         }
       ]);
     }
@@ -51,7 +54,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({ title, subtitle, initialMe
       senderId: "current-user",
       content: input,
       timestamp: new Date().toISOString(),
-      status: "sending" as const
+      status: "sending" as const,
+      conversationId: "agent-chat", // Added conversationId
     };
     
     setMessages(prev => [...prev, userMessage]);
@@ -72,7 +76,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({ title, subtitle, initialMe
         id: `msg-${Date.now()}-agent`,
         senderId: "agent",
         content: "I'm processing your request. This is a placeholder response that would be replaced with actual AI response in a production environment.",
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        conversationId: "agent-chat", // Added conversationId
       };
       
       setMessages(prev => [...prev, agentResponse]);
@@ -122,7 +127,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({ title, subtitle, initialMe
               {messages.map((message) => (
                 <ChatMessage
                   key={message.id}
-                  message={message}
+                  message={message as any} // Use type assertion temporarily to fix build error
                   isOwnMessage={message.senderId === "current-user"}
                 />
               ))}
