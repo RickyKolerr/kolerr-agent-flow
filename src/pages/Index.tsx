@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent, Eye, Loader2 } from "lucide-react";
@@ -260,6 +260,26 @@ const kolStats = {
   avgCompletionTime: "3 days",
   topEarningNiche: "Tech",
   topEarningAmount: "$1,200"
+};
+
+// Component to display animated welcome message with typing effect
+const AnimatedWelcomeMessage = ({ content }: { content: string }) => {
+  const { displayedText } = useTypingEffect({
+    text: content,
+    typingSpeed: 30,
+    startDelay: 300,
+    highlightText: "Kolerr",
+    highlightSpeed: 70
+  });
+  
+  return (
+    <div>
+      {displayedText}
+      {displayedText.length < content.length && (
+        <span className="typing-cursor inline-block h-4 w-1 bg-white/70 ml-1 animate-pulse"></span>
+      )}
+    </div>
+  );
 };
 
 const Index = () => {
@@ -687,32 +707,231 @@ const Index = () => {
             </div>
             
             <ScrollArea className="flex-1 p-4 space-y-4">
-              {messages.map((message, index) => (
-                <div 
-                  key={message.id} 
-                  className={`flex ${message.type === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
+              <div className="p-4 space-y-4">
+                {messages.map((message, index) => (
+                  <div 
+                    key={message.id} 
+                    className={`flex ${message.type === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
+                  >
+                    {message.type === "bot" && (
+                      <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                        <Bot className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                    
+                    {message.type === "bot" && index === 0 ? (
+                      <div 
+                        className="p-3 rounded-lg max-w-[80%] bg-black/40 border border-white/10"
+                      >
+                        <AnimatedWelcomeMessage content={message.content} />
+                      </div>
+                    ) : (
+                      <div 
+                        className={`p-3 rounded-lg max-w-[80%] ${
+                          message.type === "user" 
+                            ? "bg-brand-navy text-white" 
+                            : "bg-black/40 border border-white/10"
+                        }`}
+                        dangerouslySetInnerHTML={{ __html: message.content }}
+                      ></div>
+                    )}
+                    
+                    {message.type === "user" && (
+                      <div className="h-8 w-8 rounded-full bg-brand-navy flex items-center justify-center ml-3 flex-shrink-0">
+                        <User className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div ref={messagesEndRef} />
+            </ScrollArea>
+            
+            <div className="p-4 border-t border-white/10">
+              <div className="flex gap-2">
+                <Input
+                  placeholder={
+                    userView === "brand"
+                      ? "Ask me about finding creators for your campaign..."
+                      : "Ask me about finding paid brand campaigns..."
+                  }
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                  className="bg-black/10 border-white/10 focus:border-white/20"
+                />
+                <Button
+                  onClick={handleSendMessage}
+                  className="bg-brand-pink hover:bg-brand-pink/90 text-white"
                 >
-                  {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                      <Bot className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  
-                  {message.type === "bot" && index === 0 ? (
-                    <div 
-                      className="p-3 rounded-lg max-w-[80%] bg-black/40 border border-white/10"
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              <div className="mt-3">
+                <div className="flex items-center mb-2">
+                  <div className="h-6 w-6 rounded-full bg-brand-pink flex items-center justify-center mr-2">
+                    <Search className="h-3 w-3 text-white" />
+                  </div>
+                  <p className="text-sm font-medium">Quick Search</p>
+                </div>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder={
+                      userView === "brand"
+                        ? "Search for creators by name, niche, or location..."
+                        : "Search for campaigns by brand, niche, or budget..."
+                    }
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                    className="bg-black/10 border-white/10 focus:border-white/20"
+                  />
+                  <Button
+                    onClick={handleSearch}
+                    className="bg-black/30 hover:bg-black/40 text-white"
+                  >
+                    <Search className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className="w-full md:w-1/3 space-y-6">
+            {userView === "brand" ? (
+              <div className="bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-semibold flex items-center">
+                    <Sparkles className="h-4 w-4 text-brand-pink mr-2" />
+                    Trending Creators
+                  </h2>
+                  <Button
+                    variant="link"
+                    className="text-xs text-brand-pink p-0"
+                    onClick={() => navigate("/search?filter=trending")}
+                  >
+                    View All
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {trendingCreators.map((creator) => (
+                    <div
+                      key={creator.id}
+                      className="flex items-center gap-3 p-2 bg-black/30 rounded-lg hover:bg-black/40 transition cursor-pointer"
+                      onClick={() => navigate(`/creators/${creator.id}`)}
                     >
-                      <AnimatedWelcomeMessage content={message.content} />
+                      <Avatar className="h-10 w-10">
+                        <img src={creator.avatar} alt={creator.fullName} />
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate">
+                          {creator.fullName}
+                        </h3>
+                        <p className="text-xs text-gray-400 truncate">
+                          {creator.niche.join(", ")}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="bg-brand-pink/10 text-brand-pink border-brand-pink/20 text-xs">
+                        {(creator.followers / 1000000).toFixed(1)}M
+                      </Badge>
                     </div>
-                  ) : (
-                    <div 
-                      className={`p-3 rounded-lg max-w-[80%] ${
-                        message.type === "user" 
-                          ? "bg-brand-navy text-white" 
-                          : "bg-black/40 border border-white/10"
-                      }`}
-                      dangerouslySetInnerHTML={{ __html: message.content }}
-                    ></div>
-                  )}
-                  
-                  {message
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="font-semibold flex items-center">
+                    <Sparkles className="h-4 w-4 text-brand-pink mr-2" />
+                    Top Opportunities
+                  </h2>
+                  <Button
+                    variant="link"
+                    className="text-xs text-brand-pink p-0"
+                    onClick={() => navigate("/dashboard/kol/campaigns")}
+                  >
+                    View All
+                  </Button>
+                </div>
+                
+                <div className="space-y-3">
+                  {mockCampaigns.map((campaign) => (
+                    <div
+                      key={campaign.id}
+                      className="flex items-center gap-3 p-2 bg-black/30 rounded-lg hover:bg-black/40 transition cursor-pointer"
+                      onClick={() => navigate(`/campaigns/${campaign.id}`)}
+                    >
+                      <Avatar className="h-10 w-10">
+                        <img
+                          src={campaign.brandLogo}
+                          alt={campaign.brand}
+                          onError={handleImageError}
+                        />
+                      </Avatar>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate">
+                          {campaign.title}
+                        </h3>
+                        <p className="text-xs text-gray-400 truncate">
+                          {campaign.brand} • {campaign.deadline}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="bg-brand-navy/10 text-brand-navy border-brand-navy/20 text-xs">
+                        {campaign.budget}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div className="bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-4">
+              <div className="flex items-center mb-4">
+                <Star className="h-4 w-4 text-brand-pink mr-2" />
+                <h2 className="font-semibold">Popular Brands</h2>
+              </div>
+              
+              <Carousel className="w-full">
+                <CarouselContent>
+                  {Array.from({ length: Math.ceil(topBrands.length / 3) }).map((_, slideIndex) => (
+                    <CarouselItem key={`brand-slide-${slideIndex}`}>
+                      <div className="grid grid-cols-3 gap-3 p-1">
+                        {topBrands.slice(slideIndex * 3, (slideIndex + 1) * 3).map((brand) => (
+                          <div
+                            key={brand.id}
+                            className="bg-white/5 border border-white/10 rounded-lg p-3 flex flex-col items-center justify-center aspect-square hover:bg-white/10 transition cursor-pointer"
+                            onClick={() => navigate(`/brands/${brand.id}`)}
+                          >
+                            <div className="h-10 w-10 bg-white rounded-full p-1 mb-2 flex items-center justify-center">
+                              <img
+                                src={brand.logo}
+                                alt={brand.name}
+                                className="max-h-8 max-w-8 object-contain"
+                                onError={handleImageError}
+                              />
+                            </div>
+                            <p className="text-xs text-center font-medium truncate w-full">
+                              {brand.name}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <div className="flex justify-center mt-4">
+                  <CarouselPrevious className="static transform-none mx-1 h-8 w-8" />
+                  <CarouselNext className="static transform-none mx-1 h-8 w-8" />
+                </div>
+              </Carousel>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Index;
