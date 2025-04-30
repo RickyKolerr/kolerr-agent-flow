@@ -38,7 +38,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
-          <Link to="/" className="hover:opacity-80 transition-opacity">
+          <Link to="/" className="hover:opacity-80 transition-opacity flex items-center">
             <div className="flex items-center gap-1 text-brand-pink">
               <Home className="h-4 w-4" />
               <span className="text-sm font-medium">Home</span>
@@ -77,7 +77,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
                   <OnlineIndicator status={otherParticipant?.status || "offline"} />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between">
+                  <div className="flex justify-between items-center">
                     <p className="font-medium truncate">{otherParticipant?.name}</p>
                     <span className="text-xs text-gray-400">
                       {conversation.lastMessage?.timestamp 

@@ -33,18 +33,6 @@ export const ChatLayout: React.FC = () => {
         tooltip="This is a production-ready chat interface that will be connected to WebSockets." 
       />
       
-      {/* Mobile back button - only show when viewing a conversation */}
-      {isMobile && !showSidebar && (
-        <Button 
-          variant="ghost" 
-          className="absolute top-4 left-4 z-10"
-          onClick={toggleSidebar}
-        >
-          <ChevronLeft className="h-5 w-5 mr-1" />
-          Back
-        </Button>
-      )}
-      
       {/* Sidebar - show full width on mobile when active, hide when viewing conversation */}
       <div className={`${isMobile ? (showSidebar ? 'block w-full' : 'hidden') : 'block w-80 min-w-80'} transition-all duration-300`}>
         <ChatSidebar onConversationSelect={isMobile ? toggleSidebar : undefined} />
