@@ -74,11 +74,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   const handleSendMessage = (content: string) => {
     if (!content.trim() || !conversationId) return;
 
-    const newMessage = {
+    const newMessage: ChatMessage = {
       id: `msg-${Date.now()}`,
+      conversationId: conversationId,
       senderId: "current-user",
       content,
       timestamp: new Date().toISOString(),
+      status: 'sending'
     };
 
     setMessages((prev) => [...prev, newMessage]);
@@ -141,7 +143,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       <ScrollArea ref={messageContainerRef} className="flex-1">
         <div className="p-4 space-y-4">
           {messages.map((message) => (
-            <ChatMessage
+            <ChatMessageComponent
               key={message.id}
               message={message}
               isOwnMessage={message.senderId === "current-user"}
