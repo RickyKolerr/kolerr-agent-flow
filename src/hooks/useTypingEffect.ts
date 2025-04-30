@@ -28,6 +28,8 @@ export function useTypingEffect({
   const [currentIndex, setCurrentIndex] = useState(0);
   const [started, setStarted] = useState(false);
   const [currentSpeed, setCurrentSpeed] = useState(typingSpeed);
+  const [isPaused, setIsPaused] = useState(false);
+  const [pauseDuration, setPauseDuration] = useState(0);
   const isComplete = currentIndex >= text.length;
 
   // Handle the initial delay before typing starts
@@ -44,12 +46,40 @@ export function useTypingEffect({
     if (humanizedTyping && started && !isComplete) {
       // Current character being typed
       const currentChar = text[currentIndex];
+      const nextChar = text[currentIndex + 1];
+      
+      // Check if we should insert a pause to simulate thinking
+      if (
+        // Pause after completing a sentence
+        ['.', '!', '?'].includes(currentChar) ||
+        // Occasionally pause mid-sentence to simulate thinking
+        (currentIndex > 5 && Math.random() < 0.05) ||
+        // Pause before starting brand names
+        (highlightText && 
+         text.substring(currentIndex + 1, currentIndex + 1 + highlightText.length).toLowerCase() === 
+         highlightText.toLowerCase())
+      ) {
+        setIsPaused(true);
+        // Random pause duration between 300ms and 1000ms
+        const pause = ['.', '!', '?'].includes(currentChar) ? 
+          Math.floor(Math.random() * 700) + 600 : // Longer pause after sentences
+          Math.floor(Math.random() * 400) + 300;  // Shorter mid-sentence pause
+        setPauseDuration(pause);
+        return;
+      }
       
       // Common characters like spaces might be typed faster
       const isCommonChar = [' ', '.', ','].includes(currentChar);
       
-      // Add variation to typing speed
-      const variation = Math.random() * 80 - 40; // -40 to +40ms variation
+      // Add realistic variation to typing speed
+      // People type faster in the middle of words, slower when starting new words
+      let variation = Math.random() * 100 - 50; // -50 to +50ms variation
+      
+      // Typists often have a rhythm, with occasional stumbles or speed bursts
+      if (Math.random() < 0.1) {
+        // Occasional very fast or slow keystroke
+        variation = Math.random() < 0.5 ? -30 : 120;
+      }
       
       // Highlighted text gets typed at highlightSpeed
       const isHighlighted = highlightText && 
@@ -62,12 +92,19 @@ export function useTypingEffect({
       // Common characters are typed faster
       if (isCommonChar) newSpeed = newSpeed * 0.7;
       
-      // Add random variation for realistic effect
+      // Add realistic variation for human typing effect
       newSpeed = Math.max(20, newSpeed + variation);
+      
+      // If typing a capital letter after a lowercase, add slight delay for shift key
+      if (currentIndex > 0 && 
+          currentChar >= 'A' && currentChar <= 'Z' && 
+          text[currentIndex - 1] >= 'a' && text[currentIndex - 1] <= 'z') {
+        newSpeed += 40;
+      }
       
       // If end of word (space after letter), add slight pause
       if (currentIndex > 0 && currentChar === ' ' && text[currentIndex - 1] !== ' ') {
-        newSpeed += 60;
+        newSpeed += 80;
       }
       
       // If punctuation, add longer pause
@@ -75,19 +112,42 @@ export function useTypingEffect({
         newSpeed += 200;
       }
       
+      // Consecutive same letter is often typed faster
+      if (currentChar === text[currentIndex - 1]) {
+        newSpeed *= 0.8;
+      }
+      
+      // Occasionally simulate a "burst" of typing for common letter combinations
+      const commonPairs = ['th', 'er', 'on', 'an', 'in', 'he', 'nd'];
+      if (currentIndex > 0 && 
+          commonPairs.includes(text.substring(currentIndex - 1, currentIndex + 1).toLowerCase())) {
+        newSpeed *= 0.7;
+      }
+      
       setCurrentSpeed(newSpeed);
     }
   }, [currentIndex, text, started, isComplete, humanizedTyping, typingSpeed, highlightText, highlightSpeed]);
 
+  // Handle pauses in typing
+  useEffect(() => {
+    if (isPaused && pauseDuration > 0) {
+      const pauseTimer = setTimeout(() => {
+        setIsPaused(false);
+      }, pauseDuration);
+      
+      return () => clearTimeout(pauseTimer);
+    }
+  }, [isPaused, pauseDuration]);
+
   // Use interval for the typing effect with dynamic speed
   useInterval(
     () => {
-      if (currentIndex < text.length) {
+      if (currentIndex < text.length && !isPaused) {
         setDisplayedText(prev => prev + text.charAt(currentIndex));
         setCurrentIndex(prevIndex => prevIndex + 1);
       }
     },
-    started && !isComplete ? currentSpeed : null
+    started && !isComplete && !isPaused ? currentSpeed : null
   );
 
   return { displayedText, isComplete };
