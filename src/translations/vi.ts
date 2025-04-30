@@ -1,4 +1,3 @@
-
 export default {
   mainNav: {
     about: 'Giới thiệu',
@@ -11,7 +10,12 @@ export default {
     dashboard: 'Bảng điều khiển',
     profile: 'Hồ sơ',
     settings: 'Cài đặt',
-    logout: 'Đăng xuất'
+    logout: 'Đăng xuất',
+    home: 'Trang chủ',
+    chat: 'Trò chuyện',
+    blog: 'Blog',
+    api: 'API',
+    help: 'Trợ giúp'
   },
   footer: {
     product: 'Sản phẩm',

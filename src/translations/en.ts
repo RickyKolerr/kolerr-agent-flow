@@ -1,4 +1,3 @@
-
 export default {
   mainNav: {
     about: 'About',
@@ -11,7 +10,12 @@ export default {
     dashboard: 'Dashboard',
     profile: 'Profile',
     settings: 'Settings',
-    logout: 'Log out'
+    logout: 'Log out',
+    home: 'Home',
+    chat: 'Chat',
+    blog: 'Blog',
+    api: 'API',
+    help: 'Help'
   },
   footer: {
     product: 'Product',
