@@ -3,14 +3,12 @@ import React, { useState, useEffect, useRef } from "react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Send } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
-import { useTypingEffect } from "@/hooks/useTypingEffect";
-import { X } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 // Updated interface to align with the ChatMessage type from types.ts
@@ -102,7 +100,11 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   useEffect(() => {
     // Scroll to bottom when new messages are added
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      requestAnimationFrame(() => {
+        if (scrollRef.current) {
+          scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+        }
+      });
     }
   }, [messages]);
 
@@ -191,7 +193,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
               key={message.id}
               message={{...message, isThinking: message.isThinking || false} as any}
               isOwnMessage={message.senderId === "current-user"}
-              typingSpeed={message.isThinking ? 500 : 1} // Slower typing for thinking animation, ultra-fast for normal messages
+              typingSpeed={80} // Consistent typing speed
             />
           ))}
         </div>

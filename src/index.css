@@ -56,6 +56,9 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
+    /* Added to prevent content jumping */
+    position: fixed;
+    width: 100%;
   }
 }
 
@@ -87,18 +90,18 @@
     background-position: -19px -19px;
   }
 
+  /* Modified to reduce animation intensity */
   .animate-pulse {
-    animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    will-change: opacity, transform;
   }
 
   @keyframes pulse {
     0%, 100% {
       opacity: 0.2;
-      transform: scale(1);
     }
     50% {
-      opacity: 0.4;
-      transform: scale(1.1);
+      opacity: 0.3;
     }
   }
 
@@ -111,13 +114,13 @@
     scroll-behavior: smooth;
   }
   
-  /* Improved typing cursor animation */
+  /* Improved typing cursor animation with reduced movement */
   .typing-cursor::after {
     content: '|';
     margin-left: 1px;
     opacity: 1;
     display: inline-block;
-    animation: blink 0.85s step-end infinite;
+    animation: blink 1.5s step-end infinite;
     color: hsl(var(--primary));
     font-weight: 300;
     position: relative;
