@@ -65,7 +65,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
       }`}
     >
       {!isOwnMessage && (
-        <Avatar className="h-8 w-8">
+        <Avatar className="h-8 w-8 flex-shrink-0">
           {isAgentMessage ? (
             <img src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" alt="Kolerr AI Agent" />
           ) : (
@@ -74,12 +74,12 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
         </Avatar>
       )}
 
-      <div className="max-w-[70%]">
+      <div className={`max-w-[75%] ${isOwnMessage ? "ml-auto" : "mr-auto"}`}>
         <div
           className={`rounded-xl p-3 ${
             isOwnMessage
-              ? "bg-brand-pink text-white rounded-br-none"
-              : "bg-black/30 border border-white/10 rounded-bl-none"
+              ? "bg-brand-pink text-white rounded-br-none shadow-sm"
+              : "bg-black/30 border border-white/10 rounded-bl-none shadow-sm"
           } ${thinkingAnimation}`}
         >
           {isAgentMessage ? (
@@ -130,7 +130,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
         </div>
         
         <div
-          className={`text-xs text-gray-400 mt-1 flex items-center ${
+          className={`text-xs text-gray-400 mt-0.5 flex items-center ${
             isOwnMessage ? "justify-end" : "justify-start"
           }`}
         >

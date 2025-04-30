@@ -45,6 +45,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   const isMobile = useMediaQuery("(max-width: 768px)");
   const scrollRef = useRef<HTMLDivElement>(null);
   const [sendButtonClicked, setSendButtonClicked] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   // Function to simulate response with typing effect
   const simulateResponse = (userMessageContent: string) => {
@@ -105,6 +106,15 @@ export const AgentChat: React.FC<AgentChatProps> = ({
     }
   }, [messages]);
 
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
   const handleSendMessage = () => {
     // Prevent multiple submissions by checking if button was already clicked
     if (sendButtonClicked) return;
@@ -149,8 +159,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({
 
   const renderChatContent = () => (
     <div className="flex flex-col h-full">
-      {/* Header */}
-      <div className="flex items-center px-4 py-3 border-b border-white/10">
+      {/* Header - Simplified with better contrast and spacing */}
+      <div className="flex items-center px-4 py-3 border-b border-white/10 bg-black/40">
         <Avatar className="h-10 w-10 mr-3">
           <img src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" alt="Kolerr AI Agent" />
         </Avatar>
@@ -161,15 +171,21 @@ export const AgentChat: React.FC<AgentChatProps> = ({
           </p>
         </div>
         {onOpenChange && (
-          <Button variant="ghost" size="icon" onClick={() => onOpenChange(false)} className="ml-auto">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            onClick={() => onOpenChange(false)} 
+            className="ml-auto"
+            aria-label="Close chat"
+          >
             <X className="h-4 w-4" />
           </Button>
         )}
       </div>
       
-      {/* Messages */}
+      {/* Messages - Improved scrolling and spacing */}
       <ScrollArea className="flex-1 p-4" ref={scrollRef as any}>
-        <div className="space-y-4">
+        <div className="space-y-4 pb-2">
           {messages.map((message) => (
             <ChatMessage
               key={message.id}
@@ -181,25 +197,28 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         </div>
       </ScrollArea>
       
-      {/* Input */}
-      <div className="p-4 border-t border-white/10">
+      {/* Input - Improved accessibility and visual feedback */}
+      <div className="p-4 border-t border-white/10 bg-black/40">
         <form 
-          className="flex gap-2" 
+          className="flex gap-3" 
           onSubmit={(e) => {
             e.preventDefault();
             handleSendMessage();
           }}
         >
           <Input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask me anything..."
-            className="flex-1 bg-black/20"
+            className="flex-1 bg-black/20 focus:ring-1 focus:ring-brand-pink/50"
+            disabled={sendButtonClicked}
+            aria-label="Type your message"
           />
           <Button 
             type="submit" 
             size="icon" 
-            className="shrink-0 p-2" 
+            className="shrink-0 p-2.5" 
             disabled={!input.trim() || sendButtonClicked}
             aria-label="Send message"
           >
@@ -214,7 +233,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[80vh] p-0">
+        <SheetContent side="bottom" className="h-[80vh] p-0 rounded-t-xl border-t border-white/10 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-xl">
           {renderChatContent()}
         </SheetContent>
       </Sheet>
@@ -224,7 +243,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   // For desktop, use Dialog component to create a modal-like experience
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] h-[80vh] p-0 bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden">
+      <DialogContent className="sm:max-w-[550px] h-[70vh] p-0 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden">
         <DialogTitle className="sr-only">{title}</DialogTitle>
         {renderChatContent()}
       </DialogContent>
