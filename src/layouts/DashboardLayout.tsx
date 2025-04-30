@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -373,6 +372,15 @@ const DashboardLayout = () => {
             <Outlet />
           </div>
         </main>
+
+        {/* Agent Chat Modal */}
+        <AgentChat
+          title={agentConfig.title}
+          subtitle={agentConfig.subtitle}
+          initialMessage={agentConfig.initialMessage}
+          isOpen={isChatbotOpen}
+          onOpenChange={setIsChatbotOpen}
+        />
       </div>
     </ProtectedRoute>
   );
