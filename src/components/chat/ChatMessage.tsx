@@ -1,10 +1,11 @@
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Check } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { mockConversations } from "./mockChatData";
 import { formatMessageTime } from "./utils";
 import { ChatMessage as ChatMessageType } from "./types";
+import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface ChatMessageProps {
   message: ChatMessageType;
@@ -16,6 +17,19 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
   const sender = mockConversations
     .flatMap((c) => c.participants)
     .find((p) => p.id === message.senderId);
+
+  // Check if message comes from chatbot in the initial greeting
+  const isBotGreeting = !isOwnMessage && message.id === "welcome";
+  
+  // Use typing effect for bot greeting messages
+  const { displayedText, isComplete } = useTypingEffect({
+    text: message.content,
+    typingSpeed: 40,  // Base typing speed (adjusted for human feel)
+    startDelay: 500,  // Delay before typing starts
+    humanizedTyping: true, // Enable humanized typing
+    highlightText: "Kolerr", // Highlight brand name
+    highlightSpeed: 120, // Slower for brand name
+  });
 
   const getStatusIcon = () => {
     switch (message.status) {
@@ -60,7 +74,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
               : "bg-black/30 border border-white/10 rounded-bl-none"
           }`}
         >
-          {message.content}
+          {isBotGreeting ? (
+            <div 
+              className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}
+              dangerouslySetInnerHTML={{ 
+                __html: displayedText
+                  .replace(/👋/g, '<span style="display:inline-block;transform:rotate(-20deg);">👋</span>')
+                  .replace(/Kolerr/g, '<span class="highlight-text">Kolerr</span>')
+                  .replace(/TikTok/g, '<span class="highlight-text">TikTok</span>')
+                  .replace(/Meta/g, '<span class="highlight-text">Meta</span>')
+              }}
+            />
+          ) : (
+            message.content
+          )}
           
           {message.attachments && message.attachments.length > 0 && (
             <div className="mt-2 space-y-2">

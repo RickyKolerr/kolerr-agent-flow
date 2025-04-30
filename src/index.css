@@ -110,4 +110,31 @@
   .scroll-smooth {
     scroll-behavior: smooth;
   }
+  
+  /* Typing cursor animation */
+  .typing-cursor::after {
+    content: '|';
+    margin-left: 2px;
+    animation: blink 1s step-end infinite;
+  }
+  
+  @keyframes blink {
+    from, to { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  .typing-active {
+    display: inline-block;
+  }
+  
+  .typing-complete::after {
+    content: '';
+    animation: none;
+  }
+  
+  /* Highlight text during typing */
+  .highlight-text {
+    color: hsl(var(--primary));
+    font-weight: 500;
+  }
 }
