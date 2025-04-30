@@ -13,7 +13,7 @@ interface ChatMessageProps {
   typingSpeed?: number;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 80 }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 55 }) => {
   // Find sender in conversations
   const sender = mockConversations
     .flatMap((c) => c.participants)
@@ -22,14 +22,14 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
   // Check if message comes from agent in the welcome message
   const isAgentMessage = message.senderId === "agent" || (!isOwnMessage && message.id === "welcome");
   
-  // Use typing effect for agent greeting messages with consistent typing parameters
+  // Use typing effect for agent greeting messages with more human typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
-    typingSpeed: message.isThinking ? 600 : typingSpeed,
-    startDelay: message.isThinking ? 0 : 300,  // Reduced delay
-    humanizedTyping: !message.isThinking,
+    typingSpeed: message.isThinking ? 600 : typingSpeed,  // Use slower typing for thinking animation
+    startDelay: message.isThinking ? 0 : 700,  // No delay for thinking dots
+    humanizedTyping: !message.isThinking,  // No humanized typing for thinking dots
     highlightText: "Kolerr", 
-    highlightSpeed: 100,
+    highlightSpeed: 120,
   });
 
   const getStatusIcon = () => {
@@ -55,8 +55,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
     }
   };
 
-  // Modified thinking animation to be less intrusive
-  const thinkingAnimation = message.isThinking ? "opacity-70" : "";
+  // Special styling for thinking message
+  const thinkingAnimation = message.isThinking ? "animate-pulse" : "";
 
   return (
     <div
@@ -81,19 +81,17 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
               ? "bg-brand-pink text-white rounded-br-none shadow-sm"
               : "bg-black/30 border border-white/10 rounded-bl-none shadow-sm"
           } ${thinkingAnimation}`}
-          style={{ transform: 'none' }} /* Force no transform to prevent movement */
         >
           {isAgentMessage ? (
             <div 
               className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}
               dangerouslySetInnerHTML={{ 
                 __html: displayedText
-                  .replace(/👋/g, '<span style="display:inline-block;">👋</span>')
+                  .replace(/👋/g, '<span style="display:inline-block;transform:rotate(-20deg);">👋</span>')
                   .replace(/Kolerr/g, '<span class="highlight-text">Kolerr</span>')
                   .replace(/TikTok/g, '<span class="highlight-text">TikTok</span>')
                   .replace(/Meta/g, '<span class="highlight-text">Meta</span>')
               }}
-              style={{ transform: 'none' }} /* Force no transform to prevent movement */
             />
           ) : (
             message.content
@@ -111,7 +109,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
                       src={attachment.url}
                       alt={attachment.name}
                       className="max-w-full rounded"
-                      loading="lazy"
                     />
                   ) : (
                     <div className="bg-black/20 p-2 rounded flex items-center gap-2">
