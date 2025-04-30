@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -32,17 +31,17 @@ export function FloatingChatButton() {
     !isChatPath && 
     canAccessFeature('messages');
 
-  // Configure AgentChat based on user role
+  // Configure AgentChat based on user role with shorter messages
   const agentConfig = user?.role === 'kol' 
     ? {
         title: "Campaign Finder AI",
         subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Welcome to Kolerr! We connect creators like you to amazing paid brand campaigns. Tell me what kind of opportunities you're looking for, and I'll help you find the perfect match!"
+        initialMessage: "👋 Hi! I'll help you find paid brand campaigns that match your content. What opportunities are you looking for?"
       }
     : {
         title: "Influencer AI Agent",
         subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
+        initialMessage: "👋 Welcome! As TikTok and Meta's Strategic Partner, I can help you find the right creators for your campaigns. What type of influencers do you need?"
       };
 
   // Show notification dot after a delay to simulate new information
