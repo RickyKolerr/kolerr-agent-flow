@@ -91,13 +91,14 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
           <Textarea
             ref={textareaRef}
             placeholder="Type a message..."
-            className="resize-none py-2 md:py-3 min-h-[50px] md:min-h-[60px] max-h-[120px] bg-black/20 border-white/10"
+            className="resize-none py-3 pr-2 min-h-[50px] md:min-h-[60px] max-h-[120px] bg-black/20 border-white/10"
             value={message}
             onChange={(e) => setMessage(e.target.value)}
             onKeyDown={handleKeyDown}
           />
+          
+          {/* Mobile-optimized button group */}
           <div className="absolute bottom-2 left-2 flex gap-1">
-            {/* Show fewer buttons on mobile */}
             <Button
               type="button"
               variant="ghost"
@@ -107,6 +108,8 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
             >
               <Paperclip className="h-4 w-4" />
             </Button>
+            
+            {/* Only show additional buttons on desktop */}
             {!isMobile && (
               <>
                 <Button
@@ -114,7 +117,6 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 rounded-full"
-                  onClick={() => fileInputRef.current?.click()}
                 >
                   <Image className="h-4 w-4" />
                 </Button>
@@ -129,6 +131,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
               </>
             )}
           </div>
+          
           <input
             ref={fileInputRef}
             type="file"
@@ -140,7 +143,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
         <Button
           type="button"
           size="icon"
-          className="h-10 w-10 rounded-full bg-brand-pink hover:bg-brand-pink/90"
+          className="h-10 w-10 rounded-full bg-brand-pink hover:bg-brand-pink/90 flex-shrink-0"
           onClick={handleSendMessage}
           disabled={!message.trim() && attachments.length === 0}
         >

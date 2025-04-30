@@ -45,8 +45,8 @@ export const ChatLayout: React.FC = () => {
         </Button>
       )}
       
-      {/* Sidebar - hide on mobile when viewing a conversation */}
-      <div className={`${isMobile ? (showSidebar ? 'block w-full' : 'hidden') : 'block'}`}>
+      {/* Sidebar - show full width on mobile when active, hide when viewing conversation */}
+      <div className={`${isMobile ? (showSidebar ? 'block w-full' : 'hidden') : 'block w-80 min-w-80'} transition-all duration-300`}>
         <ChatSidebar onConversationSelect={isMobile ? toggleSidebar : undefined} />
       </div>
       

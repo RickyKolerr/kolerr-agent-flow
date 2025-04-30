@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 interface Creator {
   id: string;
@@ -34,6 +35,44 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const navigate = useNavigate();
+  const { isAuthenticated, canAccessFeature, hasPremiumPlan, getRedirectPath } = useUserAccess();
+
+  const handleContactCreator = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to contact creators", {
+        description: "Create an account or log in to continue"
+      });
+      navigate("/login");
+      return;
+    }
+
+    // Open message dialog
+    setSelectedCreator(creator);
+    setIsDialogOpen(true);
+  };
+
+  const handleRequestCollab = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to request collaborations", {
+        description: "Create an account or log in to continue"
+      });
+      navigate("/login");
+      return;
+    }
+
+    if (!hasPremiumPlan) {
+      toast.error("Premium plan required", {
+        description: "Upgrade to premium to request collaborations with creators"
+      });
+      navigate("/pricing");
+      return;
+    }
+
+    // Set a template message for collaboration
+    setSelectedCreator(creator);
+    setMessage(`Hi ${creator.name}, I'd like to collaborate with you on a project. Would you be interested in discussing further?`);
+    setIsDialogOpen(true);
+  };
 
   const handleSendMessage = () => {
     if (!message.trim() || !selectedCreator) return;
@@ -41,17 +80,12 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
     toast.success(`Message sent to ${selectedCreator.name}`, {
       description: "They will be notified of your message."
     });
-    setMessage("");
-    setIsDialogOpen(false);
     
     // Navigate to chat with this creator
-    // In a real app, we'd create a conversation or find an existing one first
-    navigate(`/chat?message=${encodeURIComponent(message)}&recipient=${selectedCreator.name}`);
-  };
-
-  const handleOpenDialog = (creator: Creator) => {
-    setSelectedCreator(creator);
-    setIsDialogOpen(true);
+    navigate(`/chat?recipient=${selectedCreator.id}&name=${encodeURIComponent(selectedCreator.name)}&message=${encodeURIComponent(message)}`);
+    
+    setMessage("");
+    setIsDialogOpen(false);
   };
 
   return (
@@ -97,7 +131,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
               variant="outline" 
               size="sm"
               className="text-xs"
-              onClick={() => handleOpenDialog(creator)}
+              onClick={handleContactCreator}
             >
               <MessageSquare className="h-3 w-3 mr-1" />
               Message
@@ -141,7 +175,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
           size="sm"
           className="text-xs"
           disabled={creator.connected}
-          onClick={() => !creator.connected && onConnect(creator)}
+          onClick={() => !creator.connected ? handleRequestCollab() : null}
         >
           {creator.connected ? (
             <>
@@ -151,7 +185,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
           ) : (
             <>
               <UserPlus className="h-3 w-3 mr-1" />
-              Connect
+              Request Collab
             </>
           )}
         </Button>

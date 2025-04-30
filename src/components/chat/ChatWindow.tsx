@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
@@ -19,10 +19,61 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   const [conversation, setConversation] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
-
+  const location = useLocation();
+  
   useEffect(() => {
-    // Find the conversation
-    if (conversationId) {
+    // Handle URL parameters for direct messaging
+    const searchParams = new URLSearchParams(location.search);
+    const recipientId = searchParams.get('recipient');
+    const recipientName = searchParams.get('name');
+    const initialMessage = searchParams.get('message');
+    
+    if (recipientId && !conversationId) {
+      // Check if we have an existing conversation with this recipient
+      const existingConversation = mockConversations.find(c => 
+        c.participants.some(p => p.id === recipientId)
+      );
+      
+      if (existingConversation) {
+        // If conversation exists, use it
+        setConversation(existingConversation);
+        const conversationMessages = mockMessages.filter(
+          (m) => m.conversationId === existingConversation.id
+        ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+        setMessages(conversationMessages);
+      } else if (recipientName) {
+        // Create a synthetic conversation for UI purposes
+        const syntheticConversation = {
+          id: `new-${recipientId}`,
+          participants: [
+            { id: "current-user", name: "You", status: "online", avatar: "/placeholder.svg" },
+            { id: recipientId, name: recipientName, status: "online", avatar: "/placeholder.svg" }
+          ],
+          lastMessage: null,
+          unreadCount: 0
+        };
+        setConversation(syntheticConversation);
+        setMessages([]);
+      }
+      
+      // If there's an initial message, add it after a small delay
+      if (initialMessage) {
+        setTimeout(() => {
+          const newMessage = {
+            id: `msg-${Date.now()}`,
+            conversationId: existingConversation?.id || `new-${recipientId}`,
+            senderId: "current-user",
+            content: initialMessage,
+            timestamp: new Date().toISOString(),
+            status: "sent",
+            attachments: [],
+          };
+          setMessages((prev) => [...prev, newMessage]);
+          setShouldScrollToBottom(true);
+        }, 300);
+      }
+    } else if (conversationId) {
+      // Find the conversation
       const foundConversation = mockConversations.find(
         (c) => c.id === conversationId
       );
@@ -39,7 +90,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       setMessages([]);
       setConversation(null);
     }
-  }, [conversationId]);
+  }, [conversationId, location.search]);
 
   useEffect(() => {
     if (messagesEndRef.current && shouldScrollToBottom) {
@@ -49,11 +100,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   }, [shouldScrollToBottom, messages]);
 
   const handleSendMessage = (content: string, attachments?: any[]) => {
-    if (!conversationId || !content.trim()) return;
+    if (!conversation || !content.trim()) return;
     
     const newMessage = {
       id: `msg-${Date.now()}`,
-      conversationId,
+      conversationId: conversation.id,
       senderId: "current-user",
       content,
       timestamp: new Date().toISOString(),
@@ -70,7 +121,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       if (otherParticipant) {
         const replyMessage = {
           id: `msg-reply-${Date.now()}`,
-          conversationId,
+          conversationId: conversation.id,
           senderId: otherParticipant.id,
           content: `Thanks for your message! This is an automated reply from ${otherParticipant.name}.`,
           timestamp: new Date().toISOString(),
@@ -88,7 +139,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
 
   return (
     <div className="flex-1 flex flex-col h-full">
-      {conversationId && conversation ? (
+      {conversation ? (
         <>
           <ChatHeader participant={otherParticipant} onBackClick={onBackClick} />
           <ScrollArea className="flex-1 p-4">

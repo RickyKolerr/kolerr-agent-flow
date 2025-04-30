@@ -2,13 +2,13 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, Home } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockConversations } from "./mockChatData";
 import { OnlineIndicator } from "./OnlineIndicator";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 
 interface ChatSidebarProps {
   onConversationSelect?: () => void;
@@ -36,7 +36,15 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
   return (
     <div className="w-full md:w-80 border-r border-white/10 flex flex-col h-full">
       <div className="p-4 border-b border-white/10">
-        <h2 className="text-xl font-bold mb-4">Messages</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold">Messages</h2>
+          <Link to="/" className="hover:opacity-80 transition-opacity">
+            <div className="flex items-center gap-1 text-brand-pink">
+              <Home className="h-4 w-4" />
+              <span className="text-sm font-medium">Home</span>
+            </div>
+          </Link>
+        </div>
         <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
