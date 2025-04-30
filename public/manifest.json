@@ -1,0 +1,46 @@
+
+{
+  "short_name": "Kolerr",
+  "name": "Kolerr - Your TikTok KOL Discovery Platform",
+  "description": "Find and connect with the perfect TikTok creators for your brand",
+  "icons": [
+    {
+      "src": "/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#000000",
+  "orientation": "portrait",
+  "categories": ["business", "marketing", "social"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Home",
+      "url": "/home",
+      "description": "View the app homepage"
+    },
+    {
+      "name": "Dashboard",
+      "url": "/dashboard",
+      "description": "Access your dashboard"
+    }
+  ]
+}

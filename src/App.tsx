@@ -11,6 +11,9 @@ import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/Aut
 import { CreditProvider } from "@/contexts/CreditContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
+// Chat components
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
+
 // Pages
 import HomePage from "@/pages/HomePage";
 import AboutPage from "@/pages/About";
@@ -99,6 +102,9 @@ const Layout = ({ children }) => {
         {children}
       </main>
       {!isDashboardRoute && !isAuthRoute && !isChatRoute && <Footer />}
+      
+      {/* Always show the floating chat button except on auth routes and dedicated chat routes */}
+      {!isAuthRoute && !isChatRoute && <FloatingChatButton />}
     </div>
   );
 };

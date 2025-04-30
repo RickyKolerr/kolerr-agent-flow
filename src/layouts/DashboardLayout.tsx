@@ -3,8 +3,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, LogOut, Menu, X, Languages,
-  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText,
-  Bot
+  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AgentChat } from "@/components/chat/AgentChat";
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -27,7 +25,6 @@ const DashboardLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isChatbotOpen, setIsChatbotOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Auto-hide sidebar on login/initial load
@@ -52,19 +49,6 @@ const DashboardLayout = () => {
       document.removeEventListener("mousedown", handleOutsideClick);
     };
   }, [isSidebarOpen]);
-
-  // Configure AgentChat based on user role
-  const agentConfig = user?.role === 'kol' 
-    ? {
-        title: "Campaign Finder AI",
-        subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Welcome to Kolerr! We connect creators like you to amazing paid brand campaigns. Tell me what kind of opportunities you're looking for, and I'll help you find the perfect match!"
-      }
-    : {
-        title: "Influencer AI Agent",
-        subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
-      };
 
   // Determine menu items based on user role
   const getBrandMenuItems = () => [
@@ -192,10 +176,6 @@ const DashboardLayout = () => {
     setLanguage(language === 'en' ? 'vi' : 'en');
   };
 
-  const toggleChatbot = () => {
-    setIsChatbotOpen(!isChatbotOpen);
-  };
-
   return (
     <ProtectedRoute>
       <div className="flex h-screen bg-background">
@@ -268,29 +248,6 @@ const DashboardLayout = () => {
 
               <Separator className="my-6 bg-white/10" />
 
-              {/* AI Assistant Button */}
-              <Tooltip delayDuration={0}>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={toggleChatbot}
-                    className={cn(
-                      "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3 mb-4",
-                      isChatbotOpen
-                        ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
-                        : "text-white/70 hover:text-white hover:bg-white/10"
-                    )}
-                  >
-                    <Bot className="h-5 w-5" />
-                    <span>{user?.role === 'kol' ? "Campaign Finder AI" : "Influencer AI"}</span>
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="right" className="ml-2">
-                  {user?.role === 'kol' 
-                    ? "Let AI find the perfect campaigns for you" 
-                    : "Find influencers for your campaign with AI"}
-                </TooltipContent>
-              </Tooltip>
-
               <div className="space-y-1">
                 {userItems.map((item) => (
                   <Tooltip key={item.name} delayDuration={0}>
@@ -360,15 +317,6 @@ const DashboardLayout = () => {
             <Outlet />
           </div>
         </main>
-
-        {/* Agent Chat Modal */}
-        <AgentChat
-          title={agentConfig.title}
-          subtitle={agentConfig.subtitle}
-          initialMessage={agentConfig.initialMessage}
-          isOpen={isChatbotOpen}
-          onOpenChange={setIsChatbotOpen}
-        />
       </div>
     </ProtectedRoute>
   );

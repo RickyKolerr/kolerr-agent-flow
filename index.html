@@ -3,12 +3,24 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Kolerr - Your TikTok KOL Discovery Platform</title>
     <meta name="description" content="Find and connect with the perfect TikTok creators for your brand" />
     <meta name="author" content="Kolerr" />
     
     <link rel="icon" href="/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png" type="image/png" />
+    
+    <!-- PWA meta tags -->
+    <meta name="theme-color" content="#000000" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kolerr" />
+
+    <!-- PWA related links -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png" />
+    
+    <!-- Social media meta tags -->
     <meta property="og:title" content="Kolerr - TikTok KOL Discovery" />
     <meta property="og:description" content="Find and connect with the perfect TikTok creators for your brand" />
     <meta property="og:type" content="website" />
@@ -23,6 +35,20 @@
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- PWA service worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/service-worker.js')
+            .then(registration => {
+              console.log('Service worker registered:', registration);
+            })
+            .catch(error => {
+              console.log('Service worker registration failed:', error);
+            });
+        });
+      }
+    </script>
   </body>
 </html>
-
