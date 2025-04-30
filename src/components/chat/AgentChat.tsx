@@ -7,7 +7,7 @@ import { Send } from "lucide-react";
 import { ChatMessage } from "@/components/chat/ChatMessage";
 import { useAuth } from "@/contexts/AuthContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { X } from "lucide-react";
@@ -44,6 +44,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   const [input, setInput] = useState("");
   const isMobile = useMediaQuery("(max-width: 768px)");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [sendButtonClicked, setSendButtonClicked] = useState(false);
 
   // Function to simulate response with typing effect
   const simulateResponse = (userMessageContent: string) => {
@@ -105,7 +106,13 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   }, [messages]);
 
   const handleSendMessage = () => {
+    // Prevent multiple submissions by checking if button was already clicked
+    if (sendButtonClicked) return;
+    
     if (!input.trim()) return;
+    
+    // Set the button as clicked to prevent double submissions
+    setSendButtonClicked(true);
     
     // Add user message
     const userMessage = {
@@ -119,6 +126,11 @@ export const AgentChat: React.FC<AgentChatProps> = ({
     
     setMessages(prev => [...prev, userMessage]);
     setInput("");
+    
+    // Reset button clicked state after a short delay
+    setTimeout(() => {
+      setSendButtonClicked(false);
+    }, 500);
     
     // Simulate message delivery
     setTimeout(() => {
@@ -184,7 +196,13 @@ export const AgentChat: React.FC<AgentChatProps> = ({
             placeholder="Ask me anything..."
             className="flex-1 bg-black/20"
           />
-          <Button type="submit" size="icon" className="shrink-0">
+          <Button 
+            type="submit" 
+            size="icon" 
+            className="shrink-0 p-2" 
+            disabled={!input.trim() || sendButtonClicked}
+            aria-label="Send message"
+          >
             <Send className="h-4 w-4" />
           </Button>
         </form>
@@ -207,6 +225,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] h-[80vh] p-0 bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
         {renderChatContent()}
       </DialogContent>
     </Dialog>
