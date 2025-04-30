@@ -34,7 +34,6 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [isExpanded, setIsExpanded] = useState(inSidebar); // Always expanded when in sidebar
   
   useEffect(() => {
     // Add welcome message on mount
@@ -49,7 +48,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         }
       ]);
     }
-  }, [initialMessage]);
+  }, [initialMessage, messages.length]);
 
   const handleSendMessage = () => {
     if (!input.trim()) return;
@@ -89,14 +88,8 @@ export const AgentChat: React.FC<AgentChatProps> = ({
       setMessages(prev => [...prev, agentResponse]);
     }, 1500);
   };
-
-  const toggleExpand = () => {
-    if (!inSidebar) {
-      setIsExpanded(!isExpanded);
-    }
-  };
   
-  // Different rendering when in sidebar vs floating
+  // Render the sidebar version directly
   if (inSidebar) {
     return (
       <div className="flex flex-col h-full">
@@ -150,73 +143,53 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   
   // Original floating version
   return (
-    <div className={`fixed right-6 bottom-6 z-50 flex flex-col bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 ${isExpanded ? 'w-96 h-[600px] max-h-[80vh]' : 'w-80 h-16'}`}>
+    <div className="fixed right-6 bottom-6 z-50 flex flex-col bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden transition-all duration-300 w-96 h-[600px] max-h-[80vh]">
       {/* Header */}
-      <div 
-        className="flex items-center px-4 py-3 border-b border-white/10 cursor-pointer"
-        onClick={toggleExpand}
-      >
+      <div className="flex items-center px-4 py-3 border-b border-white/10">
         <Avatar className="h-10 w-10 mr-3">
           <img src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" alt="Kolerr AI Agent" />
         </Avatar>
         <div className="flex-1">
           <h3 className="font-semibold text-base">{title}</h3>
-          {isExpanded && (
-            <p className="text-xs text-gray-400">
-              {subtitle}
-            </p>
-          )}
+          <p className="text-xs text-gray-400">
+            {subtitle}
+          </p>
         </div>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8 w-8 p-0"
-          onClick={(e) => {
-            e.stopPropagation();
-            setIsExpanded(false);
-          }}
-        >
-          {isExpanded ? "−" : "+"}
-        </Button>
       </div>
       
-      {isExpanded && (
-        <>
-          {/* Messages */}
-          <ScrollArea className="flex-1 p-4">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message as any} // Use type assertion temporarily to fix build error
-                  isOwnMessage={message.senderId === "current-user"}
-                />
-              ))}
-            </div>
-          </ScrollArea>
-          
-          {/* Input */}
-          <div className="p-4 border-t border-white/10">
-            <form 
-              className="flex gap-2" 
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-            >
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask me anything..."
-                className="flex-1 bg-black/20"
-              />
-              <Button type="submit" size="icon" className="shrink-0">
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
-          </div>
-        </>
-      )}
+      {/* Messages */}
+      <ScrollArea className="flex-1 p-4">
+        <div className="space-y-4">
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message as any} // Use type assertion temporarily to fix build error
+              isOwnMessage={message.senderId === "current-user"}
+            />
+          ))}
+        </div>
+      </ScrollArea>
+      
+      {/* Input */}
+      <div className="p-4 border-t border-white/10">
+        <form 
+          className="flex gap-2" 
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSendMessage();
+          }}
+        >
+          <Input
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Ask me anything..."
+            className="flex-1 bg-black/20"
+          />
+          <Button type="submit" size="icon" className="shrink-0">
+            <Send className="h-4 w-4" />
+          </Button>
+        </form>
+      </div>
     </div>
   );
 };
