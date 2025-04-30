@@ -35,7 +35,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const navigate = useNavigate();
-  const { isAuthenticated, canAccessFeature, hasPremiumPlan, getRedirectPath } = useUserAccess();
+  const { isAuthenticated, canAccessFeature, hasPremiumPlan, getRedirectPath, user } = useUserAccess();
 
   const handleContactCreator = () => {
     if (!isAuthenticated) {
@@ -81,8 +81,12 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
       description: "They will be notified of your message."
     });
     
-    // Navigate to chat with this creator
-    navigate(`/chat?recipient=${selectedCreator.id}&name=${encodeURIComponent(selectedCreator.name)}&message=${encodeURIComponent(message)}`);
+    // Navigate to appropriate dashboard messages page based on user role
+    const chatPath = user?.role === 'kol' 
+      ? `/dashboard/kol/messages?recipient=${selectedCreator.id}&name=${encodeURIComponent(selectedCreator.name)}&message=${encodeURIComponent(message)}`
+      : `/dashboard/messages?recipient=${selectedCreator.id}&name=${encodeURIComponent(selectedCreator.name)}&message=${encodeURIComponent(message)}`;
+    
+    navigate(chatPath);
     
     setMessage("");
     setIsDialogOpen(false);

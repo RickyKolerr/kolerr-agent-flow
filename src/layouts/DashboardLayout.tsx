@@ -78,6 +78,12 @@ const DashboardLayout = () => {
       description: t('dashboard.credits')
     },
     { 
+      icon: MessageCircle, 
+      name: "Messages", 
+      path: "/dashboard/messages",
+      description: "Chat with creators and partners"
+    },
+    { 
       icon: FileText, 
       name: "Contracts", 
       path: "/dashboard/contracts",
@@ -103,6 +109,12 @@ const DashboardLayout = () => {
       name: "Performance", 
       path: "/dashboard/kol/analytics",
       description: "Your performance analytics"
+    },
+    { 
+      icon: MessageCircle, 
+      name: "Messages", 
+      path: "/dashboard/kol/messages",
+      description: "Chat with brands and partners"
     },
     { 
       icon: FileText, 

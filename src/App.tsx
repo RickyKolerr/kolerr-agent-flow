@@ -39,6 +39,8 @@ import NotFound from "@/pages/NotFound";
 
 // Chat pages
 import ChatPage from "@/pages/chat/ChatPage";
+import MessagesPage from "@/pages/dashboard/Messages";
+import KolMessagesPage from "@/pages/dashboard/kol/Messages";
 
 // Onboarding pages
 import OnboardingBrand from "@/pages/auth/OnboardingBrand";
@@ -182,6 +184,7 @@ const App = () => {
                       <Route path="campaigns" element={<CampaignsPage />} />
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="credits" element={<CreditsPage />} />
+                      <Route path="messages" element={<MessagesPage />} />
                       
                       {/* Contract routes */}
                       <Route path="contracts" element={<ContractsPage />} />
@@ -196,6 +199,7 @@ const App = () => {
                       <Route path="kol/rewards" element={<Rewards />} />
                       <Route path="kol/community" element={<Community />} />
                       <Route path="kol/contracts" element={<KOLContracts />} />
+                      <Route path="kol/messages" element={<KolMessagesPage />} />
                       
                       {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />
