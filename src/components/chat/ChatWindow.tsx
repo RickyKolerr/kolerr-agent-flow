@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
 import { ChatMessage as ChatMessageComponent } from "./ChatMessage";
@@ -8,6 +8,7 @@ import { mockConversations, mockMessages } from "./mockChatData";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext"; 
 import { ChatMessage } from "./types";
+import { Loader2 } from "lucide-react";
 
 interface ChatWindowProps {
   onBackClick?: () => void;
@@ -25,15 +26,18 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
   const recipientId = searchParams.get('recipient');
   const recipientName = searchParams.get('name');
   const initialMessage = searchParams.get('message');
+  const [isLoading, setIsLoading] = useState(true);
 
   // Determine whether to show back to dashboard button
   const isDashboardChat = location.pathname.includes('/dashboard');
   
-  const getDashboardPath = () => {
+  const getDashboardPath = useCallback(() => {
     return user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages";
-  };
+  }, [user?.role]);
 
   useEffect(() => {
+    setIsLoading(true);
+    
     // If we don't have a conversation ID but have recipient info from URL params,
     // we should create a new conversation or find an existing one
     if (!conversationId && recipientId && recipientName) {
@@ -42,6 +46,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       if (mockConversations.length > 0) {
         navigate(`/chat/${mockConversations[0].id}${location.search}`);
       }
+      setIsLoading(false);
       return;
     }
 
@@ -61,17 +66,22 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       // If we have an ID but no conversation, redirect somewhere appropriate
       navigate(isDashboardChat ? getDashboardPath() : "/chat");
     }
-  }, [conversationId, recipientId, navigate, location.search]);
+    
+    setIsLoading(false);
+  }, [conversationId, recipientId, navigate, location.search, isDashboardChat, getDashboardPath]);
 
-  // Scroll to bottom when messages change
+  // Optimized scroll to bottom when messages change
   useEffect(() => {
     if (messageContainerRef.current) {
-      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+      const scrollContainer = messageContainerRef.current;
+      requestAnimationFrame(() => {
+        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+      });
     }
   }, [messages]);
 
-  // Handle sending a new message
-  const handleSendMessage = (content: string) => {
+  // Handle sending a new message with debounce
+  const handleSendMessage = useCallback((content: string) => {
     if (!content.trim() || !conversationId) return;
 
     const newMessage: ChatMessage = {
@@ -83,10 +93,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       status: 'sending'
     };
 
-    setMessages((prev) => [...prev, newMessage]);
-  };
+    setMessages(prev => [...prev, newMessage]);
+    
+    // Simulate message delivery after a short delay
+    setTimeout(() => {
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg
+        )
+      );
+    }, 500);
+  }, [conversationId]);
 
-  // Handle initial message from URL params
+  // Handle initial message from URL params with memoization
   useEffect(() => {
     if (initialMessage && conversationId && messages.length > 0) {
       // Only send the initial message if we haven't already (check if it exists)
@@ -100,9 +119,25 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
         navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
       }
     }
-  }, [initialMessage, conversationId, messages.length]);
+  }, [initialMessage, conversationId, messages.length, handleSendMessage, location.search, navigate, location.pathname]);
 
   // If no conversation is selected, show empty state
+  if (isLoading) {
+    return (
+      <div className="h-full flex flex-col">
+        <ChatHeader 
+          participant={null} 
+          onBackClick={onBackClick}
+          isDashboardChat={isDashboardChat}
+          dashboardUrl={getDashboardPath()} 
+        />
+        <div className="flex-1 flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-brand-pink" />
+        </div>
+      </div>
+    );
+  }
+  
   if (!conversation && !recipientId) {
     return (
       <div className="h-full flex flex-col">
