@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -274,6 +275,8 @@ const Index = () => {
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const [userView, setUserView] = useState<"brand" | "kol">("brand");
   const [applyingTo, setApplyingTo] = useState<string | null>(null);
+  // Add a new state to track user-initiated message additions
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   
   // Detect user role and set initial view
   useEffect(() => {
@@ -295,6 +298,7 @@ const Index = () => {
           content: welcomeMessage
         }]);
         setShowWelcome(false);
+        // Don't set scrollToBottom for welcome messages
       }, 500);
     }
   }, [showWelcome, userView]);
@@ -304,11 +308,14 @@ const Index = () => {
     setShowWelcome(true);
   }, [userView]);
   
+  // Modified scroll effect to only scroll when shouldScrollToBottom is true
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (messagesEndRef.current && shouldScrollToBottom) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      // Reset the flag after scrolling
+      setShouldScrollToBottom(false);
     }
-  }, [messages]);
+  }, [messages, shouldScrollToBottom]);
   
   useEffect(() => {
     const interval = setInterval(() => {
@@ -334,6 +341,8 @@ const Index = () => {
       };
       
       setMessages(prev => [...prev, userMessage]);
+      // Set scroll flag for user-initiated messages
+      setShouldScrollToBottom(true);
       
       useFreeCredit();
       
@@ -346,6 +355,8 @@ const Index = () => {
             : `Searching for campaigns matching "${searchQuery}"...`
         };
         setMessages(prev => [...prev, botResponse]);
+        // Set scroll flag for bot responses to user actions
+        setShouldScrollToBottom(true);
         
         setTimeout(() => {
           if (userView === "brand") {
@@ -381,6 +392,8 @@ const Index = () => {
     
     setMessages(prev => [...prev, userMessage]);
     setInputValue("");
+    // Set scroll flag for user-initiated messages
+    setShouldScrollToBottom(true);
     
     if (!hasPremiumPlan && freeCredits === 0) {
       setTimeout(() => {
@@ -390,6 +403,8 @@ const Index = () => {
           content: "You've used all your free searches for today. Upgrade to our premium plan to continue accessing our AI agent, or wait until 7:00 AM tomorrow for your credits to reset."
         };
         setMessages(prev => [...prev, botResponse]);
+        // Set scroll flag for bot responses to user actions
+        setShouldScrollToBottom(true);
       }, 800);
       
       return;
@@ -461,6 +476,8 @@ const Index = () => {
       }
       
       setMessages(prev => [...prev, botResponse]);
+      // Set scroll flag for bot responses to user actions
+      setShouldScrollToBottom(true);
     }, 1000);
   };
   
