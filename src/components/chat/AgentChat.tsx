@@ -106,12 +106,12 @@ export const AgentChat: React.FC<AgentChatProps> = ({
           msg.id === userMessage.id ? { ...msg, status: "delivered" } : msg
         )
       );
-    }, 300); // Faster delivery simulation
+    }, 100); // Ultra-fast delivery simulation
     
     // Simulate agent response with faster timing
     setTimeout(() => {
       simulateResponse(input);
-    }, 700); // Faster response time
+    }, 200); // Ultra-fast response time
   };
 
   const renderChatContent = () => (
@@ -142,7 +142,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
               key={message.id}
               message={message as any}
               isOwnMessage={message.senderId === "current-user"}
-              typingSpeed={10} // Much faster typing speed
+              typingSpeed={1} // Ultra-fast typing speed (1ms per character)
             />
           ))}
         </div>

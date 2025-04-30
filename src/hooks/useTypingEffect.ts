@@ -34,16 +34,24 @@ export function useTypingEffect({
 
   // Handle the initial delay before typing starts
   useEffect(() => {
+    // For ultra-fast typing, minimize the start delay
     const timer = setTimeout(() => {
       setStarted(true);
-    }, startDelay);
+    }, typingSpeed <= 5 ? 50 : startDelay); // Use smaller delay for fast typing
     
     return () => clearTimeout(timer);
-  }, [startDelay]);
+  }, [startDelay, typingSpeed]);
 
   // Randomize typing speed to simulate human typing if enabled
   useEffect(() => {
     if (humanizedTyping && started && !isComplete) {
+      // For ultra-fast mode, use minimal variations and pauses
+      if (typingSpeed <= 5) {
+        // When ultra-fast is requested, minimize all randomization
+        setCurrentSpeed(1);
+        return;
+      }
+      
       // Current character being typed
       const currentChar = text[currentIndex];
       const nextChar = text[currentIndex + 1];
@@ -130,6 +138,12 @@ export function useTypingEffect({
 
   // Handle pauses in typing
   useEffect(() => {
+    // For ultra-fast typing mode, minimize or skip pauses entirely
+    if (typingSpeed <= 5 && isPaused) {
+      setIsPaused(false);
+      return;
+    }
+    
     if (isPaused && pauseDuration > 0) {
       const pauseTimer = setTimeout(() => {
         setIsPaused(false);
@@ -137,17 +151,37 @@ export function useTypingEffect({
       
       return () => clearTimeout(pauseTimer);
     }
-  }, [isPaused, pauseDuration]);
+  }, [isPaused, pauseDuration, typingSpeed]);
+
+  // Special handling for ultra-fast mode
+  useEffect(() => {
+    // If typing speed is very low (ultra-fast mode), skip the typing animation altogether
+    if (typingSpeed <= 1 && started && !isComplete) {
+      // Set the full text immediately for ultra-fast mode
+      setDisplayedText(text);
+      setCurrentIndex(text.length);
+    }
+  }, [typingSpeed, started, isComplete, text]);
 
   // Use interval for the typing effect with dynamic speed
   useInterval(
     () => {
       if (currentIndex < text.length && !isPaused) {
-        setDisplayedText(prev => prev + text.charAt(currentIndex));
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        // For very fast typing, add multiple characters at once
+        if (typingSpeed <= 3 && typingSpeed > 1) {
+          const charsToAdd = Math.min(5, text.length - currentIndex);
+          setDisplayedText(prev => prev + text.substr(currentIndex, charsToAdd));
+          setCurrentIndex(prevIndex => Math.min(prevIndex + charsToAdd, text.length));
+        } else if (typingSpeed > 1) {
+          // Normal typing, one character at a time
+          setDisplayedText(prev => prev + text.charAt(currentIndex));
+          setCurrentIndex(prevIndex => prevIndex + 1);
+        }
+        // For typingSpeed <= 1, we handle it in the useEffect above
       }
     },
-    started && !isComplete && !isPaused ? currentSpeed : null
+    // Only use the interval for normal typing mode
+    (started && !isComplete && !isPaused && typingSpeed > 1) ? currentSpeed : null
   );
 
   return { displayedText, isComplete };
