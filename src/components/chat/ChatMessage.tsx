@@ -5,33 +5,17 @@ import { Avatar } from "@/components/ui/avatar";
 import { mockConversations } from "./mockChatData";
 import { formatMessageTime } from "./utils";
 import { ChatMessage as ChatMessageType } from "./types";
-import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface ChatMessageProps {
   message: ChatMessageType;
   isOwnMessage: boolean;
-  animateTyping?: boolean;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ 
-  message, 
-  isOwnMessage, 
-  animateTyping = false 
-}) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage }) => {
   // Find sender in conversations
   const sender = mockConversations
     .flatMap((c) => c.participants)
     .find((p) => p.id === message.senderId);
-
-  // Use typing effect for bot messages when animateTyping is true
-  const { displayedText, isComplete } = useTypingEffect({
-    text: message.content,
-    typingSpeed: 40,  // Faster base typing speed
-    startDelay: 300,
-    // Highlight important phrases with slower typing
-    highlightText: isOwnMessage ? "" : "Kolerr",
-    highlightSpeed: 150,  // Slower speed for brand name and important terms
-  });
 
   const getStatusIcon = () => {
     switch (message.status) {
@@ -56,9 +40,6 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
     }
   };
 
-  // Only use the animation for non-user messages when animateTyping is true
-  const content = animateTyping && !isOwnMessage ? displayedText : message.content;
-
   return (
     <div
       className={`flex items-end gap-2 group ${
@@ -79,11 +60,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
               : "bg-black/30 border border-white/10 rounded-bl-none"
           }`}
         >
-          {content}
-          
-          {!isComplete && !isOwnMessage && animateTyping && (
-            <span className="typing-cursor"></span>
-          )}
+          {message.content}
           
           {message.attachments && message.attachments.length > 0 && (
             <div className="mt-2 space-y-2">
