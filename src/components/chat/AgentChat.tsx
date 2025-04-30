@@ -21,6 +21,7 @@ interface Message {
   timestamp: string;
   conversationId: string; // Required for ChatMessage component
   status?: "sending" | "sent" | "delivered" | "read";
+  isThinking?: boolean; // Added isThinking property
 }
 
 interface AgentChatProps {
@@ -46,19 +47,39 @@ export const AgentChat: React.FC<AgentChatProps> = ({
 
   // Function to simulate response with typing effect
   const simulateResponse = (userMessageContent: string) => {
+    // First, add a thinking message
+    const thinkingId = `thinking-${Date.now()}`;
+    const thinkingMessage: Message = {
+      id: thinkingId,
+      senderId: "agent",
+      content: "...",
+      timestamp: new Date().toISOString(),
+      conversationId: "agent-chat",
+      isThinking: true,
+    };
+    
+    setMessages(prev => [...prev, thinkingMessage]);
+    
     // Generate a simple response based on the user message
     let responseContent = "I'm processing your request. This is a placeholder response that would be replaced with actual AI response in a production environment.";
     
-    // Add agent response with faster typing (will be optimized with useTypingEffect)
-    const agentResponse = {
-      id: `msg-${Date.now()}-agent`,
-      senderId: "agent",
-      content: responseContent,
-      timestamp: new Date().toISOString(),
-      conversationId: "agent-chat",
-    };
-    
-    setMessages(prev => [...prev, agentResponse]);
+    // After a short delay, replace the thinking message with the actual response
+    setTimeout(() => {
+      setMessages(prev => 
+        prev.map(msg => 
+          msg.id === thinkingId 
+            ? {
+                id: `msg-${Date.now()}-agent`,
+                senderId: "agent",
+                content: responseContent,
+                timestamp: new Date().toISOString(),
+                conversationId: "agent-chat",
+                isThinking: false
+              } 
+            : msg
+        )
+      );
+    }, 2000); // Show thinking indicator for 2 seconds
   };
   
   useEffect(() => {
@@ -140,9 +161,9 @@ export const AgentChat: React.FC<AgentChatProps> = ({
           {messages.map((message) => (
             <ChatMessage
               key={message.id}
-              message={message as any}
+              message={{...message, isThinking: message.isThinking || false} as any}
               isOwnMessage={message.senderId === "current-user"}
-              typingSpeed={1} // Ultra-fast typing speed (1ms per character)
+              typingSpeed={message.isThinking ? 500 : 1} // Slower typing for thinking animation, ultra-fast for normal messages
             />
           ))}
         </div>

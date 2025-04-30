@@ -8,9 +8,9 @@ import { ChatMessage as ChatMessageType } from "./types";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface ChatMessageProps {
-  message: ChatMessageType;
+  message: ChatMessageType & { isThinking?: boolean };
   isOwnMessage: boolean;
-  typingSpeed?: number; // Added this property
+  typingSpeed?: number;
 }
 
 export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 55 }) => {
@@ -25,9 +25,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
   // Use typing effect for agent greeting messages with more human typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
-    typingSpeed: typingSpeed,  // Use the provided typing speed
-    startDelay: 700,  // Longer delay before typing starts to simulate thinking
-    humanizedTyping: true, 
+    typingSpeed: message.isThinking ? 600 : typingSpeed,  // Use slower typing for thinking animation
+    startDelay: message.isThinking ? 0 : 700,  // No delay for thinking dots
+    humanizedTyping: !message.isThinking,  // No humanized typing for thinking dots
     highlightText: "Kolerr", 
     highlightSpeed: 120,
   });
@@ -55,6 +55,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
     }
   };
 
+  // Special styling for thinking message
+  const thinkingAnimation = message.isThinking ? "animate-pulse" : "";
+
   return (
     <div
       className={`flex items-end gap-2 group ${
@@ -77,7 +80,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
             isOwnMessage
               ? "bg-brand-pink text-white rounded-br-none"
               : "bg-black/30 border border-white/10 rounded-bl-none"
-          }`}
+          } ${thinkingAnimation}`}
         >
           {isAgentMessage ? (
             <div 
