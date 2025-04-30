@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { Menu, User, Languages } from "lucide-react";
@@ -30,17 +31,18 @@ export const MainNav = () => {
     setIsOpen(false);
   };
 
-  // Find the routes array and add a new route for chat
+  // Modified routes array to hide specific tabs
   const routes = [
     { title: "Home", path: "/" },
     { title: "About", path: "/about" },
     { title: "Features", path: "/features" },
     { title: "Pricing", path: "/pricing" },
-    { title: "Chat", path: "/chat" },  // Add this line for chat
-    { title: "Docs", path: "/docs" },
-    { title: "Blog", path: "/blog" },
-    { title: "API", path: "/api" },
-    { title: "Help", path: "/help" }
+    // Hidden tabs (removed from navigation but still accessible via routes)
+    // { title: "Chat", path: "/chat" },
+    // { title: "Docs", path: "/docs" },
+    // { title: "Blog", path: "/blog" },
+    // { title: "API", path: "/api" },
+    // { title: "Help", path: "/help" }
   ];
 
   return (
@@ -111,7 +113,7 @@ export const MainNav = () => {
               </>}
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation - also update here to match the desktop nav tabs */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
@@ -121,6 +123,7 @@ export const MainNav = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
+                {/* Use the same filtered routes for mobile */}
                 {routes.map(route => (
                   <Link key={route.path} to={route.path} className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                     {t(`mainNav.${route.title.toLowerCase()}`)}
