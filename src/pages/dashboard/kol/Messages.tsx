@@ -27,7 +27,7 @@ const KolMessagesPage: React.FC = () => {
           </p>
         </div>
         <div className="flex-1 overflow-hidden">
-          <ChatLayout />
+          <ChatLayout isDashboardChat={true} />
         </div>
       </div>
     </div>

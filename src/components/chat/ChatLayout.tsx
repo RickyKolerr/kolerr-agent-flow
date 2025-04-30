@@ -1,15 +1,21 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ChatSidebar } from "./ChatSidebar";
 import { ChatWindow } from "./ChatWindow";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
+import { useLocation } from "react-router-dom";
 
-export const ChatLayout: React.FC = () => {
+interface ChatLayoutProps {
+  isDashboardChat?: boolean;
+}
+
+export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false }) => {
   const isMobile = useIsMobile();
   const [showSidebar, setShowSidebar] = useState(true);
+  const location = useLocation();
   
   // On mobile, default to showing the sidebar (conversations list)
   React.useEffect(() => {
@@ -40,8 +46,11 @@ export const ChatLayout: React.FC = () => {
       
       {/* Chat window - hide on mobile when showing the sidebar */}
       <div className={`flex-1 ${isMobile ? (showSidebar ? 'hidden' : 'block') : 'block'}`}>
-        <ChatWindow onBackClick={isMobile ? toggleSidebar : undefined} />
+        <ChatWindow 
+          onBackClick={isMobile ? toggleSidebar : undefined} 
+        />
       </div>
     </div>
   );
 };
+

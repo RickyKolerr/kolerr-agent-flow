@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Search, Plus, Home } from "lucide-react";
+import { Search, Plus, Home, LayoutDashboard } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { mockConversations } from "./mockChatData";
 import { OnlineIndicator } from "./OnlineIndicator";
 import { useNavigate, useParams, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface ChatSidebarProps {
   onConversationSelect?: () => void;
@@ -18,6 +19,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
   const [searchQuery, setSearchQuery] = useState("");
   const { conversationId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const filteredConversations = mockConversations.filter(
     (conversation) =>
@@ -33,17 +35,32 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
     }
   };
 
+  const getDashboardPath = () => {
+    // Return the appropriate dashboard path based on user role
+    return user?.role === 'kol' 
+      ? "/dashboard/kol/messages" 
+      : "/dashboard/messages";
+  };
+
   return (
     <div className="w-full md:w-80 border-r border-white/10 flex flex-col h-full">
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
-          <Link to="/" className="hover:opacity-80 transition-opacity flex items-center">
-            <div className="flex items-center gap-1 text-brand-pink">
-              <Home className="h-4 w-4" />
-              <span className="text-sm font-medium">Home</span>
-            </div>
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link to={getDashboardPath()} className="hover:opacity-80 transition-opacity flex items-center">
+              <div className="flex items-center gap-1 text-brand-pink">
+                <LayoutDashboard className="h-4 w-4" />
+                <span className="text-sm font-medium">Dashboard</span>
+              </div>
+            </Link>
+            <Link to="/" className="hover:opacity-80 transition-opacity flex items-center">
+              <div className="flex items-center gap-1 text-brand-pink">
+                <Home className="h-4 w-4" />
+                <span className="text-sm font-medium">Home</span>
+              </div>
+            </Link>
+          </div>
         </div>
         <div className="relative">
           <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -107,3 +124,4 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }
     </div>
   );
 };
+

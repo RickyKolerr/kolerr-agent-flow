@@ -1,72 +1,88 @@
 
 import React from "react";
-import { MoreHorizontal, Phone, Video, ArrowLeft } from "lucide-react";
+import { ChevronLeft, LayoutDashboard, MoreVertical, Phone, Video } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { OnlineIndicator } from "./OnlineIndicator";
-import { ChatUser } from "./types";
+import { Link } from "react-router-dom";
 
-interface ChatHeaderProps {
-  participant: ChatUser;
-  onBackClick?: () => void;
+interface Participant {
+  id: string;
+  name: string;
+  avatar?: string;
+  status?: "online" | "offline" | "away" | "busy";
 }
 
-export const ChatHeader: React.FC<ChatHeaderProps> = ({ participant, onBackClick }) => {
-  if (!participant) return null;
+interface ChatHeaderProps {
+  participant: Participant | null;
+  onBackClick?: () => void;
+  isDashboardChat?: boolean;
+  dashboardUrl?: string;
+}
 
-  // Format the last seen date in a more user-friendly way
-  const formatLastSeen = (lastSeen: string) => {
-    const date = new Date(lastSeen);
-    const now = new Date();
-    const diffInDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    
-    if (diffInDays === 0) {
-      return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (diffInDays === 1) {
-      return `Yesterday at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-    } else if (diffInDays < 7) {
-      return `${diffInDays} days ago`;
-    } else {
-      return date.toLocaleDateString([], { month: 'short', day: 'numeric', year: 'numeric' });
-    }
-  };
-
+export const ChatHeader: React.FC<ChatHeaderProps> = ({
+  participant,
+  onBackClick,
+  isDashboardChat = false,
+  dashboardUrl = "/dashboard",
+}) => {
   return (
-    <div className="border-b border-white/10 p-4 flex items-center justify-between bg-black/10">
+    <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
       <div className="flex items-center gap-3">
-        {onBackClick && (
-          <Button variant="ghost" size="icon" className="mr-1 flex md:hidden" onClick={onBackClick}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
+        <Button
+          onClick={onBackClick}
+          size="icon"
+          variant="ghost"
+          className="md:hidden h-8 w-8"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
+        
+        {isDashboardChat && (
+          <Link to={dashboardUrl} className="mr-2 hidden md:flex">
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <LayoutDashboard className="h-5 w-5" />
+              <span className="sr-only">Back to Dashboard</span>
+            </Button>
+          </Link>
         )}
-        <div className="relative">
-          <Avatar className="h-10 w-10 border border-white/10">
-            <img src={participant.avatar} alt={participant.name} />
-          </Avatar>
-          <OnlineIndicator status={participant.status} />
-        </div>
-        <div>
-          <h3 className="font-medium">{participant.name}</h3>
-          <p className="text-xs text-muted-foreground">
-            {participant.status === "online"
-              ? "Online"
-              : participant.lastSeen
-                ? `Last seen ${formatLastSeen(participant.lastSeen)}`
-                : "Offline"}
-          </p>
-        </div>
+        
+        {participant ? (
+          <>
+            <div className="relative">
+              <Avatar className="h-9 w-9 border border-white/10">
+                <img src={participant.avatar} alt={participant.name} />
+              </Avatar>
+              {participant.status && (
+                <OnlineIndicator status={participant.status} />
+              )}
+            </div>
+            <div>
+              <h3 className="font-medium">{participant.name}</h3>
+              <p className="text-xs text-muted-foreground">
+                {participant.status === "online" ? "Online" : "Offline"}
+              </p>
+            </div>
+          </>
+        ) : (
+          <h3 className="font-medium">Messages</h3>
+        )}
       </div>
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="icon" className="rounded-full md:flex hidden">
-          <Phone className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="rounded-full md:flex hidden">
-          <Video className="h-4 w-4" />
-        </Button>
-        <Button variant="ghost" size="icon" className="rounded-full">
-          <MoreHorizontal className="h-4 w-4" />
-        </Button>
-      </div>
+      
+      {participant && (
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+            <Phone className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+            <Video className="h-5 w-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+            <MoreVertical className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
+

@@ -1,188 +1,158 @@
 
-import React, { useEffect, useRef, useState } from "react";
-import { useParams, useLocation } from "react-router-dom";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import React, { useState, useRef, useEffect } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
 import { ChatMessage } from "./ChatMessage";
-import { mockConversations, mockMessages } from "./mockChatData";
-import { Button } from "@/components/ui/button";
-import { MessageSquare } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { mockConversations } from "./mockChatData";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext"; 
 
 interface ChatWindowProps {
   onBackClick?: () => void;
 }
 
 export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
-  const { conversationId } = useParams<{ conversationId: string }>();
+  const { conversationId } = useParams();
   const [messages, setMessages] = useState<any[]>([]);
   const [conversation, setConversation] = useState<any>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
+  const messageContainerRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const searchParams = new URLSearchParams(location.search);
+  const recipientId = searchParams.get('recipient');
+  const recipientName = searchParams.get('name');
+  const initialMessage = searchParams.get('message');
+
+  // Determine whether to show back to dashboard button
+  const isDashboardChat = location.pathname.includes('/dashboard');
   
+  const getDashboardPath = () => {
+    return user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages";
+  };
+
   useEffect(() => {
-    // Handle URL parameters for direct messaging
-    const searchParams = new URLSearchParams(location.search);
-    const recipientId = searchParams.get('recipient');
-    const recipientName = searchParams.get('name');
-    const initialMessage = searchParams.get('message');
-    
-    if (recipientId && !conversationId) {
-      // Check if we have an existing conversation with this recipient
-      const existingConversation = mockConversations.find(c => 
-        c.participants.some(p => p.id === recipientId)
-      );
-      
-      if (existingConversation) {
-        // If conversation exists, use it
-        setConversation(existingConversation);
-        const conversationMessages = mockMessages.filter(
-          (m) => m.conversationId === existingConversation.id
-        ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        setMessages(conversationMessages);
-      } else if (recipientName) {
-        // Create a synthetic conversation for UI purposes
-        const syntheticConversation = {
-          id: `new-${recipientId}`,
-          participants: [
-            { id: "current-user", name: "You", status: "online", avatar: "/placeholder.svg" },
-            { id: recipientId, name: recipientName, status: "online", avatar: "/placeholder.svg" }
-          ],
-          lastMessage: null,
-          unreadCount: 0
-        };
-        setConversation(syntheticConversation);
-        setMessages([]);
+    // If we don't have a conversation ID but have recipient info from URL params,
+    // we should create a new conversation or find an existing one
+    if (!conversationId && recipientId && recipientName) {
+      // For demo purposes, just navigate to the first conversation
+      // In a real app, you would create or find the conversation with this recipient
+      if (mockConversations.length > 0) {
+        navigate(`/chat/${mockConversations[0].id}${location.search}`);
       }
-      
-      // If there's an initial message, add it after a small delay
-      if (initialMessage) {
-        setTimeout(() => {
-          const newMessage = {
-            id: `msg-${Date.now()}`,
-            conversationId: existingConversation?.id || `new-${recipientId}`,
-            senderId: "current-user",
-            content: initialMessage,
-            timestamp: new Date().toISOString(),
-            status: "sent",
-            attachments: [],
-          };
-          setMessages((prev) => [...prev, newMessage]);
-          setShouldScrollToBottom(true);
-        }, 300);
-      }
-    } else if (conversationId) {
-      // Find the conversation
-      const foundConversation = mockConversations.find(
-        (c) => c.id === conversationId
-      );
+      return;
+    }
+
+    // Find the conversation by ID
+    const foundConversation = mockConversations.find(
+      (c) => c.id === conversationId
+    );
+
+    if (foundConversation) {
       setConversation(foundConversation);
-      
-      // Get messages for this conversation
-      const conversationMessages = mockMessages.filter(
-        (m) => m.conversationId === conversationId
-      ).sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-      
-      setMessages(conversationMessages);
-      setShouldScrollToBottom(true);
-    } else {
-      setMessages([]);
-      setConversation(null);
+      setMessages(foundConversation.messages || []);
+    } else if (conversationId) {
+      // If we have an ID but no conversation, redirect somewhere appropriate
+      navigate(isDashboardChat ? getDashboardPath() : "/chat");
     }
-  }, [conversationId, location.search]);
+  }, [conversationId, recipientId, navigate, location.search]);
 
+  // Scroll to bottom when messages change
   useEffect(() => {
-    if (messagesEndRef.current && shouldScrollToBottom) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-      setShouldScrollToBottom(false);
+    if (messageContainerRef.current) {
+      messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
-  }, [shouldScrollToBottom, messages]);
+  }, [messages]);
 
-  const handleSendMessage = (content: string, attachments?: any[]) => {
-    if (!conversation || !content.trim()) return;
-    
+  // Handle sending a new message
+  const handleSendMessage = (content: string) => {
+    if (!content.trim() || !conversationId) return;
+
     const newMessage = {
       id: `msg-${Date.now()}`,
-      conversationId: conversation.id,
       senderId: "current-user",
       content,
       timestamp: new Date().toISOString(),
-      status: "sent",
-      attachments: attachments || [],
     };
-    
+
     setMessages((prev) => [...prev, newMessage]);
-    setShouldScrollToBottom(true);
-    
-    // Simulate reply after a delay
-    setTimeout(() => {
-      const otherParticipant = conversation?.participants.find(p => p.id !== "current-user");
-      if (otherParticipant) {
-        const replyMessage = {
-          id: `msg-reply-${Date.now()}`,
-          conversationId: conversation.id,
-          senderId: otherParticipant.id,
-          content: `Thanks for your message! This is an automated reply from ${otherParticipant.name}.`,
-          timestamp: new Date().toISOString(),
-          status: "sent",
-          attachments: [],
-        };
-        setMessages((prev) => [...prev, replyMessage]);
-        setShouldScrollToBottom(true);
-      }
-    }, 2000);
   };
 
-  // Get the other participant for the header
-  const otherParticipant = conversation?.participants.find(p => p.id !== "current-user");
+  // Handle initial message from URL params
+  useEffect(() => {
+    if (initialMessage && conversationId && messages.length > 0) {
+      // Only send the initial message if we haven't already (check if it exists)
+      const messageExists = messages.some(msg => msg.content === initialMessage);
+      
+      if (!messageExists) {
+        handleSendMessage(initialMessage);
+        // Clear the message from the URL after sending
+        const newSearchParams = new URLSearchParams(location.search);
+        newSearchParams.delete('message');
+        navigate(`${location.pathname}?${newSearchParams.toString()}`, { replace: true });
+      }
+    }
+  }, [initialMessage, conversationId, messages.length]);
 
-  return (
-    <div className="flex-1 flex flex-col h-full">
-      {conversation ? (
-        <>
-          <ChatHeader participant={otherParticipant} onBackClick={onBackClick} />
-          <ScrollArea className="flex-1 p-4">
-            {messages.length > 0 ? (
-              <div className="space-y-4">
-                {messages.map((message) => (
-                  <ChatMessage
-                    key={message.id}
-                    message={message}
-                    isOwnMessage={message.senderId === "current-user"}
-                  />
-                ))}
-                <div ref={messagesEndRef} />
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  <div className="bg-black/20 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-                    <MessageSquare className="h-6 w-6 text-muted-foreground" />
-                  </div>
-                  <h3 className="text-lg font-medium">No messages yet</h3>
-                  <p className="text-muted-foreground mt-1">
-                    Send a message to start the conversation
-                  </p>
-                </div>
-              </div>
-            )}
-          </ScrollArea>
-          <MessageInput onSendMessage={handleSendMessage} />
-        </>
-      ) : (
-        <div className="flex items-center justify-center h-full">
-          <div className="text-center p-6">
-            <div className="bg-black/20 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="h-6 w-6 text-muted-foreground" />
-            </div>
-            <h3 className="text-xl font-medium">Select a conversation</h3>
-            <p className="text-muted-foreground mt-2 max-w-sm">
-              Choose a conversation from the sidebar to start messaging
-            </p>
+  // If no conversation is selected, show empty state
+  if (!conversation && !recipientId) {
+    return (
+      <div className="h-full flex flex-col">
+        <ChatHeader 
+          participant={null} 
+          onBackClick={onBackClick}
+          isDashboardChat={isDashboardChat}
+          dashboardUrl={getDashboardPath()} 
+        />
+        <div className="flex-1 flex flex-col items-center justify-center p-4">
+          <div className="text-center space-y-3">
+            <h3 className="text-xl font-medium">No conversation selected</h3>
+            <p className="text-muted-foreground">Choose a conversation from the sidebar or start a new one.</p>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  // Find the other participant (not the current user)
+  const otherParticipant = conversation?.participants?.find(
+    (p: any) => p.id !== "current-user"
+  ) || { 
+    id: recipientId || "unknown", 
+    name: recipientName || "Unknown User", 
+    status: "offline",
+    avatar: "https://via.placeholder.com/40" 
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      <ChatHeader 
+        participant={otherParticipant} 
+        onBackClick={onBackClick}
+        isDashboardChat={isDashboardChat}
+        dashboardUrl={getDashboardPath()}
+      />
+      <ScrollArea ref={messageContainerRef} className="flex-1">
+        <div className="p-4 space-y-4">
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              isOwnMessage={message.senderId === "current-user"}
+            />
+          ))}
+          {messages.length === 0 && (
+            <div className="text-center py-8">
+              <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
+            </div>
+          )}
+        </div>
+      </ScrollArea>
+      <div className="p-4 border-t border-white/10">
+        <MessageInput onSendMessage={handleSendMessage} />
+      </div>
     </div>
   );
 };
+
