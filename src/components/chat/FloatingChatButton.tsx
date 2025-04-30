@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { AgentChat } from "./AgentChat";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 export function FloatingChatButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,9 +13,24 @@ export function FloatingChatButton() {
   const [isFirstLoad, setIsFirstLoad] = useState(true);
   const { user, isAuthenticated } = useAuth();
   const location = useLocation();
+  const { canAccessFeature } = useUserAccess();
   
-  // Check if we should show the button (authenticated and not on home page)
-  const shouldShowButton = isAuthenticated && location.pathname !== "/" && location.pathname !== "/home";
+  // Enhanced logic: check authentication, route path, and feature access
+  const homePaths = ['/', '/home', '/index'];
+  const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-email', '/onboarding'];
+  const chatPaths = ['/chat'];
+  
+  const isHomePath = homePaths.includes(location.pathname);
+  const isAuthPath = authPaths.some(path => location.pathname.startsWith(path));
+  const isChatPath = chatPaths.some(path => location.pathname.startsWith(path));
+  
+  // Don't show on home paths, auth paths, or dedicated chat paths
+  const shouldShowButton = 
+    isAuthenticated && 
+    !isHomePath && 
+    !isAuthPath && 
+    !isChatPath && 
+    canAccessFeature('messages');
 
   // Configure AgentChat based on user role
   const agentConfig = user?.role === 'kol' 
@@ -48,7 +64,20 @@ export function FloatingChatButton() {
   };
 
   // Don't render anything if we shouldn't show the button
-  if (!shouldShowButton) return null;
+  if (!shouldShowButton) {
+    console.log("FloatingChatButton: Not showing button", { 
+      isAuthenticated, 
+      isHomePath, 
+      path: location.pathname 
+    });
+    return null;
+  }
+
+  // If we get here, we should show the button
+  console.log("FloatingChatButton: Showing button", { 
+    isAuthenticated, 
+    path: location.pathname 
+  });
 
   return (
     <>
