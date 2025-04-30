@@ -5,17 +5,33 @@ import { Avatar } from "@/components/ui/avatar";
 import { mockConversations } from "./mockChatData";
 import { formatMessageTime } from "./utils";
 import { ChatMessage as ChatMessageType } from "./types";
+import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface ChatMessageProps {
   message: ChatMessageType;
   isOwnMessage: boolean;
+  animateTyping?: boolean;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ 
+  message, 
+  isOwnMessage, 
+  animateTyping = false 
+}) => {
   // Find sender in conversations
   const sender = mockConversations
     .flatMap((c) => c.participants)
     .find((p) => p.id === message.senderId);
+
+  // Use typing effect for bot messages when animateTyping is true
+  const { displayedText, isComplete } = useTypingEffect({
+    text: message.content,
+    typingSpeed: 40,  // Faster base typing speed
+    startDelay: 300,
+    // Highlight important phrases with slower typing
+    highlightText: isOwnMessage ? "" : "Kolerr",
+    highlightSpeed: 100,  // Slower speed for brand name and important terms
+  });
 
   const getStatusIcon = () => {
     switch (message.status) {
@@ -40,6 +56,8 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
     }
   };
 
+  const content = animateTyping && !isOwnMessage ? displayedText : message.content;
+
   return (
     <div
       className={`flex items-end gap-2 group ${
@@ -60,7 +78,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
               : "bg-black/30 border border-white/10 rounded-bl-none"
           }`}
         >
-          {message.content}
+          {content}
+          
+          {!isComplete && !isOwnMessage && animateTyping && (
+            <span className="typing-cursor inline-block h-4 w-1 bg-white/70 ml-1 animate-pulse"></span>
+          )}
           
           {message.attachments && message.attachments.length > 0 && (
             <div className="mt-2 space-y-2">

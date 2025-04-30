@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
@@ -30,6 +29,11 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
 
   // Determine whether to show back to dashboard button
   const isDashboardChat = location.pathname.includes('/dashboard');
+  
+  // Check if this is the first message in the list (welcome message)
+  const isWelcomeMessage = useCallback((message: ChatMessage, index: number) => {
+    return index === 0 && message.content.includes('Welcome') && message.senderId !== 'current-user';
+  }, []);
   
   const getDashboardPath = useCallback(() => {
     return user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages";
@@ -177,11 +181,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
       />
       <ScrollArea ref={messageContainerRef} className="flex-1">
         <div className="p-4 space-y-4">
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <ChatMessageComponent
               key={message.id}
               message={message}
               isOwnMessage={message.senderId === "current-user"}
+              // Apply typing animation only to welcome/initial bot messages
+              animateTyping={isWelcomeMessage(message, index)}
             />
           ))}
           {messages.length === 0 && (

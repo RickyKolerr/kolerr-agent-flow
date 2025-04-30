@@ -36,6 +36,12 @@ export function useTypingEffect({
     return () => clearTimeout(timer);
   }, [startDelay]);
 
+  // Reset effect when text changes
+  useEffect(() => {
+    setDisplayedText('');
+    setCurrentIndex(0);
+  }, [text]);
+
   // Use interval for the typing effect with dynamic speed
   useInterval(
     () => {
@@ -50,8 +56,23 @@ export function useTypingEffect({
         // Use the slower speed if this is part of the highlighted text
         const currentSpeed = isHighlightedPhrase ? highlightSpeed : typingSpeed;
         
-        setDisplayedText(prev => prev + text.charAt(currentIndex));
-        setCurrentIndex(prevIndex => prevIndex + 1);
+        // Add random variation to typing speed (±20%) to make it feel more human
+        const speedVariation = Math.random() * 0.4 - 0.2; // -20% to +20%
+        
+        // Add longer pause after punctuation
+        const currentChar = text.charAt(currentIndex);
+        let extraDelay = 0;
+        if (['.', '!', '?'].includes(currentChar)) {
+          extraDelay = 300; // Longer pause after sentence end
+        } else if ([',', ';', ':'].includes(currentChar)) {
+          extraDelay = 150; // Medium pause after comma, etc.
+        }
+
+        // Set the next character with delay
+        setTimeout(() => {
+          setDisplayedText(prev => prev + text.charAt(currentIndex));
+          setCurrentIndex(prevIndex => prevIndex + 1);
+        }, extraDelay);
       }
     },
     started && !isComplete ? typingSpeed : null
