@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -103,8 +102,8 @@ const Layout = ({ children }) => {
       </main>
       {!isDashboardRoute && !isAuthRoute && !isChatRoute && <Footer />}
       
-      {/* Always show the floating chat button except on auth routes and dedicated chat routes */}
-      {!isAuthRoute && !isChatRoute && <FloatingChatButton />}
+      {/* FloatingChatButton is now self-determining when to show */}
+      <FloatingChatButton />
     </div>
   );
 };

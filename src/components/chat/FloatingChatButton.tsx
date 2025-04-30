@@ -4,12 +4,17 @@ import { Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AgentChat } from "./AgentChat";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLocation } from "react-router-dom";
 
 export function FloatingChatButton() {
   const [isOpen, setIsOpen] = useState(false);
   const [hasNotification, setHasNotification] = useState(false);
   const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
+  const location = useLocation();
+  
+  // Check if we should show the button (authenticated and not on home page)
+  const shouldShowButton = isAuthenticated && location.pathname !== "/" && location.pathname !== "/home";
 
   // Configure AgentChat based on user role
   const agentConfig = user?.role === 'kol' 
@@ -26,7 +31,7 @@ export function FloatingChatButton() {
 
   // Show notification dot after a delay to simulate new information
   useEffect(() => {
-    if (isFirstLoad) {
+    if (isFirstLoad && shouldShowButton) {
       const timer = setTimeout(() => {
         setHasNotification(true);
         setIsFirstLoad(false);
@@ -34,13 +39,16 @@ export function FloatingChatButton() {
       
       return () => clearTimeout(timer);
     }
-  }, [isFirstLoad]);
+  }, [isFirstLoad, shouldShowButton]);
   
   // Reset notification when chat is opened
   const handleOpenChat = () => {
     setIsOpen(true);
     setHasNotification(false);
   };
+
+  // Don't render anything if we shouldn't show the button
+  if (!shouldShowButton) return null;
 
   return (
     <>
