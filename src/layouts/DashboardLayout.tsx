@@ -19,6 +19,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AgentChatWrapper } from "@/components/dashboard/AgentChatWrapper";
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -317,6 +318,9 @@ const DashboardLayout = () => {
           <div className="container mx-auto p-6 pt-16 md:pt-6">
             <Outlet />
           </div>
+          
+          {/* Add the AgentChatWrapper here so it appears on all dashboard pages */}
+          <AgentChatWrapper />
         </main>
       </div>
     </ProtectedRoute>
