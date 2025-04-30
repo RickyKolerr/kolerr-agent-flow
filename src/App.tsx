@@ -1,10 +1,9 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState, memo } from "react";
+import { useState, memo, ReactNode } from "react";
 
 // Context providers
 import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
@@ -88,8 +87,13 @@ import CampaignDetail from "@/pages/campaigns/CampaignDetail";
 import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
 
+// Define proper interface for Layout component props
+interface LayoutProps {
+  children: ReactNode;
+}
+
 // Helper component to conditionally render MainNav and Footer
-const Layout = memo(({ children }) => {
+const Layout = memo(({ children }: LayoutProps) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/onboarding');
