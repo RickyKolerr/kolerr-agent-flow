@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -19,7 +18,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { AgentChatWrapper } from "@/components/dashboard/AgentChatWrapper";
+import { AgentChat } from "@/components/chat/AgentChat";
 
 const DashboardLayout = () => {
   const { user, logout } = useAuth();
@@ -178,6 +177,19 @@ const DashboardLayout = () => {
     setLanguage(language === 'en' ? 'vi' : 'en');
   };
 
+  // Configure AgentChat based on user role
+  const agentConfig = user?.role === 'kol' 
+    ? {
+        title: "Campaign Finder AI",
+        subtitle: "4 free searches remaining today",
+        initialMessage: "👋 Welcome to Kolerr! We connect creators like you to amazing paid brand campaigns. Tell me what kind of opportunities you're looking for, and I'll help you find the perfect match!"
+      }
+    : {
+        title: "Influencer AI Agent",
+        subtitle: "4 free searches remaining today",
+        initialMessage: "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
+      };
+
   return (
     <ProtectedRoute>
       <div className="flex h-screen bg-background">
@@ -223,7 +235,7 @@ const DashboardLayout = () => {
           </div>
 
           <TooltipProvider>
-            <nav className="px-3 py-6">
+            <nav className="px-3 py-6 flex flex-col h-[calc(100%-4rem-5rem)]">
               <div className="space-y-1">
                 {menuItems.map((item) => (
                   <Tooltip key={item.name} delayDuration={0}>
@@ -280,6 +292,17 @@ const DashboardLayout = () => {
                   <span>{t('mainNav.logout')}</span>
                 </button>
               </div>
+              
+              {/* Agent Chat in sidebar - expand to take available space */}
+              <div className="mt-6 flex-grow flex flex-col">
+                <div className="bg-black/20 rounded-lg shadow-lg h-full overflow-hidden border border-white/10">
+                  <AgentChat 
+                    title={agentConfig.title} 
+                    subtitle={agentConfig.subtitle} 
+                    initialMessage={agentConfig.initialMessage}
+                  />
+                </div>
+              </div>
             </nav>
           </TooltipProvider>
 
@@ -318,9 +341,6 @@ const DashboardLayout = () => {
           <div className="container mx-auto p-6 pt-16 md:pt-6">
             <Outlet />
           </div>
-          
-          {/* Add the AgentChatWrapper here so it appears on all dashboard pages */}
-          <AgentChatWrapper />
         </main>
       </div>
     </ProtectedRoute>
