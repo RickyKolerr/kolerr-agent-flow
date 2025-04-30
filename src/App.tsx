@@ -37,6 +37,9 @@ import EmailVerification from "@/pages/auth/EmailVerification";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import NotFound from "@/pages/NotFound";
 
+// Chat pages
+import ChatPage from "@/pages/chat/ChatPage";
+
 // Onboarding pages
 import OnboardingBrand from "@/pages/auth/OnboardingBrand";
 import OnboardingKOL from "@/pages/auth/OnboardingKOL";
@@ -85,14 +88,15 @@ const Layout = ({ children }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/onboarding');
+  const isChatRoute = location.pathname.startsWith('/chat');
   
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboardRoute && !isAuthRoute && <MainNav />}
-      <main className={!isDashboardRoute && !isAuthRoute ? "flex-1 pt-16" : "flex-1"}>
+      {!isDashboardRoute && !isAuthRoute && !isChatRoute && <MainNav />}
+      <main className={!isDashboardRoute && !isAuthRoute && !isChatRoute ? "flex-1 pt-16" : "flex-1"}>
         {children}
       </main>
-      {!isDashboardRoute && !isAuthRoute && <Footer />}
+      {!isDashboardRoute && !isAuthRoute && !isChatRoute && <Footer />}
     </div>
   );
 };
@@ -150,6 +154,10 @@ const App = () => {
                     <Route path="/forgot-password" element={<ForgotPasswordPage />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/verify-email" element={<EmailVerification />} />
+                    
+                    {/* Chat routes */}
+                    <Route path="/chat" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
+                    <Route path="/chat/:conversationId" element={<ProtectedRoute><ChatPage /></ProtectedRoute>} />
                     
                     {/* Onboarding routes */}
                     <Route path="/onboarding/brand" element={

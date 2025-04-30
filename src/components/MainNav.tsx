@@ -30,6 +30,19 @@ export const MainNav = () => {
     setIsOpen(false);
   };
 
+  // Find the routes array and add a new route for chat
+  const routes = [
+    { title: "Home", path: "/" },
+    { title: "About", path: "/about" },
+    { title: "Features", path: "/features" },
+    { title: "Pricing", path: "/pricing" },
+    { title: "Chat", path: "/chat" },  // Add this line for chat
+    { title: "Docs", path: "/docs" },
+    { title: "Blog", path: "/blog" },
+    { title: "API", path: "/api" },
+    { title: "Help", path: "/help" }
+  ];
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm">
       <div className="container mx-auto px-4">
@@ -45,21 +58,11 @@ export const MainNav = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
-            <Link to="/about" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              {t('mainNav.about')}
-            </Link>
-            <Link to="/features" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              {t('mainNav.features')}
-            </Link>
-            <Link to="/pricing" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              {t('mainNav.pricing')}
-            </Link>
-            <Link to="/docs" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              {t('mainNav.docs')}
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-brand-pink transition-colors">
-              {t('mainNav.contact')}
-            </Link>
+            {routes.map(route => (
+              <Link key={route.path} to={route.path} className="text-sm font-medium hover:text-brand-pink transition-colors">
+                {t(`mainNav.${route.title.toLowerCase()}`)}
+              </Link>
+            ))}
           </nav>
 
           {/* Desktop Auth Buttons and Language Toggle */}
@@ -118,21 +121,11 @@ export const MainNav = () => {
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
-                <Link to="/about" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  {t('mainNav.about')}
-                </Link>
-                <Link to="/features" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  {t('mainNav.features')}
-                </Link>
-                <Link to="/pricing" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  {t('mainNav.pricing')}
-                </Link>
-                <Link to="/docs" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  {t('mainNav.docs')}
-                </Link>
-                <Link to="/contact" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                  {t('mainNav.contact')}
-                </Link>
+                {routes.map(route => (
+                  <Link key={route.path} to={route.path} className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
+                    {t(`mainNav.${route.title.toLowerCase()}`)}
+                  </Link>
+                ))}
                 <div className="flex items-center space-x-2">
                   <Button 
                     variant="ghost" 
