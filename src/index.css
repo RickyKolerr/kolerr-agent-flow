@@ -145,5 +145,14 @@
     color: hsl(var(--primary));
     font-weight: 500;
   }
-}
 
+  /* Touch optimization utilities */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Larger touch targets for mobile */
+  .mobile-tab-trigger {
+    @apply min-h-[3rem] px-4;
+  }
+}

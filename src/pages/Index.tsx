@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { UserRole } from "@/contexts/AuthContext";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
+import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
 // Add type definition for the window object at the top level of the file
 declare global {
@@ -275,8 +275,8 @@ const Index = () => {
   const [activeCarouselIndex, setActiveCarouselIndex] = useState(0);
   const [userView, setUserView] = useState<"brand" | "kol">("brand");
   const [applyingTo, setApplyingTo] = useState<string | null>(null);
-  // Add a new state to track user-initiated message additions
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
+  const { isMobile, hasTouch } = useMobileDetection();
   
   // Detect user role and set initial view
   useEffect(() => {
@@ -658,9 +658,23 @@ const Index = () => {
               onValueChange={(value) => setUserView(value as "brand" | "kol")} 
               className="w-full max-w-md"
             >
-              <TabsList className="grid grid-cols-2 w-full">
-                <TabsTrigger value="brand">For Brands</TabsTrigger>
-                <TabsTrigger value="kol">For Creators</TabsTrigger>
+              <TabsList className={`grid grid-cols-2 w-full ${isMobile ? 'h-14' : ''}`}>
+                <TabsTrigger 
+                  value="brand"
+                  className={`${isMobile ? 'py-4 text-base touch-manipulation' : ''}`}
+                  style={isMobile ? { touchAction: 'manipulation' } : {}}
+                  aria-label="For Brands tab"
+                >
+                  For Brands
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="kol"
+                  className={`${isMobile ? 'py-4 text-base touch-manipulation' : ''}`}
+                  style={isMobile ? { touchAction: 'manipulation' } : {}}
+                  aria-label="For Creators tab"
+                >
+                  For Creators
+                </TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
