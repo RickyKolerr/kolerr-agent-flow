@@ -10,9 +10,10 @@ import { useTypingEffect } from "@/hooks/useTypingEffect";
 interface ChatMessageProps {
   message: ChatMessageType;
   isOwnMessage: boolean;
+  typingSpeed?: number; // Added this property
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 55 }) => {
   // Find sender in conversations
   const sender = mockConversations
     .flatMap((c) => c.participants)
@@ -24,7 +25,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage 
   // Use typing effect for agent greeting messages with more human typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
-    typingSpeed: 55,  // Slightly slower base speed for more realism
+    typingSpeed: typingSpeed,  // Use the provided typing speed
     startDelay: 700,  // Longer delay before typing starts to simulate thinking
     humanizedTyping: true, 
     highlightText: "Kolerr", 

@@ -291,18 +291,6 @@ const DashboardLayout = () => {
                 </TooltipContent>
               </Tooltip>
 
-              {/* Chatbot Panel */}
-              {isChatbotOpen && (
-                <div className="flex-grow flex flex-col overflow-hidden bg-black/20 backdrop-blur-sm rounded-lg border border-white/10 shadow-xl mb-4">
-                  <AgentChat 
-                    title={agentConfig.title} 
-                    subtitle={agentConfig.subtitle} 
-                    initialMessage={agentConfig.initialMessage}
-                    inSidebar={true}
-                  />
-                </div>
-              )}
-
               <div className="space-y-1">
                 {userItems.map((item) => (
                   <Tooltip key={item.name} delayDuration={0}>

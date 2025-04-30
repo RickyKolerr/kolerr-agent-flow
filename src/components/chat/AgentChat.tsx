@@ -142,7 +142,6 @@ export const AgentChat: React.FC<AgentChatProps> = ({
               key={message.id}
               message={message as any}
               isOwnMessage={message.senderId === "current-user"}
-              // Use a faster typing effect for agent messages
               typingSpeed={10} // Much faster typing speed
             />
           ))}
