@@ -1,15 +1,11 @@
-
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
-  type EmblaOptionsType,
-  type EmblaPluginType,
 } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { useMobileDetection } from "@/hooks/use-mobile-detection"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -60,19 +56,16 @@ const Carousel = React.forwardRef<
     },
     ref
   ) => {
-    // Get mobile detection to enhance the carousel behavior
-    const { isZoomed } = useMobileDetection();
-    
-    // Add default options for better mobile handling
-    const carouselOptions: CarouselOptions = {
+    // Add default touchDragAxis option for better mobile handling
+    const carouselOptions = {
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
       dragFree: true,
       containScroll: "trimSnaps",
-      // Fix the type of watchDrag to match DragHandlerOptionType
-      watchDrag: (emblaApi) => {
+      watchDrag: (enable) => {
         // Disable drag when user is pinch-zooming
-        return !isZoomed;
+        const isZooming = window.visualViewport && window.visualViewport.scale > 1;
+        return enable && !isZooming;
       }
     };
     
@@ -84,22 +77,24 @@ const Carousel = React.forwardRef<
     React.useEffect(() => {
       const preventDefault = (e: TouchEvent) => {
         // Only prevent default if we have multiple touch points (pinch gesture)
-        if (e.touches.length > 1 && api) {
+        if (e.touches.length > 1) {
           // Allow the zoom but prevent carousel from trying to scroll
-          api.reInit();
+          if (api) {
+            api.clickAllowed = false;
+          }
         }
       };
 
-      // Get the current element safely - carouselRef is a ref object
-      if (carouselRef && carouselRef.current) {
-        const element = carouselRef.current;
+      const element = carouselRef?.current;
+      if (element) {
         element.addEventListener('touchstart', preventDefault, { passive: false });
-        
-        return () => {
+      }
+
+      return () => {
+        if (element) {
           element.removeEventListener('touchstart', preventDefault);
         }
       }
-      return undefined;
     }, [carouselRef, api]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
@@ -161,7 +156,7 @@ const Carousel = React.forwardRef<
           api: api,
           opts: carouselOptions,
           orientation:
-            orientation || (carouselOptions?.axis === "y" ? "vertical" : "horizontal"),
+            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
           scrollPrev,
           scrollNext,
           canScrollPrev,
