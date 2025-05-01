@@ -1,10 +1,9 @@
-
 import * as React from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
-import { useMediaQuery } from "@/hooks/useMediaQuery"
+import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -66,8 +65,7 @@ const SidebarProvider = React.forwardRef<
     },
     ref
   ) => {
-    // Use useMediaQuery hook instead of useIsMobile to just get a boolean value
-    const isMobile = useMediaQuery("(max-width: 768px)");
+    const isMobile = useIsMobile()
     const [openMobile, setOpenMobile] = React.useState(false)
 
     // This is the internal state of the sidebar.
