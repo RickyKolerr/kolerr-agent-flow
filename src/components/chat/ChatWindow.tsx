@@ -12,9 +12,15 @@ import { Loader2 } from "lucide-react";
 
 interface ChatWindowProps {
   onBackClick?: () => void;
+  showBackButton?: boolean;
+  isDashboardChat?: boolean;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({ onBackClick }) => {
+export const ChatWindow: React.FC<ChatWindowProps> = ({ 
+  onBackClick, 
+  showBackButton = false, 
+  isDashboardChat = false 
+}) => {
   const { conversationId } = useParams();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [conversation, setConversation] = useState<any>(null);

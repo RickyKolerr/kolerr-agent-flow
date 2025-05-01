@@ -14,9 +14,10 @@ import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
 interface ChatSidebarProps {
   onConversationSelect?: () => void;
+  isDashboardChat?: boolean;
 }
 
-export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect }) => {
+export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, isDashboardChat = false }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const { conversationId } = useParams();
   const navigate = useNavigate();
