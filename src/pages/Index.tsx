@@ -289,8 +289,8 @@ const Index = () => {
     if (showWelcome) {
       setTimeout(() => {
         const welcomeMessage = userView === "brand" 
-          ? "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?"
-          : "👋 Welcome to Kolerr! We connect creators like you to amazing paid brand campaigns. Tell me what kind of opportunities you're looking for, and I'll help you find the perfect match!";
+          ? "👋 Welcome! Find perfect creators for your campaigns with our AI. What type of influencers do you need?"
+          : "👋 Welcome to Kolerr! Find paid brand campaigns matching your style. What opportunities interest you?";
         
         setMessages([{
           id: "welcome",
