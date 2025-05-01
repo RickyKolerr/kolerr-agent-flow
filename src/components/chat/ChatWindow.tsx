@@ -33,9 +33,6 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const recipientName = searchParams.get('name');
   const initialMessage = searchParams.get('message');
   const [isLoading, setIsLoading] = useState(true);
-
-  // Determine whether to show back to dashboard button
-  const isDashboardChat = location.pathname.includes('/dashboard');
   
   const getDashboardPath = useCallback(() => {
     return user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages";
