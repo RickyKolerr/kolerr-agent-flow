@@ -1,48 +1,70 @@
 
 import * as React from "react";
+import { useMediaQuery } from "./useMediaQuery";
 
+// Multiple breakpoints for more precise device detection
 const MOBILE_BREAKPOINT = 768;
+const SMALL_MOBILE_BREAKPOINT = 480;
+const TABLET_BREAKPOINT = 1024;
 
+/**
+ * A hook that provides device detection and responsive layout information
+ * 
+ * @returns Object with device and touch detection information
+ * 
+ * @example
+ * const { isMobile, isTablet, hasTouch } = useMobileDetection();
+ * 
+ * if (isMobile) {
+ *   // Use mobile-specific UI
+ * }
+ */
 export function useMobileDetection() {
-  const [isMobile, setIsMobile] = React.useState<boolean>(false);
+  // Use useMediaQuery for responsive breakpoint detection
+  const isSmallMobile = useMediaQuery(`(max-width: ${SMALL_MOBILE_BREAKPOINT}px)`);
+  const isMobile = useMediaQuery(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+  const isTablet = useMediaQuery(`(min-width: ${MOBILE_BREAKPOINT + 1}px) and (max-width: ${TABLET_BREAKPOINT}px)`);
+  
   const [hasTouch, setHasTouch] = React.useState<boolean>(false);
+  const [isIOS, setIsIOS] = React.useState<boolean>(false);
+  const [isAndroid, setIsAndroid] = React.useState<boolean>(false);
 
+  // Detect device capabilities on mount
   React.useEffect(() => {
-    // Function to update mobile status based on screen size
-    const updateMobileStatus = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
-
-    // Set initial mobile status
-    updateMobileStatus();
-
-    // Check for touch capabilities
+    // Touch detection
     setHasTouch('ontouchstart' in window || navigator.maxTouchPoints > 0);
-
-    // Create a throttled resize handler
-    let resizeTimeout: number;
-    const handleResize = () => {
-      if (resizeTimeout) {
-        window.cancelAnimationFrame(resizeTimeout);
-      }
-      resizeTimeout = window.requestAnimationFrame(updateMobileStatus);
-    };
-
-    // Add event listener with throttling
-    window.addEventListener('resize', handleResize, { passive: true });
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', handleResize);
-      if (resizeTimeout) {
-        window.cancelAnimationFrame(resizeTimeout);
-      }
-    };
+    
+    // OS detection
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    setIsIOS(/iphone|ipad|ipod/.test(userAgent));
+    setIsAndroid(/android/.test(userAgent));
+    
+    // Add viewport height fix for mobile browsers
+    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+      // Fix for mobile viewport height issues
+      const setVh = () => {
+        const vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+      };
+      
+      setVh();
+      window.addEventListener('resize', setVh, { passive: true });
+      
+      return () => {
+        window.removeEventListener('resize', setVh);
+      };
+    }
   }, []);
 
-  return { 
-    isMobile, 
+  return {
+    isMobile,
+    isSmallMobile,
+    isTablet, 
     hasTouch,
-    mobileBreakpoint: MOBILE_BREAKPOINT 
+    isIOS,
+    isAndroid,
+    mobileBreakpoint: MOBILE_BREAKPOINT,
+    smallMobileBreakpoint: SMALL_MOBILE_BREAKPOINT,
+    tabletBreakpoint: TABLET_BREAKPOINT
   };
 }

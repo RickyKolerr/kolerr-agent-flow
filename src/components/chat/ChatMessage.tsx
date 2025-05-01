@@ -25,9 +25,9 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
   // Use typing effect for agent greeting messages with more human typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
-    typingSpeed: message.isThinking ? 600 : typingSpeed,  // Use slower typing for thinking animation
-    startDelay: message.isThinking ? 0 : 700,  // No delay for thinking dots
-    humanizedTyping: !message.isThinking,  // No humanized typing for thinking dots
+    typingSpeed: message.isThinking ? 600 : typingSpeed,
+    startDelay: message.isThinking ? 0 : 700,
+    humanizedTyping: !message.isThinking,
     highlightText: "Kolerr", 
     highlightSpeed: 120,
   });
@@ -60,16 +60,20 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
 
   return (
     <div
-      className={`flex items-end gap-2 group ${
+      className={`flex items-start gap-2 group mb-4 ${
         isOwnMessage ? "flex-row-reverse" : ""
       }`}
     >
       {!isOwnMessage && (
-        <Avatar className="h-8 w-8 flex-shrink-0">
+        <Avatar className="h-10 w-10 flex-shrink-0 mt-1">
           {isAgentMessage ? (
             <img src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" alt="Kolerr AI Agent" />
           ) : (
-            <img src={sender?.avatar} alt={sender?.name} />
+            <img 
+              src={sender?.avatar || "/lovable-uploads/92eead47-3854-4a2d-a9ca-5b60716aaec4.png"} 
+              alt={sender?.name} 
+              className="object-cover"
+            />
           )}
         </Avatar>
       )}
@@ -94,7 +98,26 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
               }}
             />
           ) : (
-            message.content
+            <div className="whitespace-pre-wrap break-words">
+              {message.content}
+            </div>
+          )}
+          
+          {/* URL Detection and Formatting */}
+          {!isAgentMessage && message.content.includes('http') && (
+            <div className="mt-1 text-blue-400 underline break-all">
+              {Array.from(message.content.matchAll(/(https?:\/\/[^\s]+)/g)).map((match, index) => (
+                <a 
+                  key={index} 
+                  href={match[0]} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:text-blue-300"
+                >
+                  {match[0]}
+                </a>
+              ))}
+            </div>
           )}
           
           {message.attachments && message.attachments.length > 0 && (
@@ -140,6 +163,16 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
           )}
         </div>
       </div>
+      
+      {isOwnMessage && (
+        <Avatar className="h-10 w-10 flex-shrink-0 mt-1">
+          <img 
+            src={"/lovable-uploads/92eead47-3854-4a2d-a9ca-5b60716aaec4.png"} 
+            alt="User" 
+            className="object-cover"
+          />
+        </Avatar>
+      )}
     </div>
   );
 };

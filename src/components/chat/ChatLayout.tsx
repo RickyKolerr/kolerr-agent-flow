@@ -5,8 +5,9 @@ import { ChatWindow } from "./ChatWindow";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { ChevronLeft, Menu } from "lucide-react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
 
 interface ChatLayoutProps {
   isDashboardChat?: boolean;
@@ -14,20 +15,22 @@ interface ChatLayoutProps {
 
 export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false }) => {
   const { isMobile } = useMobileDetection();
+  const isSmallScreen = useMediaQuery('(max-width: 768px)');
   const [showSidebar, setShowSidebar] = useState(true);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+  const { conversationId } = useParams<{ conversationId: string }>();
   
   // On mobile, default to showing the sidebar (conversations list)
+  // unless we have a specific conversation open
   useEffect(() => {
-    if (isMobile) {
-      // If we have a conversation ID in the URL, don't show sidebar by default
-      const hasConversationId = window.location.pathname.split('/').length > 2;
-      setShowSidebar(!hasConversationId);
+    if (isSmallScreen) {
+      setShowSidebar(!conversationId);
     } else {
       setShowSidebar(true);
     }
-  }, [isMobile]);
+  }, [isSmallScreen, conversationId]);
 
   const toggleSidebar = useCallback(() => {
     if (isTransitioning) return;
@@ -41,42 +44,65 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false 
     }, 300); // Match with CSS transition duration
   }, [showSidebar, isTransitioning]);
 
+  // Handle back button on conversation view
+  const handleBackToConversations = () => {
+    if (isSmallScreen) {
+      setShowSidebar(true);
+    } else if (isDashboardChat) {
+      navigate(-1);
+    }
+  };
+
   return (
-    <div className="flex h-screen overflow-hidden bg-black/10 backdrop-blur-md">
+    <div className="flex h-full w-full overflow-hidden bg-black/10 backdrop-blur-md">
       <DemoIndicator 
         section="Chat" 
-        tooltip="This is a production-ready chat interface that will be connected to WebSockets." 
+        tooltip="This is a production-ready chat interface for Brand-KOL communication." 
       />
       
-      {/* Sidebar - use will-change for better performance during transitions */}
+      {/* Sidebar - adapt width based on screen size */}
       <div 
-        className={`${
-          isMobile ? 
-            (showSidebar ? 'block w-full' : 'hidden') : 
-            'block w-80 min-w-80'
-        } transition-all duration-300 will-change-transform`}
+        className={`
+          ${isSmallScreen ? (showSidebar ? 'block w-full' : 'hidden') : 'block w-80 min-w-80'} 
+          h-full transition-all duration-300 will-change-transform
+        `}
         style={{ 
-          transform: showSidebar ? 'translateX(0)' : 'translateX(-100%)',
-          opacity: showSidebar ? 1 : 0
+          transform: showSidebar || !isSmallScreen ? 'translateX(0)' : 'translateX(-100%)',
+          opacity: showSidebar || !isSmallScreen ? 1 : 0
         }}
       >
-        <ChatSidebar onConversationSelect={isMobile ? toggleSidebar : undefined} />
+        <ChatSidebar 
+          onConversationSelect={isSmallScreen ? toggleSidebar : undefined} 
+          isDashboardChat={isDashboardChat}
+        />
       </div>
       
-      {/* Chat window - controlled visibility for better performance */}
+      {/* Chat window */}
       <div 
-        className={`flex-1 ${
-          isMobile ? (showSidebar ? 'hidden' : 'block') : 'block'
-        } will-change-opacity`}
+        className={`flex-1 ${isSmallScreen ? (showSidebar ? 'hidden' : 'block') : 'block'} h-full`}
         style={{ 
-          opacity: isMobile && showSidebar ? 0 : 1,
+          opacity: isSmallScreen && showSidebar ? 0 : 1,
           transition: 'opacity 200ms ease-out'
         }}
       >
         <ChatWindow 
-          onBackClick={isMobile ? toggleSidebar : undefined} 
+          onBackClick={handleBackToConversations}
+          showBackButton={isSmallScreen || isDashboardChat}
+          isDashboardChat={isDashboardChat}
         />
       </div>
+      
+      {/* Mobile Toggle Button - only show when in a conversation */}
+      {isSmallScreen && !showSidebar && conversationId && (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="fixed bottom-20 left-5 h-12 w-12 rounded-full bg-brand-pink/80 shadow-lg z-50 hover:bg-brand-pink"
+          onClick={toggleSidebar}
+        >
+          <Menu className="h-6 w-6 text-white" />
+        </Button>
+      )}
     </div>
   );
 };

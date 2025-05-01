@@ -8,25 +8,32 @@ import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
 interface MessageInputProps {
   onSendMessage: (content: string, attachments?: any[]) => void;
+  disabled?: boolean;
+  placeholder?: string;
 }
 
-export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
+export const MessageInput: React.FC<MessageInputProps> = ({ 
+  onSendMessage, 
+  disabled = false,
+  placeholder = "Type a message..."
+}) => {
   const [message, setMessage] = useState("");
   const [attachments, setAttachments] = useState<any[]>([]);
   const [isFocused, setIsFocused] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const { isMobile } = useMobileDetection();
+  const { isMobile, hasTouch } = useMobileDetection();
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Send on Enter (but not with Shift+Enter for new line)
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
     }
-  }, []);
+  }, [message, attachments]);
 
   const handleSendMessage = useCallback(() => {
-    if (message.trim() || attachments.length > 0) {
+    if ((message.trim() || attachments.length > 0) && !disabled) {
       onSendMessage(message, attachments);
       setMessage("");
       setAttachments([]);
@@ -36,7 +43,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
         textareaRef.current.focus();
       }
     }
-  }, [message, attachments, onSendMessage]);
+  }, [message, attachments, onSendMessage, disabled]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -73,10 +80,20 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
     );
   }, []);
 
+  // Auto-resize textarea as user types
+  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMessage(e.target.value);
+    
+    // Auto-resize
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+  };
+
   return (
-    <div className="border-t border-white/10 p-2 md:p-4 bg-black/10">
+    <div className={`border-t border-white/10 p-3 bg-black/20 ${hasTouch ? 'pb-safe' : ''}`}>
       {attachments.length > 0 && (
-        <div className="mb-3 flex flex-wrap gap-2">
+        <div className="mb-3 flex flex-wrap gap-2 max-h-24 overflow-y-auto">
           {attachments.map((attachment) => (
             <AttachmentPreview
               key={attachment.id}
@@ -91,52 +108,51 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
         <div className="flex-1 relative">
           <Textarea
             ref={textareaRef}
-            placeholder="Type a message..."
-            className={`resize-none py-3 pr-2 min-h-[50px] md:min-h-[60px] max-h-[120px] bg-black/20 border-white/10 transition-colors ${
+            placeholder={placeholder}
+            className={`resize-none py-3 pr-14 pl-10 min-h-[50px] max-h-[120px] rounded-full bg-black/20 border-white/10 transition-colors ${
               isFocused ? "border-brand-pink" : ""
-            }`}
+            } ${disabled ? "opacity-50" : ""}`}
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleTextareaChange}
             onKeyDown={handleKeyDown}
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             style={{ touchAction: "manipulation" }}
+            disabled={disabled}
           />
           
-          {/* Mobile-optimized button group */}
-          <div className="absolute bottom-2 left-2 flex gap-1">
+          {/* Attachment buttons */}
+          <div className="absolute bottom-2.5 left-3 flex gap-1">
             <Button
               type="button"
               variant="ghost"
               size="icon"
-              className="h-9 w-9 rounded-full touch-manipulation"
+              className="h-6 w-6 rounded-full bg-transparent hover:bg-white/10"
               onClick={() => fileInputRef.current?.click()}
+              disabled={disabled}
+              title="Attach file"
             >
               <Paperclip className="h-4 w-4" />
+              <span className="sr-only">Attach file</span>
             </Button>
-            
-            {/* Only show additional buttons on desktop */}
-            {!isMobile && (
-              <>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                >
-                  <Image className="h-4 w-4" />
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 rounded-full"
-                >
-                  <Smile className="h-4 w-4" />
-                </Button>
-              </>
-            )}
           </div>
+          
+          {/* Emoji button (on desktop) */}
+          {!isMobile && (
+            <div className="absolute bottom-2.5 right-12">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-6 w-6 rounded-full bg-transparent hover:bg-white/10"
+                disabled={disabled}
+                title="Add emoji"
+              >
+                <Smile className="h-4 w-4" />
+                <span className="sr-only">Add emoji</span>
+              </Button>
+            </div>
+          )}
           
           <input
             ref={fileInputRef}
@@ -144,17 +160,24 @@ export const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => 
             className="hidden"
             onChange={handleFileChange}
             multiple
+            disabled={disabled}
+            accept="image/*,video/*,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
           />
         </div>
+        
         <Button
           type="button"
           size="icon"
-          className="h-12 w-12 md:h-10 md:w-10 rounded-full bg-brand-pink hover:bg-brand-pink/90 flex-shrink-0 touch-manipulation"
+          className={`h-10 w-10 rounded-full flex-shrink-0 ${
+            message.trim() || attachments.length > 0 
+              ? "bg-brand-pink hover:bg-brand-pink/90" 
+              : "bg-gray-500/50 cursor-not-allowed"
+          }`}
           onClick={handleSendMessage}
-          disabled={!message.trim() && attachments.length === 0}
+          disabled={disabled || (!message.trim() && attachments.length === 0)}
           aria-label="Send message"
         >
-          <Send className="h-5 w-5 md:h-4 md:w-4" />
+          <Send className="h-4 w-4" />
         </Button>
       </div>
     </div>
