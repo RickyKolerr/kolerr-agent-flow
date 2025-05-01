@@ -57,3 +57,4 @@ export const FeatureComparison = () => {
       </CardContent>
     </Card>
   );
+};
