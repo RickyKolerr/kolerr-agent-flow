@@ -20,4 +20,10 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    // Adding optimized build settings for Netlify deployment
+    minify: 'terser',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1600,
+  },
 }));
