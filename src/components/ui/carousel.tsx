@@ -1,8 +1,10 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
+  type EmblaOptionsType,
+  type EmblaPluginType,
 } from "embla-carousel-react"
-import { type Options, type Plugin } from "embla-carousel"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -67,9 +69,10 @@ const Carousel = React.forwardRef<
       axis: orientation === "horizontal" ? "x" : "y",
       dragFree: true,
       containScroll: "trimSnaps",
-      watchDrag: (enable: boolean) => {
+      // Fix the type of watchDrag to match DragHandlerOptionType
+      watchDrag: (emblaApi) => {
         // Disable drag when user is pinch-zooming
-        return enable && !isZoomed;
+        return !isZoomed;
       }
     };
     
@@ -87,17 +90,16 @@ const Carousel = React.forwardRef<
         }
       };
 
-      // Get the current element safely with type checking
-      const element = carouselRef.current as HTMLElement | null;
-      if (element) {
+      // Get the current element safely - carouselRef is a ref object
+      if (carouselRef && carouselRef.current) {
+        const element = carouselRef.current;
         element.addEventListener('touchstart', preventDefault, { passive: false });
-      }
-
-      return () => {
-        if (element) {
+        
+        return () => {
           element.removeEventListener('touchstart', preventDefault);
         }
       }
+      return undefined;
     }, [carouselRef, api]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
