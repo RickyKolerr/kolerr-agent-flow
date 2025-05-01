@@ -66,15 +66,18 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         title={title} 
         subtitle={subtitle} 
         onClose={onOpenChange ? () => onOpenChange(false) : undefined}
-        // Add any custom props if needed 
       />
       
-      <ChatMessagesDisplay messages={messages} />
+      {/* Fixed height for the chat messages area */}
+      <div className="flex-1 overflow-hidden" style={{ minHeight: "350px" }}>
+        <ChatMessagesDisplay messages={messages} />
+      </div>
       
       <ChatAgentInput 
         onSendMessage={handleSendMessage} 
         disabled={sendButtonClicked}
         placeholder={getPlaceholderText()}
+        inputRef={inputRef}
       />
     </div>
   );

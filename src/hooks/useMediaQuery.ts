@@ -8,25 +8,31 @@ import { useState, useEffect } from 'react';
  * const isMobile = useMediaQuery('(max-width: 640px)');
  */
 export function useMediaQuery(query: string): boolean {
-  const [matches, setMatches] = useState<boolean>(false);
+  const [matches, setMatches] = useState<boolean>(() => {
+    // Set initial value (SSR safe)
+    if (typeof window !== 'undefined') {
+      return window.matchMedia(query).matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
     const media = window.matchMedia(query);
-    if (media.matches !== matches) {
-      setMatches(media.matches);
-    }
-
-    const listener = () => {
-      setMatches(media.matches);
-    };
     
-    // Modern browsers
-    media.addEventListener('change', listener);
+    // Update matches state initially and on changes
+    const updateMatches = () => setMatches(media.matches);
+    updateMatches();
     
+    // Add listener for changes
+    media.addEventListener('change', updateMatches);
+    
+    // Cleanup function
     return () => {
-      media.removeEventListener('change', listener);
+      media.removeEventListener('change', updateMatches);
     };
-  }, [matches, query]);
+  }, [query]);
 
   return matches;
 }

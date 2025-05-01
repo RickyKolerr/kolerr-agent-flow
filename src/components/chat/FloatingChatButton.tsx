@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -64,41 +65,21 @@ export function FloatingChatButton() {
 
   // Don't render anything if we shouldn't show the button
   if (!shouldShowButton) {
-    console.log("FloatingChatButton: Not showing button", { 
-      isAuthenticated, 
-      isHomePath, 
-      path: location.pathname 
-    });
     return null;
   }
-
-  // If we get here, we should show the button
-  console.log("FloatingChatButton: Showing button", { 
-    isAuthenticated, 
-    path: location.pathname 
-  });
 
   return (
     <>
       <button 
         onClick={handleOpenChat}
-        className={cn(
-          "fixed z-40 flex items-center justify-center",
-          "bottom-4 right-4 md:bottom-6 md:right-6",
-          "h-12 w-12 md:h-14 md:w-14",
-          "rounded-full shadow-lg",
-          "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to",
-          "text-white hover:shadow-xl transform hover:scale-105 transition-all duration-300",
-          isFirstLoad && "animate-pulse"
-        )}
+        className="fixed z-40 flex items-center justify-center bottom-4 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white hover:shadow-xl transform hover:scale-105 transition-all duration-300"
         aria-label="Chat with AI Assistant"
       >
         <Bot className="h-6 w-6" />
         
         {/* Notification dot */}
         {hasNotification && (
-          <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full 
-            animate-pulse border border-white transform translate-x-1 -translate-y-1" />
+          <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full animate-pulse border border-white transform translate-x-1 -translate-y-1" />
         )}
       </button>
 

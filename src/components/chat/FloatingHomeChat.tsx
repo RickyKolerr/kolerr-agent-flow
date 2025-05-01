@@ -43,9 +43,13 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const { freeCredits, hasPremiumPlan } = useCredits();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
+  // Fixed heights for better stability
+  const chatContainerHeight = "500px";
+  const messageAreaHeight = "350px";
+
   return (
-    <div className={`fixed bottom-0 right-0 z-50 ${isMobile ? 'w-full' : 'w-full max-w-[550px]'} rounded-t-2xl overflow-hidden shadow-2xl`}>
-      <div className="glass-panel shadow-2xl flex flex-col">
+    <div className={`fixed bottom-0 right-0 z-50 md:max-w-[550px] w-full rounded-t-2xl overflow-hidden shadow-2xl`}>
+      <div className="glass-panel shadow-2xl flex flex-col h-auto">
         <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
@@ -88,34 +92,36 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4 bg-black/20 h-[350px] max-h-[40vh]">
-          {messages.map(message => (
-            <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-              {message.type === "bot" && (
-                <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                  <MessageCircle className="h-4 w-4 text-white" />
+        <ScrollArea className="flex-1 p-4 bg-black/20" style={{ height: messageAreaHeight }}>
+          <div className="pb-2">
+            {messages.map(message => (
+              <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                {message.type === "bot" && (
+                  <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                    <MessageCircle className="h-4 w-4 text-white" />
+                  </div>
+                )}
+                <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
+                  {message.content}
+                  {message.isTyping && (
+                    <span className="inline-block ml-1 animate-pulse">▌</span>
+                  )}
+                  {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                    <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
+                  )}
+                  {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                    <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                  )}
                 </div>
-              )}
-              <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                {message.content}
-                {message.isTyping && (
-                  <span className="inline-block ml-1 animate-pulse">▌</span>
-                )}
-                {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                  <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                )}
-                {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                  <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                {message.type === "user" && (
+                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                    <User className="h-4 w-4" />
+                  </div>
                 )}
               </div>
-              {message.type === "user" && (
-                <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                  <User className="h-4 w-4" />
-                </div>
-              )}
-            </div>
-          ))}
-          <div ref={messagesEndRef} />
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </ScrollArea>
 
         <div className="p-3 border-t border-white/10 bg-black/40">
