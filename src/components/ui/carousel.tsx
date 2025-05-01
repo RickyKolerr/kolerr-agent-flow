@@ -2,8 +2,7 @@ import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
 } from "embla-carousel-react"
-import type { Options as EmblaOptionsType } from "embla-carousel"
-import type { Plugin as EmblaPluginType } from "embla-carousel"
+import { type Options, type Plugin } from "embla-carousel"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -63,11 +62,11 @@ const Carousel = React.forwardRef<
     const { isZoomed } = useMobileDetection();
     
     // Add default options for better mobile handling
-    const carouselOptions = {
+    const carouselOptions: CarouselOptions = {
       ...opts,
-      axis: orientation === "horizontal" ? "x" : "y" as const,
+      axis: orientation === "horizontal" ? "x" : "y",
       dragFree: true,
-      containScroll: "trimSnaps" as const,
+      containScroll: "trimSnaps",
       watchDrag: (enable: boolean) => {
         // Disable drag when user is pinch-zooming
         return enable && !isZoomed;
@@ -88,7 +87,8 @@ const Carousel = React.forwardRef<
         }
       };
 
-      const element = carouselRef?.current;
+      // Get the current element safely with type checking
+      const element = carouselRef.current as HTMLElement | null;
       if (element) {
         element.addEventListener('touchstart', preventDefault, { passive: false });
       }
