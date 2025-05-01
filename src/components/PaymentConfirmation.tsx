@@ -31,7 +31,7 @@ export const PaymentConfirmation = ({
 }: PaymentConfirmationProps) => {
   // Calculate the value per credit
   const valuePerCredit = amount / credits;
-  const savings = credits > amount ? Math.round((1 - (amount / credits)) * 100) : 0;
+  const savings = credits >= amount ? Math.round((1 - (valuePerCredit)) * 100) : 0;
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -52,12 +52,10 @@ export const PaymentConfirmation = ({
               <span className="text-muted-foreground">Credits</span>
               <span className="font-medium">{credits}</span>
             </div>
-            {savings > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-muted-foreground">Value per credit</span>
-                <span className="font-medium text-green-500">${valuePerCredit.toFixed(2)} <span className="text-xs">({savings}% savings)</span></span>
-              </div>
-            )}
+            <div className="flex justify-between items-center">
+              <span className="text-muted-foreground">Value per credit</span>
+              <span className="font-medium text-green-500">${valuePerCredit.toFixed(2)}{savings > 0 && <span className="text-xs ml-1">({savings}% savings)</span>}</span>
+            </div>
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="font-medium">Total Amount</span>
               <span className="font-bold">${amount}</span>

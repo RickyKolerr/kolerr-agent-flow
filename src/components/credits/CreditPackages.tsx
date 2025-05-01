@@ -11,6 +11,7 @@ interface CreditPackage {
   price: number;
   description: string;
   popular?: boolean;
+  valuePerCredit?: number;
 }
 
 const creditPackages: CreditPackage[] = [
@@ -19,6 +20,7 @@ const creditPackages: CreditPackage[] = [
     name: "Basic Pack",
     credits: 20,
     price: 20,
+    valuePerCredit: 1.00,
     description: "Perfect for trying out our premium features"
   },
   {
@@ -26,6 +28,7 @@ const creditPackages: CreditPackage[] = [
     name: "Standard Pack",
     credits: 60,
     price: 50,
+    valuePerCredit: 0.83,
     description: "Great value for occasional users",
     popular: true
   },
@@ -34,6 +37,7 @@ const creditPackages: CreditPackage[] = [
     name: "Premium Pack",
     credits: 130,
     price: 100,
+    valuePerCredit: 0.77,
     description: "Ideal for regular campaign creators"
   },
   {
@@ -41,6 +45,7 @@ const creditPackages: CreditPackage[] = [
     name: "Pro Pack",
     credits: 300,
     price: 200,
+    valuePerCredit: 0.67,
     description: "Best value for power users and agencies"
   }
 ];
@@ -90,6 +95,10 @@ export function CreditPackages() {
                   <div className="flex items-center gap-2">
                     <Package className="h-4 w-4" />
                     <span>{pkg.credits} search credits</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <CreditCard className="h-4 w-4" />
+                    <span>${pkg.valuePerCredit?.toFixed(2)}/credit</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CreditCard className="h-4 w-4" />
