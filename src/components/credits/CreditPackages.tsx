@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, CreditCard } from "lucide-react";
@@ -14,26 +15,33 @@ interface CreditPackage {
 
 const creditPackages: CreditPackage[] = [
   {
-    id: "starter-pack",
-    name: "Starter Pack",
-    credits: 100,
-    price: 100,
+    id: "basic-pack",
+    name: "Basic Pack",
+    credits: 20,
+    price: 20,
     description: "Perfect for trying out our premium features"
   },
   {
-    id: "growth-pack",
-    name: "Growth Pack",
-    credits: 500,
-    price: 400,
-    description: "Most popular choice for growing brands",
+    id: "standard-pack",
+    name: "Standard Pack",
+    credits: 60,
+    price: 50,
+    description: "Great value for occasional users",
     popular: true
+  },
+  {
+    id: "premium-pack",
+    name: "Premium Pack",
+    credits: 130,
+    price: 100,
+    description: "Ideal for regular campaign creators"
   },
   {
     id: "pro-pack",
     name: "Pro Pack",
-    credits: 2000,
-    price: 1500,
-    description: "Best value for power users"
+    credits: 300,
+    price: 200,
+    description: "Best value for power users and agencies"
   }
 ];
 
@@ -56,7 +64,7 @@ export function CreditPackages() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid gap-4 md:grid-cols-3">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {creditPackages.map((pkg) => (
             <Card 
               key={pkg.id}
@@ -65,7 +73,7 @@ export function CreditPackages() {
               {pkg.popular && (
                 <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
                   <div className="bg-brand-pink text-white text-xs font-medium px-2 py-1 rounded-full">
-                    Most Popular
+                    Best Value
                   </div>
                 </div>
               )}

@@ -7,7 +7,7 @@ export const FeatureComparison = () => {
     {
       name: "Search Credits",
       free: "5 daily credits",
-      pro: "Unlimited searches",
+      pro: "Up to 2000 monthly credits",
     },
     {
       name: "Advanced Filters",
@@ -23,6 +23,11 @@ export const FeatureComparison = () => {
       name: "Analytics",
       free: "Basic metrics",
       pro: "Advanced analytics & reporting",
+    },
+    {
+      name: "One-time Credit Packs",
+      free: "Available ($20-$200)",
+      pro: "Available for additional needs",
     },
   ];
 

@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -213,8 +214,8 @@ const PricingPage = () => {
             <p className="text-muted-foreground">Free daily credits reset each day at 7:00 AM. Premium credits roll over month to month, up to 50% of your monthly allocation.</p>
           </div>
           <div className="p-6 border rounded-lg">
-            <h3 className="font-bold mb-2">Can I upgrade anytime?</h3>
-            <p className="text-muted-foreground">Yes! You can upgrade to a premium plan at any time to get immediate access to additional features and credits.</p>
+            <h3 className="font-bold mb-2">Can I combine subscriptions and credit packs?</h3>
+            <p className="text-muted-foreground">Yes! You can purchase one-time credit packages alongside your subscription for additional flexibility during high-usage periods.</p>
           </div>
         </div>
       </div>
