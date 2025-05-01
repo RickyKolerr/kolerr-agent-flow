@@ -14,9 +14,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
-import { CreditCard, MessageSquare } from "lucide-react";
 import { CreditCounter } from "@/components/CreditCounter";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
+import { FloatingHomeChat } from "@/components/chat/FloatingHomeChat";
+import { CreditCard, MessageSquare } from "lucide-react";
 
 interface Message {
   id: string;
@@ -350,6 +351,7 @@ const HomePage = () => {
     <div className="min-h-screen flex flex-col overflow-auto hero-gradient">
       <div className="container mx-auto px-4 pt-8 pb-16">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          {/* Top Performers Card */}
           <div className="glass-panel rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-6">
               <Star className="h-8 w-8 text-brand-pink" />
@@ -385,6 +387,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          {/* Trending Now Card */}
           <div className="glass-panel rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-6">
               <TrendingUp className="h-8 w-8 text-brand-pink" />
@@ -421,6 +424,7 @@ const HomePage = () => {
             </div>
           </div>
 
+          {/* Viral Stars Card */}
           <div className="glass-panel rounded-2xl p-6 shadow-2xl">
             <div className="flex items-center gap-3 mb-6">
               <Users className="h-8 w-8 text-brand-pink" />
@@ -495,8 +499,10 @@ const HomePage = () => {
               </div>
             </div>
 
-            <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
-              {/* Add Credit ratio indicator at the top of chat */}
+            {/* Hidden chat section - still rendering to keep the state/logic but not displayed 
+                This avoids duplicating all the chat state management logic */}
+            <div className="hidden">
+              {/* Credit ratio indicator */}
               <div className="mb-4 rounded-md bg-brand-pink/10 p-3 border border-brand-pink/20 relative">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
@@ -524,67 +530,71 @@ const HomePage = () => {
                 </div>
               </div>
               
-              {messages.map(message => (
-                <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                      <MessageCircle className="h-4 w-4 text-white" />
+              {/* Messages display */}
+              <ScrollArea className="flex-1 p-6 bg-black/20 h-[400px]">
+                {messages.map(message => (
+                  <div key={message.id} className={`mb-6 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                    {message.type === "bot" && (
+                      <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                        <MessageCircle className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                    <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
+                      {message.content}
+                      {message.isTyping && (
+                        <span className="inline-block ml-1 animate-pulse">▌</span>
+                      )}
+                      {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                        <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
+                      )}
+                      {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                        <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                      )}
                     </div>
-                  )}
-                  <div className={`p-4 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                    {message.content}
-                    {message.isTyping && (
-                      <span className="inline-block ml-1 animate-pulse">▌</span>
-                    )}
-                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                    )}
-                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                    {message.type === "user" && (
+                      <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                        <User className="h-4 w-4" />
+                      </div>
                     )}
                   </div>
-                  {message.type === "user" && (
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                      <User className="h-4 w-4" />
+                ))}
+                <div ref={messagesEndRef} />
+              </ScrollArea>
+
+              {/* Input area */}
+              <div className="p-4 border-t border-white/10 bg-black/40">
+                <div className="flex gap-2">
+                  <Input placeholder="Ask about specific creator types, niches, or requirements..." 
+                         value={inputValue} 
+                         onChange={e => setInputValue(e.target.value)} 
+                         onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
+                         className="bg-black/60" />
+                  <Button onClick={handleSendMessage}>Send</Button>
+                </div>
+                <div className="flex items-center justify-between mt-3 px-2">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground">
+                    <Paperclip className="h-4 w-4 mr-2" />
+                    Attach
+                  </Button>
+                  
+                  {!hasPremiumPlan && (
+                    <div className="text-sm text-muted-foreground flex items-center gap-2">
+                      <span>
+                        {isKOLSpecificQuery(inputValue) 
+                          ? "KOL question: Uses 1 credit" 
+                          : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
+                      </span>
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="text-brand-pink p-0 h-auto" 
+                        onClick={() => navigate("/pricing")}
+                      >
+                        Upgrade
+                      </Button>
                     </div>
                   )}
                 </div>
-              ))}
-              <div ref={messagesEndRef} />
-            </ScrollArea>
-
-            <div className="p-4 border-t border-white/10 bg-black/40">
-              <div className="flex gap-2">
-                <Input placeholder="Ask about specific creator types, niches, or requirements..." 
-                       value={inputValue} 
-                       onChange={e => setInputValue(e.target.value)} 
-                       onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
-                       className="bg-black/60" />
-                <Button onClick={handleSendMessage}>Send</Button>
-              </div>
-              <div className="flex items-center justify-between mt-3 px-2">
-                <Button variant="ghost" size="sm" className="text-muted-foreground">
-                  <Paperclip className="h-4 w-4 mr-2" />
-                  Attach
-                </Button>
-                
-                {!hasPremiumPlan && (
-                  <div className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>
-                      {isKOLSpecificQuery(inputValue) 
-                        ? "KOL question: Uses 1 credit" 
-                        : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
-                    </span>
-                    <Button 
-                      variant="link" 
-                      size="sm" 
-                      className="text-brand-pink p-0 h-auto" 
-                      onClick={() => navigate("/pricing")}
-                    >
-                      Upgrade
-                    </Button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
@@ -619,7 +629,7 @@ const HomePage = () => {
             </div>
           </div>
           
-          {/* Replace Credit Usage Info Card with enhanced component */}
+          {/* Credit Usage Info Card */}
           <div className="rounded-2xl glass-panel p-6 shadow-2xl mt-6 relative">
             <DemoIndicator 
               section="Credit System" 
@@ -660,6 +670,18 @@ const HomePage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Add the floating chat component */}
+      <FloatingHomeChat
+        messages={messages}
+        inputValue={inputValue}
+        setInputValue={setInputValue}
+        handleSendMessage={handleSendMessage}
+        messagesEndRef={messagesEndRef}
+        isKOLSpecificQuery={isKOLSpecificQuery}
+        generalQuestionCounter={generalQuestionCounter}
+        generalQuestionsPerCredit={generalQuestionsPerCredit}
+      />
     </div>
   );
 };
