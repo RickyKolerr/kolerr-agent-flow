@@ -4,6 +4,7 @@
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
+  overflow-x: hidden;
 }
 
 /* Animation for logos */
@@ -19,5 +20,53 @@
 @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
+  }
+}
+
+/* Add fixed layout container for homepage */
+.home-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Fixed footer spacing to accommodate floating components */
+.floating-footer-space {
+  height: 500px;
+  width: 100%;
+}
+
+/* Glass panel fixes for consistent heights */
+.glass-panel {
+  backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hero gradient that stays fixed */
+.hero-gradient {
+  background: linear-gradient(to bottom right, #121212, #1a1a2e);
+  background-attachment: fixed;
+}
+
+/* Fixed-height containers for consistent UIs */
+.fixed-height-container {
+  position: relative;
+  height: auto;
+}
+
+/* Mobile-specific fixes */
+@media (max-width: 768px) {
+  .home-chat-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    z-index: 50;
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
   }
 }

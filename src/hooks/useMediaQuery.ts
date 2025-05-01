@@ -22,15 +22,32 @@ export function useMediaQuery(query: string): boolean {
     const media = window.matchMedia(query);
     
     // Update matches state initially and on changes
-    const updateMatches = () => setMatches(media.matches);
+    const updateMatches = () => {
+      setMatches(media.matches);
+    };
     updateMatches();
     
-    // Add listener for changes
+    // Use correct event listener based on browser support
     media.addEventListener('change', updateMatches);
+    
+    // Use requestAnimationFrame to handle resize events more efficiently
+    let rafId: number;
+    const handleResize = () => {
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
+      rafId = window.requestAnimationFrame(updateMatches);
+    };
+    
+    window.addEventListener('resize', handleResize, { passive: true });
     
     // Cleanup function
     return () => {
       media.removeEventListener('change', updateMatches);
+      window.removeEventListener('resize', handleResize);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
+      }
     };
   }, [query]);
 

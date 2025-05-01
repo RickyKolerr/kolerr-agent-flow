@@ -43,13 +43,15 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const { freeCredits, hasPremiumPlan } = useCredits();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // Fixed heights for better stability
-  const chatContainerHeight = "500px";
+  // Fixed heights for consistent UI across devices
   const messageAreaHeight = "350px";
+  const containerClasses = isMobile 
+    ? "fixed bottom-0 left-0 w-full home-chat-fixed" 
+    : "fixed bottom-0 right-0 z-50 md:right-4 md:bottom-4 md:max-w-[550px] w-full rounded-2xl overflow-hidden";
 
   return (
-    <div className={`fixed bottom-0 right-0 z-50 md:max-w-[550px] w-full rounded-t-2xl overflow-hidden shadow-2xl`}>
-      <div className="glass-panel shadow-2xl flex flex-col h-auto">
+    <div className={containerClasses}>
+      <div className="glass-panel shadow-2xl flex flex-col">
         <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
