@@ -48,18 +48,17 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   useEffect(() => {
     if (isOpen) {
       initializeWithWelcomeMessage(initialMessage);
+      
+      // Focus input after a short delay to ensure the chat interface is visible
+      const timer = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 300);
+      
+      return () => clearTimeout(timer);
     }
   }, [initialMessage, isOpen, initializeWithWelcomeMessage]);
-
-  // Focus input when chat opens
-  useEffect(() => {
-    if (isOpen && inputRef.current) {
-      // Add a small delay to ensure the chat is visible before focusing
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
-    }
-  }, [isOpen]);
 
   const renderChatContent = () => (
     <div className="flex flex-col h-full">
@@ -70,7 +69,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
       />
       
       {/* Fixed height for the chat messages area */}
-      <div className="flex-1 overflow-hidden" style={{ minHeight: "350px" }}>
+      <div className="flex-1 overflow-hidden relative" style={{ minHeight: "350px" }}>
         <ChatMessagesDisplay messages={messages} />
       </div>
       
@@ -87,7 +86,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   if (isMobile) {
     return (
       <Sheet open={isOpen} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[80vh] p-0 rounded-t-xl border-t border-white/10 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-xl">
+        <SheetContent side="bottom" className="h-[85vh] p-0 rounded-t-xl border-t border-white/10 bg-gradient-to-b from-black/90 to-black/80 backdrop-blur-xl">
           {renderChatContent()}
         </SheetContent>
       </Sheet>
