@@ -1,13 +1,17 @@
-
 import * as React from "react"
-import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType, type EmblaPluginType } from "embla-carousel-react"
+import useEmblaCarousel, { 
+  type UseEmblaCarouselType, 
+  type EmblaOptionsType, 
+  type EmblaPluginType,
+  type UseEmblaCarouselReturnType
+} from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useMobileDetection } from "@/hooks/use-mobile-detection"
 
-type CarouselApi = ReturnType<typeof useEmblaCarousel>[1]
+type CarouselApi = UseEmblaCarouselReturnType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
@@ -20,8 +24,8 @@ type CarouselProps = {
 }
 
 type CarouselContextProps = {
-  carouselRef: ReturnType<typeof useEmblaCarousel>[0]
-  api: ReturnType<typeof useEmblaCarousel>[1]
+  carouselRef: React.RefObject<HTMLDivElement>
+  api: CarouselApi
   scrollPrev: () => void
   scrollNext: () => void
   canScrollPrev: boolean
@@ -59,10 +63,9 @@ const Carousel = React.forwardRef<
     const { hasTouch } = useMobileDetection();
     const axis = orientation === "horizontal" ? "x" : "y";
     
-    const [carouselRef, api] = useEmblaCarousel({
+    const [emblaRef, emblaApi] = useEmblaCarousel({
       ...opts,
       axis,
-      // Remove the draggable property as it's not a valid option
       dragFree: hasTouch ? true : false,
       containScroll: "trimSnaps",
     }, plugins)
@@ -70,12 +73,14 @@ const Carousel = React.forwardRef<
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
 
+    // Create a proper ref object that we can safely use
+    const carouselRef = React.useRef<HTMLDivElement>(null)
+
     // Helper to safely access viewport element
     const getViewportElement = React.useCallback(() => {
-      if (!carouselRef.current) return null;
-      // Access the viewport element safely
-      return carouselRef.current;
-    }, [carouselRef]);
+      if (!emblaRef || !emblaRef.current) return null;
+      return emblaRef.current;
+    }, [emblaRef]);
 
     // Configure touch actions on mobile
     React.useEffect(() => {
@@ -109,12 +114,12 @@ const Carousel = React.forwardRef<
     }, [])
 
     const scrollPrev = React.useCallback(() => {
-      api?.scrollPrev()
-    }, [api])
+      emblaApi?.scrollPrev()
+    }, [emblaApi])
 
     const scrollNext = React.useCallback(() => {
-      api?.scrollNext()
-    }, [api])
+      emblaApi?.scrollNext()
+    }, [emblaApi])
 
     const handleKeyDown = React.useCallback(
       (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -130,32 +135,32 @@ const Carousel = React.forwardRef<
     )
 
     React.useEffect(() => {
-      if (!api || !setApi) {
+      if (!emblaApi || !setApi) {
         return
       }
 
-      setApi(api)
-    }, [api, setApi])
+      setApi(emblaApi)
+    }, [emblaApi, setApi])
 
     React.useEffect(() => {
-      if (!api) {
+      if (!emblaApi) {
         return
       }
 
-      onSelect(api)
-      api.on("reInit", onSelect)
-      api.on("select", onSelect)
+      onSelect(emblaApi)
+      emblaApi.on("reInit", onSelect)
+      emblaApi.on("select", onSelect)
 
       return () => {
-        api?.off("select", onSelect)
+        emblaApi?.off("select", onSelect)
       }
-    }, [api, onSelect])
+    }, [emblaApi, onSelect])
 
     return (
       <CarouselContext.Provider
         value={{
           carouselRef,
-          api: api,
+          api: emblaApi,
           opts,
           orientation,
           scrollPrev,
@@ -187,7 +192,12 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-hidden">
+    <div ref={emblaRef => {
+      // This assigns the embla ref that the carousel needs
+      if (emblaRef && carouselRef.current !== emblaRef) {
+        carouselRef.current = emblaRef
+      }
+    }} className="overflow-hidden">
       <div
         ref={ref}
         className={cn(
