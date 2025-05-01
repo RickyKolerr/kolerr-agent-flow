@@ -34,7 +34,8 @@ export function useMediaQuery(query: string): boolean {
     document.body.style.bottom = '0';
     document.body.style.overflow = 'auto';
     document.body.style.overflowX = 'hidden';
-    document.body.style.webkitOverflowScrolling = 'touch';
+    // Apply webkit overflow scrolling with type casting
+    (document.body.style as any).webkitOverflowScrolling = 'touch';
     document.body.style.margin = '0';
     document.body.style.height = '100%';
     document.body.style.width = '100%';

@@ -56,7 +56,8 @@ export function useIsMobile(options?: Partial<MobileLayoutOptions>) {
       document.body.style.right = '0';
       document.body.style.bottom = '0';
       document.body.style.overflow = 'auto';
-      document.body.style.webkitOverflowScrolling = 'touch';
+      // Apply webkit overflow scrolling with type casting
+      (document.body.style as any).webkitOverflowScrolling = 'touch';
     }
     
     // Prevent elastic scrolling on iOS
