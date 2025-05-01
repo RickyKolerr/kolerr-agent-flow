@@ -1,95 +1,60 @@
 
 import React, { useState, useEffect } from "react";
-import { Bot } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { AgentChat } from "./AgentChat";
+import { Button } from "@/components/ui/button";
+import { MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useLocation } from "react-router-dom";
-import { useUserAccess } from "@/hooks/useUserAccess";
+import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
-export function FloatingChatButton() {
-  const [isOpen, setIsOpen] = useState(false);
-  const [hasNotification, setHasNotification] = useState(false);
-  const [isFirstLoad, setIsFirstLoad] = useState(true);
-  const { user, isAuthenticated } = useAuth();
+export const FloatingChatButton = () => {
   const location = useLocation();
-  const { canAccessFeature } = useUserAccess();
-  
-  // Enhanced logic: check authentication, route path, and feature access
-  const homePaths = ['/', '/home', '/index'];
-  const authPaths = ['/login', '/signup', '/forgot-password', '/reset-password', '/verify-email', '/onboarding'];
-  const chatPaths = ['/chat'];
-  
-  const isHomePath = homePaths.includes(location.pathname);
-  const isAuthPath = authPaths.some(path => location.pathname.startsWith(path));
-  const isChatPath = chatPaths.some(path => location.pathname.startsWith(path));
-  
-  // Don't show on home paths, auth paths, or dedicated chat paths
-  const shouldShowButton = 
-    isAuthenticated && 
-    !isHomePath && 
-    !isAuthPath && 
-    !isChatPath && 
-    canAccessFeature('messages');
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isMobile } = useMobileDetection();
+  const [isVisible, setIsVisible] = useState(true);
 
-  // Configure AgentChat based on user role with shorter messages
-  const agentConfig = user?.role === 'kol' 
-    ? {
-        title: "Campaign Finder AI",
-        subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Hi! I'll help you find paid brand campaigns that match your content. What opportunities are you looking for?"
-      }
-    : {
-        title: "Influencer AI Agent",
-        subtitle: "4 free searches remaining today",
-        initialMessage: "👋 Welcome! As TikTok and Meta's Strategic Partner, I can help you find the right creators for your campaigns. What type of influencers do you need?"
-      };
-
-  // Show notification dot after a delay to simulate new information
+  // Check if we should hide the button based on current route
   useEffect(() => {
-    if (isFirstLoad && shouldShowButton) {
-      const timer = setTimeout(() => {
-        setHasNotification(true);
-        setIsFirstLoad(false);
-      }, 15000); // Show notification after 15 seconds
-      
-      return () => clearTimeout(timer);
+    // Hide on chat pages, auth pages, and certain dashboard pages
+    const shouldHide = 
+      location.pathname.startsWith('/chat') || 
+      ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
+      location.pathname.startsWith('/onboarding') ||
+      location.pathname === '/' || // Hide on home page
+      location.pathname === '/home'; // Also hide on /home route
+    
+    setIsVisible(!shouldHide);
+  }, [location.pathname]);
+
+  // Handle chat button click
+  const handleChatClick = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname, message: 'Please log in to access chat' } });
+      return;
     }
-  }, [isFirstLoad, shouldShowButton]);
-  
-  // Reset notification when chat is opened
-  const handleOpenChat = () => {
-    setIsOpen(true);
-    setHasNotification(false);
+
+    // If already authenticated, navigate to chat
+    navigate('/chat');
   };
 
-  // Don't render anything if we shouldn't show the button
-  if (!shouldShowButton) {
+  if (!isVisible) {
     return null;
   }
 
   return (
-    <>
-      <button 
-        onClick={handleOpenChat}
-        className="fixed z-40 flex items-center justify-center bottom-4 right-4 md:bottom-6 md:right-6 h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white hover:shadow-xl transform hover:scale-105 transition-all duration-300"
-        aria-label="Chat with AI Assistant"
+    <div className="fixed bottom-6 right-6 z-50">
+      <Button
+        variant="secondary"
+        size="lg"
+        className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
+        onClick={handleChatClick}
       >
-        <Bot className="h-6 w-6" />
-        
-        {/* Notification dot */}
-        {hasNotification && (
-          <span className="absolute top-0 right-0 h-3 w-3 bg-red-500 rounded-full animate-pulse border border-white transform translate-x-1 -translate-y-1" />
-        )}
-      </button>
-
-      <AgentChat
-        title={agentConfig.title}
-        subtitle={agentConfig.subtitle}
-        initialMessage={agentConfig.initialMessage}
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-      />
-    </>
+        <MessageCircle className="h-6 w-6 text-white" />
+        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
+          3
+        </Badge>
+      </Button>
+    </div>
   );
-}
+};

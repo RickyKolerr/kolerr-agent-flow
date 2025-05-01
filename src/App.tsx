@@ -1,9 +1,11 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useViewportFix } from "@/hooks/useViewportFix";
 
 // Context providers
 import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
@@ -93,16 +95,24 @@ const Layout = ({ children }) => {
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/onboarding');
   const isChatRoute = location.pathname.startsWith('/chat');
+  const isHomePage = location.pathname === '/' || location.pathname === '/home';
+  
+  // Apply viewport fix
+  useViewportFix();
   
   return (
     <div className="min-h-screen flex flex-col">
-      {!isDashboardRoute && !isAuthRoute && !isChatRoute && <MainNav />}
-      <main className={!isDashboardRoute && !isAuthRoute && !isChatRoute ? "flex-1 pt-16" : "flex-1"}>
+      {!isDashboardRoute && !isAuthRoute && !isChatRoute && (
+        <MainNav className="main-navigation" />
+      )}
+      
+      <main className={`${!isDashboardRoute && !isAuthRoute && !isChatRoute ? "flex-1 pt-16" : "flex-1"} ${isHomePage ? 'home-page-container' : ''} content-container`}>
         {children}
       </main>
+      
       {!isDashboardRoute && !isAuthRoute && !isChatRoute && <Footer />}
       
-      {/* FloatingChatButton is now self-determining when to show */}
+      {/* The FloatingChatButton will self-determine when to show */}
       <FloatingChatButton />
     </div>
   );

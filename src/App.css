@@ -81,3 +81,19 @@
 .scroll-shadow-top {
   background: linear-gradient(to bottom, rgba(0,0,0,0.1), transparent 10px);
 }
+
+/* Ensure home page content doesn't get cut off */
+.home-page-container {
+  padding-bottom: 80px; /* Add padding to avoid content being hidden by floating elements */
+}
+
+/* Fix for z-index stacking issues */
+.main-navigation {
+  z-index: 49; /* Just below the floating chat button */
+}
+
+/* Prevent overlap with fixed elements */
+.content-container {
+  position: relative;
+  z-index: 1;
+}
