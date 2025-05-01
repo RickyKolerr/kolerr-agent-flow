@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Campaign } from "@/types/campaign";
-import { useNavigate } from "react-router-dom";
 
 interface CampaignListItemProps {
   campaign: Campaign;
@@ -22,8 +21,6 @@ export const CampaignListItem = ({
   onCampaignClick, 
   formatDate 
 }: CampaignListItemProps) => {
-  const navigate = useNavigate();
-  
   const getStatusColor = (status: Campaign['status']) => {
     switch(status) {
       case 'active': return 'bg-green-500/10 text-green-500 hover:bg-green-500/20 border-green-500/20';
@@ -31,11 +28,6 @@ export const CampaignListItem = ({
       case 'completed': return 'bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20';
       case 'paused': return 'bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/20';
     }
-  };
-
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    navigate(`/campaigns/${campaign.id}`);
   };
 
   return (
@@ -80,12 +72,7 @@ export const CampaignListItem = ({
                 {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
               </span>
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-brand-pink"
-              onClick={handleViewDetails}
-            >
+            <Button variant="ghost" size="sm" className="text-brand-pink">
               Details <ArrowUpRight className="ml-1 h-3 w-3" />
             </Button>
           </div>

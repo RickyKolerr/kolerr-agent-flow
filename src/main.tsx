@@ -15,64 +15,34 @@ console.error = function(...args) {
   return originalError.apply(console, args);
 };
 
-// Enhanced Mobile viewport fix
+// Mobile viewport fix
 function applyMobileViewportFixes() {
-  // Prevent horizontal scroll/bounce
-  document.documentElement.style.position = 'fixed';
-  document.documentElement.style.height = '100%';
-  document.documentElement.style.width = '100%';
-  document.documentElement.style.overflow = 'hidden';
-  document.documentElement.style.overflowX = 'hidden';
-  
-  // Make body scrollable with momentum scrolling
-  document.body.style.position = 'absolute';
-  document.body.style.top = '0';
-  document.body.style.left = '0';
-  document.body.style.right = '0';
-  document.body.style.bottom = '0';
-  document.body.style.overflow = 'auto';
+  // Ensure body has no overflow
+  document.body.style.overflow = 'hidden auto';
   document.body.style.overflowX = 'hidden';
-  // Apply webkit overflow scrolling with type casting
-  (document.body.style as any).webkitOverflowScrolling = 'touch';
-  document.body.style.margin = '0';
-  document.body.style.height = '100%';
   document.body.style.width = '100%';
+  document.body.style.position = 'relative';
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+  
+  // Apply to HTML element too
+  document.documentElement.style.overflowX = 'hidden';
+  document.documentElement.style.width = '100%';
+  document.documentElement.style.position = 'relative';
   
   // Add a class to the root element
   const root = document.getElementById('root');
   if (root) {
-    root.classList.add('mobile-container-fix', 'pwa-container');
-    root.style.width = '100%';
-    root.style.height = '100%';
-    root.style.overflow = 'hidden';
-    root.style.display = 'flex';
-    root.style.flexDirection = 'column';
+    root.classList.add('mobile-container-fix');
   }
-
-  // Apply safe area insets for notched devices
-  document.documentElement.style.setProperty(
-    '--safe-area-inset-top', 
-    'env(safe-area-inset-top, 0px)'
-  );
-  document.documentElement.style.setProperty(
-    '--safe-area-inset-bottom', 
-    'env(safe-area-inset-bottom, 0px)'
-  );
 }
 
 // Apply fixes immediately
 applyMobileViewportFixes();
 
-// Re-apply on orientation change, resize and visibility change
+// Re-apply on orientation change and resize
 window.addEventListener('orientationchange', applyMobileViewportFixes);
 window.addEventListener('resize', applyMobileViewportFixes);
-window.addEventListener('visibilitychange', applyMobileViewportFixes);
-window.addEventListener('load', applyMobileViewportFixes);
-
-// Prevent pinch zoom on iOS
-document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
 
 // PWA installation event handling
 let deferredPrompt: any;
@@ -90,11 +60,6 @@ window.addEventListener('appinstalled', () => {
   console.log('App was installed successfully');
   deferredPrompt = null;
 });
-
-// Handle standalone mode
-if (window.matchMedia('(display-mode: standalone)').matches) {
-  document.documentElement.classList.add('pwa-standalone-adjust');
-}
 
 const root = createRoot(document.getElementById("root")!);
 

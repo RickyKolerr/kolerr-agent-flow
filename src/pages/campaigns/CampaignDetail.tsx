@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -7,28 +8,17 @@ import {
   Check, 
   Loader2, 
   ArrowLeft, 
+  User, 
   Building,
   Clock,
   Globe,
-  Share2,
-  ChevronDown,
-  ChevronUp,
-  BarChart,
-  Users,
-  Target
+  Share2
 } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { 
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
-import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { useUserAccess } from "@/hooks/useUserAccess";
 
@@ -153,7 +143,6 @@ const CampaignDetail = () => {
   const [campaign, setCampaign] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isApplying, setIsApplying] = useState(false);
-  const [activeTab, setActiveTab] = useState<string>("overview");
   const { isAuthenticated, user, getRedirectPath } = useUserAccess();
   
   useEffect(() => {
@@ -166,6 +155,15 @@ const CampaignDetail = () => {
       }
       setLoading(false);
     }, 800);
+    
+    // In a real app, this would be an API call:
+    // fetchCampaignDetails(campaignId)
+    //   .then(data => setCampaign(data))
+    //   .catch(error => {
+    //     console.error("Failed to load campaign:", error);
+    //     toast.error("Could not load campaign details");
+    //   })
+    //   .finally(() => setLoading(false));
   }, [campaignId]);
   
   const handleApply = async () => {
@@ -194,6 +192,17 @@ const CampaignDetail = () => {
       });
       setIsApplying(false);
     }, 1000);
+    
+    // In a real app, this would be:
+    // try {
+    //   await applyToCampaign(campaignId);
+    //   toast.success("Your application has been submitted");
+    // } catch (error) {
+    //   console.error("Failed to apply:", error);
+    //   toast.error("Application submission failed");
+    // } finally {
+    //   setIsApplying(false);
+    // }
   };
   
   const handleBack = () => {
@@ -228,30 +237,18 @@ const CampaignDetail = () => {
     );
   }
   
-  // Enhanced hero banner
-  const getStatusColor = (status: string) => {
-    switch(status) {
-      case 'active': return 'bg-green-500 text-white';
-      case 'draft': return 'bg-gray-500 text-white';
-      case 'completed': return 'bg-blue-500 text-white';
-      case 'paused': return 'bg-yellow-500 text-black';
-      case 'open': return 'bg-green-500 text-white';
-      default: return 'bg-gray-500 text-white';
-    }
-  };
-  
   return (
-    <div className="bg-background min-h-screen pb-12">
-      {/* Hero Banner */}
-      <div className="bg-zinc-900 border-b border-white/10">
-        <div className="container max-w-6xl mx-auto py-8 px-4">
-          <Button variant="outline" onClick={handleBack} className="mb-6 border-white/20 text-white hover:bg-white/10">
-            <ArrowLeft className="h-4 w-4 mr-2" /> Back
-          </Button>
-          
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-            <div className="flex items-start gap-4">
-              <Avatar className="h-16 w-16 rounded-md">
+    <div className="container max-w-5xl mx-auto py-8 px-4">
+      <Button variant="ghost" onClick={handleBack} className="mb-6">
+        <ArrowLeft className="h-4 w-4 mr-2" /> Back
+      </Button>
+      
+      {/* Campaign Header */}
+      <div className="bg-zinc-900 rounded-lg shadow-lg overflow-hidden mb-6 border border-white/10">
+        <div className="p-6 md:p-8">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex items-center">
+              <Avatar className="h-14 w-14 mr-4">
                 <img 
                   src={campaign.brandLogo} 
                   alt={campaign.brand} 
@@ -259,26 +256,13 @@ const CampaignDetail = () => {
                 />
               </Avatar>
               <div>
-                <h1 className="text-3xl font-bold text-white mb-1">{campaign.title}</h1>
+                <h1 className="text-2xl font-bold text-white">{campaign.title}</h1>
                 <p className="text-gray-400">By {campaign.brand}</p>
-                
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {campaign.platforms?.map((platform: string) => (
-                    <Badge key={platform} className="bg-brand-pink text-white capitalize">
-                      {platform}
-                    </Badge>
-                  ))}
-                  {campaign.categories?.map((category: string) => (
-                    <Badge key={category} variant="outline" className="capitalize text-white border-white/20">
-                      {category}
-                    </Badge>
-                  ))}
-                </div>
               </div>
             </div>
             
-            <div className="flex flex-col items-end">
-              <Badge className={`${getStatusColor(campaign.status)} px-4 py-1 text-sm font-medium mb-2`}>
+            <div>
+              <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 mb-2">
                 {campaign.status.toUpperCase()}
               </Badge>
               <div className="text-sm text-gray-400 flex items-center">
@@ -287,261 +271,197 @@ const CampaignDetail = () => {
               </div>
             </div>
           </div>
+          
+          {/* Platforms & Categories */}
+          <div className="flex flex-wrap gap-2 mt-4">
+            {campaign.platforms.map(platform => (
+              <Badge key={platform} className="bg-brand-pink text-white capitalize">
+                {platform}
+              </Badge>
+            ))}
+            {campaign.categories.map(category => (
+              <Badge key={category} variant="outline" className="capitalize text-white border-white/20">
+                {category}
+              </Badge>
+            ))}
+          </div>
         </div>
       </div>
       
-      <div className="container max-w-6xl mx-auto py-8 px-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Campaign Details */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Campaign Description */}
-            <Card className="bg-zinc-900 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">Campaign Description</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4 text-gray-300">
-                <p>{campaign.description}</p>
-                {campaign.detailedDescription && <p>{campaign.detailedDescription}</p>}
-              </CardContent>
-            </Card>
-            
-            {/* Key Campaign Information with Accordion */}
-            <Accordion type="single" collapsible className="w-full">
-              {campaign.deliverables && (
-                <AccordionItem value="deliverables" className="bg-zinc-900 border-white/10 rounded-md mb-3">
-                  <AccordionTrigger className="px-6 py-4 text-white hover:no-underline">
-                    <div className="flex items-center">
-                      <FileText className="h-5 w-5 mr-2 text-brand-pink" />
-                      <span className="font-semibold">Deliverables</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-4 pt-0">
-                    <ul className="space-y-2 text-gray-300">
-                      {campaign.deliverables?.map((deliverable: string, index: number) => (
-                        <li key={index} className="flex items-start">
-                          <Check className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-0.5" />
-                          <span>{deliverable}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              )}
-              
-              <AccordionItem value="timeline" className="bg-zinc-900 border-white/10 rounded-md mb-3">
-                <AccordionTrigger className="px-6 py-4 text-white hover:no-underline">
-                  <div className="flex items-center">
-                    <Calendar className="h-5 w-5 mr-2 text-brand-pink" />
-                    <span className="font-semibold">Timeline</span>
-                  </div>
-                </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 pt-0">
-                  <div className="space-y-4 text-gray-300">
-                    <div className="flex items-center">
-                      <Calendar className="h-5 w-5 mr-2 text-brand-pink" />
-                      <span>Deadline: {new Date(campaign.deadline).toLocaleDateString()}</span>
-                    </div>
-                    {campaign.timeline && <p>{campaign.timeline}</p>}
-                    {!campaign.timeline && (
-                      <p>Content should be submitted by the deadline date for review and approval.</p>
-                    )}
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-              
-              {campaign.brandInfo && (
-                <AccordionItem value="brand" className="bg-zinc-900 border-white/10 rounded-md">
-                  <AccordionTrigger className="px-6 py-4 text-white hover:no-underline">
-                    <div className="flex items-center">
-                      <Building className="h-5 w-5 mr-2 text-brand-pink" />
-                      <span className="font-semibold">About {campaign.brand}</span>
-                    </div>
-                  </AccordionTrigger>
-                  <AccordionContent className="px-6 pb-4 pt-0">
-                    <div className="flex items-center mb-4">
-                      <Avatar className="h-10 w-10 mr-3">
-                        <img 
-                          src={campaign.brandLogo} 
-                          alt={campaign.brand}
-                          className="h-full w-full object-cover" 
-                        />
-                      </Avatar>
-                      <div>
-                        <h3 className="font-semibold text-white">{campaign.brand}</h3>
-                        <div className="flex items-center text-sm text-gray-400">
-                          <Building className="h-3 w-3 mr-1" />
-                          <span>Verified Brand</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="text-gray-300">{campaign.brandInfo}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              )}
-            </Accordion>
-            
-            {/* Campaign Metrics Panel (only for non-draft campaigns) */}
-            {campaign && campaign.metrics && campaign.status !== 'draft' && (
-              <Card className="bg-zinc-900 border-white/10 overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="text-white flex items-center">
-                    <BarChart className="h-5 w-5 mr-2 text-brand-pink" />
-                    Campaign Performance
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-gray-400">Views</span>
-                          <span className="text-white font-medium">{campaign.metrics.views?.toLocaleString()}</span>
-                        </div>
-                        <Progress value={75} className="h-2 bg-gray-700" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-gray-400">Engagement</span>
-                          <span className="text-white font-medium">{campaign.metrics.engagement}%</span>
-                        </div>
-                        <Progress value={campaign.metrics.engagement * 10} className="h-2 bg-gray-700" />
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-gray-400">Conversions</span>
-                          <span className="text-white font-medium">{campaign.metrics.conversions?.toLocaleString()}</span>
-                        </div>
-                        <Progress value={60} className="h-2 bg-gray-700" />
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="text-gray-400">ROI</span>
-                          <span className="text-white font-medium">{campaign.metrics.roi}x</span>
-                        </div>
-                        <Progress value={campaign.metrics.roi * 20} className="h-2 bg-gray-700" />
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+      {/* Main Content */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Campaign Details */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Campaign Description */}
+          <Card className="bg-zinc-900 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">Campaign Description</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-300">
+              <p>{campaign.description}</p>
+              <p>{campaign.detailedDescription}</p>
+            </CardContent>
+          </Card>
           
-          {/* Right Column - Apply Section */}
-          <div>
-            <Card className="sticky top-6 bg-zinc-900 border-white/10">
-              <CardHeader>
-                <CardTitle className="text-white">Campaign Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Budget */}
+          {/* Campaign Deliverables */}
+          <Card className="bg-zinc-900 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">Deliverables</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-2 text-gray-300">
+                {campaign.deliverables?.map((deliverable, index) => (
+                  <li key={index} className="flex items-start">
+                    <Check className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-0.5" />
+                    <span>{deliverable}</span>
+                  </li>
+                ))}
+              </ul>
+            </CardContent>
+          </Card>
+          
+          {/* Campaign Timeline */}
+          <Card className="bg-zinc-900 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 text-gray-300">
+              <div className="flex items-center">
+                <Calendar className="h-5 w-5 mr-2 text-brand-pink" />
+                <span>Deadline: {new Date(campaign.deadline).toLocaleDateString()}</span>
+              </div>
+              <p>{campaign.timeline}</p>
+            </CardContent>
+          </Card>
+          
+          {/* Brand Information */}
+          <Card className="bg-zinc-900 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">About {campaign.brand}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center mb-4">
+                <Avatar className="h-10 w-10 mr-3">
+                  <img 
+                    src={campaign.brandLogo} 
+                    alt={campaign.brand}
+                    className="h-full w-full object-cover" 
+                  />
+                </Avatar>
                 <div>
-                  <h3 className="font-medium mb-2 flex items-center text-white">
-                    <BadgeDollarSign className="h-4 w-4 mr-2 text-brand-pink" />
-                    Budget
-                  </h3>
-                  <div className="text-xl font-semibold text-white">${campaign.budget}</div>
-                </div>
-                
-                <Separator className="bg-white/10" />
-                
-                {/* Target Audience */}
-                <div>
-                  <h3 className="font-medium mb-2 flex items-center text-white">
-                    <Target className="h-4 w-4 mr-2 text-brand-pink" />
-                    Target Audience
-                  </h3>
-                  <div className="text-white">{campaign.audience || "All audiences"}</div>
-                </div>
-                
-                <Separator className="bg-white/10" />
-                
-                {/* Requirements */}
-                <div>
-                  <h3 className="font-medium mb-2 flex items-center text-white">
-                    <FileText className="h-4 w-4 mr-2 text-brand-pink" />
-                    Requirements
-                  </h3>
-                  <ul className="space-y-2 text-gray-300">
-                    {campaign.requirements.map((req: string, index: number) => (
-                      <li key={index} className="flex items-center">
-                        <Check className="h-4 w-4 mr-2 text-green-500" />
-                        {req}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <Separator className="bg-white/10" />
-                
-                {/* Platforms */}
-                <div>
-                  <h3 className="font-medium mb-2 flex items-center text-white">
-                    <Globe className="h-4 w-4 mr-2 text-brand-pink" />
-                    Platforms
-                  </h3>
-                  <div className="flex flex-wrap gap-2">
-                    {campaign.platforms.map((platform: string) => (
-                      <Badge key={platform} variant="outline" className="capitalize text-white border-white/20">
-                        {platform}
-                      </Badge>
-                    ))}
+                  <h3 className="font-semibold text-white">{campaign.brand}</h3>
+                  <div className="flex items-center text-sm text-gray-400">
+                    <Building className="h-3 w-3 mr-1" />
+                    <span>Verified Brand</span>
                   </div>
                 </div>
-                
-                {/* Apply Button */}
-                <div className="pt-4">
+              </div>
+              <p className="text-gray-300">{campaign.brandInfo}</p>
+            </CardContent>
+          </Card>
+        </div>
+        
+        {/* Right Column - Apply Section */}
+        <div>
+          <Card className="sticky top-6 bg-zinc-900 border-white/10">
+            <CardHeader>
+              <CardTitle className="text-white">Campaign Details</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Budget */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center text-white">
+                  <BadgeDollarSign className="h-4 w-4 mr-2 text-brand-pink" />
+                  Budget
+                </h3>
+                <div className="text-xl font-semibold text-white">${campaign.budget}</div>
+              </div>
+              
+              <Separator className="bg-white/10" />
+              
+              {/* Requirements */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center text-white">
+                  <FileText className="h-4 w-4 mr-2 text-brand-pink" />
+                  Requirements
+                </h3>
+                <ul className="space-y-2 text-gray-300">
+                  {campaign.requirements.map((req, index) => (
+                    <li key={index} className="flex items-center">
+                      <Check className="h-4 w-4 mr-2 text-green-500" />
+                      {req}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <Separator className="bg-white/10" />
+              
+              {/* Platforms */}
+              <div>
+                <h3 className="font-medium mb-2 flex items-center text-white">
+                  <Globe className="h-4 w-4 mr-2 text-brand-pink" />
+                  Platforms
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {campaign.platforms.map(platform => (
+                    <Badge key={platform} variant="outline" className="capitalize text-white border-white/20">
+                      {platform}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Apply Button */}
+              <div className="pt-4">
+                <Button 
+                  className="w-full bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
+                  onClick={handleApply}
+                  disabled={isApplying}
+                >
+                  {isApplying ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Applying...
+                    </>
+                  ) : (
+                    <>
+                      {isAuthenticated ? "Apply Now" : "Sign in to Apply"}
+                    </>
+                  )}
+                </Button>
+              </div>
+              
+              {/* Auth Notice */}
+              {!isAuthenticated && (
+                <div className="text-sm text-center text-gray-400">
+                  <p>You need an account to apply for campaigns</p>
                   <Button 
-                    className="w-full bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-                    onClick={handleApply}
-                    disabled={isApplying}
+                    variant="link" 
+                    className="text-brand-pink p-0 h-auto"
+                    onClick={() => navigate("/signup")}
                   >
-                    {isApplying ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Applying...
-                      </>
-                    ) : (
-                      <>
-                        {isAuthenticated ? "Apply Now" : "Sign in to Apply"}
-                      </>
-                    )}
+                    Sign up now
                   </Button>
                 </div>
-                
-                {/* Auth Notice */}
-                {!isAuthenticated && (
-                  <div className="text-sm text-center text-gray-400">
-                    <p>You need an account to apply for campaigns</p>
-                    <Button 
-                      variant="link" 
-                      className="text-brand-pink p-0 h-auto"
-                      onClick={() => navigate("/signup")}
-                    >
-                      Sign up now
-                    </Button>
-                  </div>
-                )}
-                
-                {/* Share Campaign */}
-                <div className="pt-2">
-                  <Button 
-                    variant="outline" 
-                    className="w-full flex items-center justify-center gap-2 border-white/20 text-white hover:bg-white/10"
-                    onClick={() => {
-                      navigator.clipboard.writeText(window.location.href);
-                      toast.success("Campaign link copied to clipboard");
-                    }}
-                  >
-                    <Share2 className="h-4 w-4" />
-                    Share Campaign
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+              
+              {/* Share Campaign */}
+              <div className="pt-2">
+                <Button 
+                  variant="outline" 
+                  className="w-full flex items-center justify-center gap-2 border-white/20 text-white hover:bg-white/10"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success("Campaign link copied to clipboard");
+                  }}
+                >
+                  <Share2 className="h-4 w-4" />
+                  Share Campaign
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
