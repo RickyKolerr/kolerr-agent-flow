@@ -190,7 +190,7 @@ const CampaignsPage = () => {
   );
 
   const handleCampaignClick = (id: string) => {
-    toast.info(`Viewing campaign details for ${id}`);
+    navigate(`/campaigns/${id}`);
   };
 
   return (
