@@ -103,7 +103,7 @@ const Layout = ({ children }) => {
   return (
     <div className="min-h-screen flex flex-col">
       {!isDashboardRoute && !isAuthRoute && !isChatRoute && (
-        <MainNav className="main-navigation" />
+        <MainNav />
       )}
       
       <main className={`${!isDashboardRoute && !isAuthRoute && !isChatRoute ? "flex-1 pt-16" : "flex-1"} ${isHomePage ? 'home-page-container' : ''} content-container`}>
