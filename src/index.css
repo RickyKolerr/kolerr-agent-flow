@@ -34,6 +34,9 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 225 73% 28%;
     --sidebar-ring: 329 86% 70%;
+    
+    /* Add viewport height variable */
+    --vh: 1vh;
   }
 }
 
@@ -44,6 +47,9 @@
   
   html {
     height: 100%;
+    width: 100vw;
+    overflow-x: hidden;
+    max-width: 100%;
   }
   
   body {
@@ -56,6 +62,9 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
+    width: 100%;
+    max-width: 100%;
+    position: relative;
   }
 }
 
@@ -154,5 +163,12 @@
   /* Larger touch targets for mobile */
   .mobile-tab-trigger {
     @apply min-h-[3rem] px-4;
+  }
+  
+  /* Fix for container width */
+  .container {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }

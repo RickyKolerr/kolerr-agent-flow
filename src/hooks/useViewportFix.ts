@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 
 /**
  * This hook applies fixes for various viewport issues that can occur on mobile browsers,
- * particularly those related to dynamic viewport height calculation.
+ * particularly those related to dynamic viewport height calculation and horizontal overflow.
  */
 export function useViewportFix() {
   useEffect(() => {
@@ -14,16 +14,32 @@ export function useViewportFix() {
       document.documentElement.style.setProperty('--vh', `${vh}px`);
     };
 
+    // Fix for horizontal overflow issues
+    const preventHorizontalOverflow = () => {
+      document.documentElement.style.overflowX = 'hidden';
+      document.body.style.overflowX = 'hidden';
+      document.body.style.width = '100%';
+      document.body.style.maxWidth = '100vw';
+      document.body.style.position = 'relative';
+    };
+
     // Apply immediately
     setViewportHeight();
+    preventHorizontalOverflow();
     
     // Update on resize
-    window.addEventListener('resize', setViewportHeight);
+    window.addEventListener('resize', () => {
+      setViewportHeight();
+      preventHorizontalOverflow();
+    });
     
     // Update on orientation change
     window.addEventListener('orientationchange', () => {
       // Small delay to ensure the browser has completed the orientation change
-      setTimeout(setViewportHeight, 100);
+      setTimeout(() => {
+        setViewportHeight();
+        preventHorizontalOverflow();
+      }, 100);
     });
 
     return () => {

@@ -19,6 +19,7 @@ import { UserRole } from "@/contexts/AuthContext";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
+import { useViewportFix } from "@/hooks/useViewportFix";
 
 // Add type definition for the window object at the top level of the file
 declare global {
@@ -278,6 +279,9 @@ const Index = () => {
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   const { isMobile, hasTouch } = useMobileDetection();
   
+  // Apply viewport fixes for mobile devices
+  useViewportFix();
+
   // Detect user role and set initial view
   useEffect(() => {
     if (isAuthenticated && user?.role === "kol") {
@@ -649,7 +653,7 @@ const Index = () => {
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
       
-      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
+      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col max-w-full">
         {!isAuthenticated && (
           <div className="flex justify-center mb-8">
             <Tabs 
@@ -680,7 +684,7 @@ const Index = () => {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
+        <div className="flex-1 flex flex-col md:flex-row gap-6 items-start w-full">
           <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
