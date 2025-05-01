@@ -1,6 +1,6 @@
 
 import * as React from "react"
-import useEmblaCarousel from "embla-carousel-react"
+import useEmblaCarousel, { type EmblaCarouselType, type EmblaOptionsType, type EmblaPluginType } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -62,9 +62,9 @@ const Carousel = React.forwardRef<
     const [carouselRef, api] = useEmblaCarousel({
       ...opts,
       axis,
+      // Remove the draggable property as it's not a valid option
       dragFree: hasTouch ? true : false,
       containScroll: "trimSnaps",
-      draggable: true,
     }, plugins)
     
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
@@ -72,7 +72,7 @@ const Carousel = React.forwardRef<
 
     // Helper to safely access viewport element
     const getViewportElement = React.useCallback(() => {
-      if (!carouselRef) return null;
+      if (!carouselRef.current) return null;
       // Access the viewport element safely
       return carouselRef.current;
     }, [carouselRef]);
