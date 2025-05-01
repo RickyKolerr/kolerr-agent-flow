@@ -1,11 +1,15 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
+  type EmblaOptionsType,
+  type EmblaPluginType,
 } from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useMobileDetection } from "@/hooks/use-mobile-detection"
 
 type CarouselApi = UseEmblaCarouselType[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
@@ -56,16 +60,18 @@ const Carousel = React.forwardRef<
     },
     ref
   ) => {
+    // Get mobile detection to enhance the carousel behavior
+    const { isZoomed } = useMobileDetection();
+    
     // Add default touchDragAxis option for better mobile handling
-    const carouselOptions = {
+    const carouselOptions: EmblaOptionsType = {
       ...opts,
       axis: orientation === "horizontal" ? "x" : "y",
       dragFree: true,
       containScroll: "trimSnaps",
       watchDrag: (enable) => {
         // Disable drag when user is pinch-zooming
-        const isZooming = window.visualViewport && window.visualViewport.scale > 1;
-        return enable && !isZooming;
+        return enable && !isZoomed;
       }
     };
     
@@ -77,11 +83,9 @@ const Carousel = React.forwardRef<
     React.useEffect(() => {
       const preventDefault = (e: TouchEvent) => {
         // Only prevent default if we have multiple touch points (pinch gesture)
-        if (e.touches.length > 1) {
+        if (e.touches.length > 1 && api) {
           // Allow the zoom but prevent carousel from trying to scroll
-          if (api) {
-            api.clickAllowed = false;
-          }
+          api.reInit();
         }
       };
 
@@ -156,7 +160,7 @@ const Carousel = React.forwardRef<
           api: api,
           opts: carouselOptions,
           orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+            orientation || (carouselOptions?.axis === "y" ? "vertical" : "horizontal"),
           scrollPrev,
           scrollNext,
           canScrollPrev,
