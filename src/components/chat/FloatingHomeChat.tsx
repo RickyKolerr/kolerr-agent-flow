@@ -7,7 +7,6 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCredits } from "@/contexts/CreditContext";
 import { CreditBadge } from "@/components/CreditBadge";
-import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { useNavigate } from "react-router-dom";
 
 interface Message {
@@ -43,7 +42,7 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const { freeCredits, hasPremiumPlan } = useCredits();
 
   return (
-    <div className="fixed bottom-4 right-4 lg:bottom-6 lg:right-6 z-40 w-full max-w-[550px] rounded-2xl overflow-hidden shadow-2xl">
+    <div className="fixed bottom-0 right-0 z-50 w-full max-w-[550px] rounded-t-2xl overflow-hidden shadow-2xl">
       <div className="glass-panel shadow-2xl flex flex-col">
         <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
           <div className="flex items-center">
