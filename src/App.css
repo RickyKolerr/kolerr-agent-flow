@@ -27,6 +27,7 @@
 .home-container {
   position: relative;
   min-height: 100vh;
+  width: 100vw;
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
@@ -49,12 +50,16 @@
 .hero-gradient {
   background: linear-gradient(to bottom right, #121212, #1a1a2e);
   background-attachment: fixed;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Fixed-height containers for consistent UIs */
 .fixed-height-container {
   position: relative;
   height: auto;
+  width: 100%;
 }
 
 /* Mobile-specific fixes */
@@ -69,4 +74,18 @@
     border-top-right-radius: 1rem;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.25);
   }
+  
+  /* Prevent any horizontal scrolling on mobile */
+  body, html {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+}
+
+/* Fix for navigation menu */
+.nav-container {
+  width: 100%;
+  max-width: 100vw;
+  overflow: visible;
 }

@@ -33,7 +33,7 @@ const HomePage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const isMobile = useMediaQuery('(max-width: 768px)');
   
-  // Modify the welcome message to make these phrases stand out
+  // Update the welcome message if needed
   const welcomeMessage = "👋 Welcome to the world's first Influencer Marketing AI Agent! As a Strategic Partner of Global TikTok and Meta, Kolerr can help you quickly find creators all around the world for your campaigns. What type of influencers are you looking for today?";
   
   // Add a special phrase that will be typed extra slowly
@@ -353,9 +353,9 @@ const HomePage = () => {
   const bottomSpacingClass = "pb-[500px]"; // Match the height of the floating chat
 
   return (
-    <div className="min-h-screen flex flex-col overflow-hidden hero-gradient">
-      <div className="container mx-auto px-4 pt-8 pb-16 max-w-7xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+    <div className="min-h-screen flex flex-col home-container hero-gradient">
+      <div className="container mx-auto px-4 pt-8 pb-16 max-w-7xl w-full overflow-x-hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 w-full">
           {/* Top Performers Card */}
           <div className="glass-panel rounded-2xl p-6 shadow-2xl h-full">
             <div className="flex items-center gap-3 mb-6">
@@ -466,7 +466,7 @@ const HomePage = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 w-full">
           <div className="lg:col-span-2">
             <div className="rounded-2xl overflow-hidden glass-panel shadow-2xl flex flex-col">
               <div className="bg-black/70 p-6 border-b border-white/10 flex justify-between items-center">
