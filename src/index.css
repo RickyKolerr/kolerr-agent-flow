@@ -155,4 +155,14 @@
   .mobile-tab-trigger {
     @apply min-h-[3rem] px-4;
   }
+
+  /* Mobile fixed element positioning */
+  @media (max-width: 768px) {
+    .fixed-element-class {
+      width: 100%;
+      left: 0;
+      right: 0;
+      box-sizing: border-box;
+    }
+  }
 }
