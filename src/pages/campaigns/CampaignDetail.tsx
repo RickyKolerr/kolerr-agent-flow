@@ -244,7 +244,7 @@ const CampaignDetail = () => {
       </Button>
       
       {/* Campaign Header */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-6">
+      <div className="bg-zinc-900 rounded-lg shadow-lg overflow-hidden mb-6 border border-white/10">
         <div className="p-6 md:p-8">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center">
@@ -256,8 +256,8 @@ const CampaignDetail = () => {
                 />
               </Avatar>
               <div>
-                <h1 className="text-2xl font-bold">{campaign.title}</h1>
-                <p className="text-muted-foreground">By {campaign.brand}</p>
+                <h1 className="text-2xl font-bold text-white">{campaign.title}</h1>
+                <p className="text-gray-400">By {campaign.brand}</p>
               </div>
             </div>
             
@@ -265,7 +265,7 @@ const CampaignDetail = () => {
               <Badge variant="outline" className="bg-green-500/10 text-green-500 border-green-500/20 mb-2">
                 {campaign.status.toUpperCase()}
               </Badge>
-              <div className="text-sm text-muted-foreground flex items-center">
+              <div className="text-sm text-gray-400 flex items-center">
                 <Clock className="h-3 w-3 mr-1" />
                 <span>Due {new Date(campaign.deadline).toLocaleDateString()}</span>
               </div>
@@ -280,7 +280,7 @@ const CampaignDetail = () => {
               </Badge>
             ))}
             {campaign.categories.map(category => (
-              <Badge key={category} variant="outline" className="capitalize">
+              <Badge key={category} variant="outline" className="capitalize text-white border-white/20">
                 {category}
               </Badge>
             ))}
@@ -293,23 +293,23 @@ const CampaignDetail = () => {
         {/* Left Column - Campaign Details */}
         <div className="lg:col-span-2 space-y-6">
           {/* Campaign Description */}
-          <Card>
+          <Card className="bg-zinc-900 border-white/10">
             <CardHeader>
-              <CardTitle>Campaign Description</CardTitle>
+              <CardTitle className="text-white">Campaign Description</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 text-gray-300">
               <p>{campaign.description}</p>
               <p>{campaign.detailedDescription}</p>
             </CardContent>
           </Card>
           
           {/* Campaign Deliverables */}
-          <Card>
+          <Card className="bg-zinc-900 border-white/10">
             <CardHeader>
-              <CardTitle>Deliverables</CardTitle>
+              <CardTitle className="text-white">Deliverables</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2">
+              <ul className="space-y-2 text-gray-300">
                 {campaign.deliverables?.map((deliverable, index) => (
                   <li key={index} className="flex items-start">
                     <Check className="h-5 w-5 mr-2 text-green-500 flex-shrink-0 mt-0.5" />
@@ -321,11 +321,11 @@ const CampaignDetail = () => {
           </Card>
           
           {/* Campaign Timeline */}
-          <Card>
+          <Card className="bg-zinc-900 border-white/10">
             <CardHeader>
-              <CardTitle>Timeline</CardTitle>
+              <CardTitle className="text-white">Timeline</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 text-gray-300">
               <div className="flex items-center">
                 <Calendar className="h-5 w-5 mr-2 text-brand-pink" />
                 <span>Deadline: {new Date(campaign.deadline).toLocaleDateString()}</span>
@@ -335,9 +335,9 @@ const CampaignDetail = () => {
           </Card>
           
           {/* Brand Information */}
-          <Card>
+          <Card className="bg-zinc-900 border-white/10">
             <CardHeader>
-              <CardTitle>About {campaign.brand}</CardTitle>
+              <CardTitle className="text-white">About {campaign.brand}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center mb-4">
@@ -349,43 +349,43 @@ const CampaignDetail = () => {
                   />
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">{campaign.brand}</h3>
-                  <div className="flex items-center text-sm text-muted-foreground">
+                  <h3 className="font-semibold text-white">{campaign.brand}</h3>
+                  <div className="flex items-center text-sm text-gray-400">
                     <Building className="h-3 w-3 mr-1" />
                     <span>Verified Brand</span>
                   </div>
                 </div>
               </div>
-              <p>{campaign.brandInfo}</p>
+              <p className="text-gray-300">{campaign.brandInfo}</p>
             </CardContent>
           </Card>
         </div>
         
         {/* Right Column - Apply Section */}
         <div>
-          <Card className="sticky top-6">
+          <Card className="sticky top-6 bg-zinc-900 border-white/10">
             <CardHeader>
-              <CardTitle>Campaign Details</CardTitle>
+              <CardTitle className="text-white">Campaign Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Budget */}
               <div>
-                <h3 className="font-medium mb-2 flex items-center">
+                <h3 className="font-medium mb-2 flex items-center text-white">
                   <BadgeDollarSign className="h-4 w-4 mr-2 text-brand-pink" />
                   Budget
                 </h3>
-                <div className="text-xl font-semibold">${campaign.budget}</div>
+                <div className="text-xl font-semibold text-white">${campaign.budget}</div>
               </div>
               
-              <Separator />
+              <Separator className="bg-white/10" />
               
               {/* Requirements */}
               <div>
-                <h3 className="font-medium mb-2 flex items-center">
+                <h3 className="font-medium mb-2 flex items-center text-white">
                   <FileText className="h-4 w-4 mr-2 text-brand-pink" />
                   Requirements
                 </h3>
-                <ul className="space-y-2">
+                <ul className="space-y-2 text-gray-300">
                   {campaign.requirements.map((req, index) => (
                     <li key={index} className="flex items-center">
                       <Check className="h-4 w-4 mr-2 text-green-500" />
@@ -395,17 +395,17 @@ const CampaignDetail = () => {
                 </ul>
               </div>
               
-              <Separator />
+              <Separator className="bg-white/10" />
               
               {/* Platforms */}
               <div>
-                <h3 className="font-medium mb-2 flex items-center">
+                <h3 className="font-medium mb-2 flex items-center text-white">
                   <Globe className="h-4 w-4 mr-2 text-brand-pink" />
                   Platforms
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {campaign.platforms.map(platform => (
-                    <Badge key={platform} variant="outline" className="capitalize">
+                    <Badge key={platform} variant="outline" className="capitalize text-white border-white/20">
                       {platform}
                     </Badge>
                   ))}
@@ -434,7 +434,7 @@ const CampaignDetail = () => {
               
               {/* Auth Notice */}
               {!isAuthenticated && (
-                <div className="text-sm text-center text-muted-foreground">
+                <div className="text-sm text-center text-gray-400">
                   <p>You need an account to apply for campaigns</p>
                   <Button 
                     variant="link" 
@@ -450,7 +450,7 @@ const CampaignDetail = () => {
               <div className="pt-2">
                 <Button 
                   variant="outline" 
-                  className="w-full flex items-center justify-center gap-2"
+                  className="w-full flex items-center justify-center gap-2 border-white/20 text-white hover:bg-white/10"
                   onClick={() => {
                     navigator.clipboard.writeText(window.location.href);
                     toast.success("Campaign link copied to clipboard");

@@ -46,7 +46,7 @@ export const MainNav = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -61,7 +61,7 @@ export const MainNav = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-6">
             {routes.map(route => (
-              <Link key={route.path} to={route.path} className="text-sm font-medium hover:text-brand-pink transition-colors">
+              <Link key={route.path} to={route.path} className="text-sm font-medium text-white hover:text-brand-pink transition-colors">
                 {t(`mainNav.${route.title.toLowerCase()}`)}
               </Link>
             ))}
@@ -79,32 +79,32 @@ export const MainNav = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuContent className="w-56 bg-zinc-900 border-white/10" align="end" forceMount>
                   <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user?.name}</p>
-                      <p className="text-xs leading-none text-muted-foreground">
+                      <p className="text-sm font-medium leading-none text-white">{user?.name}</p>
+                      <p className="text-xs leading-none text-gray-400">
                         {user?.email}
                       </p>
                     </div>
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard">{t('mainNav.dashboard')}</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard/profile">{t('mainNav.profile')}</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard/settings">{t('mainNav.settings')}</Link>
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logout}>
+                  <DropdownMenuSeparator className="bg-white/10" />
+                  <DropdownMenuItem onClick={logout} className="text-white focus:bg-white/10 focus:text-white">
                     {t('mainNav.logout')}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu> : <>
-                <Link to="/login" className="text-sm font-medium hover:text-brand-pink transition-colors">
+                <Link to="/login" className="text-sm font-medium text-white hover:text-brand-pink transition-colors">
                   {t('mainNav.login')}
                 </Link>
                 <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors">
@@ -121,7 +121,7 @@ export const MainNav = () => {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-black text-white border-l border-gray-800">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-zinc-900 text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
                 {/* Use the same filtered routes for mobile */}
                 {routes.map(route => (
@@ -153,7 +153,7 @@ export const MainNav = () => {
                         </Avatar>
                         <div>
                           <p className="font-medium">{user?.name}</p>
-                          <p className="text-sm text-muted-foreground">{user?.email}</p>
+                          <p className="text-sm text-gray-400">{user?.email}</p>
                         </div>
                       </div>
                       <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
