@@ -19,13 +19,18 @@ export function useMediaQuery(query: string): boolean {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // Add a class to the document body when this hook is used
-    // This helps ensure proper scaling and overflow control
+    // Add classes and styles to the document for proper mobile display
     document.body.classList.add('has-responsive-elements');
+    
+    // Add essential mobile viewport styles to prevent overflow
     document.documentElement.style.overflowX = 'hidden';
     document.documentElement.style.width = '100%';
+    document.documentElement.style.position = 'relative';
     document.body.style.overflowX = 'hidden';
     document.body.style.width = '100%';
+    document.body.style.position = 'relative';
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
     
     const media = window.matchMedia(query);
     

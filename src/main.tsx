@@ -15,6 +15,35 @@ console.error = function(...args) {
   return originalError.apply(console, args);
 };
 
+// Mobile viewport fix
+function applyMobileViewportFixes() {
+  // Ensure body has no overflow
+  document.body.style.overflow = 'hidden auto';
+  document.body.style.overflowX = 'hidden';
+  document.body.style.width = '100%';
+  document.body.style.position = 'relative';
+  document.body.style.margin = '0';
+  document.body.style.padding = '0';
+  
+  // Apply to HTML element too
+  document.documentElement.style.overflowX = 'hidden';
+  document.documentElement.style.width = '100%';
+  document.documentElement.style.position = 'relative';
+  
+  // Add a class to the root element
+  const root = document.getElementById('root');
+  if (root) {
+    root.classList.add('mobile-container-fix');
+  }
+}
+
+// Apply fixes immediately
+applyMobileViewportFixes();
+
+// Re-apply on orientation change and resize
+window.addEventListener('orientationchange', applyMobileViewportFixes);
+window.addEventListener('resize', applyMobileViewportFixes);
+
 // PWA installation event handling
 let deferredPrompt: any;
 window.addEventListener('beforeinstallprompt', (e) => {
@@ -23,9 +52,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Store the event for later use
   deferredPrompt = e;
   
-  // Optionally show your own install button
-  // You can create a UI element that shows "Add to Home Screen" 
-  // and call deferredPrompt.prompt() when clicked
   console.log('App can be installed! Show install button.');
 });
 

@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Menu, User, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,6 +21,20 @@ export const MainNav = () => {
 
   // Add state for controlling sheet visibility
   const [isOpen, setIsOpen] = useState(false);
+  
+  // Track scroll position for nav styling
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+    
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const getInitials = (name: string) => {
     return name.split(" ").map(part => part[0]).join("").toUpperCase();
@@ -40,11 +54,11 @@ export const MainNav = () => {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10 w-full nav-container">
-      <div className="container mx-auto px-4 max-w-full">
+    <header className={`fixed top-0 left-0 right-0 z-50 ${scrolled ? 'bg-black/90' : 'bg-black/70'} backdrop-blur-sm border-b border-white/10 w-full`}>
+      <div className="w-full max-w-[100vw] px-4 mx-auto">
         <div className="flex h-16 items-center justify-between w-full">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
             <img 
               src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
               alt="Kolerr Logo" 
@@ -115,7 +129,7 @@ export const MainNav = () => {
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-zinc-900 text-white border-l border-gray-800">
+            <SheetContent side="right" className="w-[300px] sm:w-[350px] max-w-[80vw] bg-zinc-900 text-white border-l border-gray-800 overflow-y-auto">
               <nav className="flex flex-col space-y-4 mt-8">
                 {/* Use the same filtered routes for mobile */}
                 {routes.map(route => (

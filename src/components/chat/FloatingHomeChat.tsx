@@ -43,16 +43,26 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const { freeCredits, hasPremiumPlan } = useCredits();
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // Fixed heights for consistent UI across devices
-  const messageAreaHeight = "350px";
+  // Dynamic height based on viewport
+  const messageAreaHeight = isMobile ? "280px" : "350px";
+  
+  // Classes adjusted for better mobile display
   const containerClasses = isMobile 
-    ? "fixed bottom-0 left-0 w-full home-chat-fixed" 
-    : "fixed bottom-0 right-0 z-50 md:right-4 md:bottom-4 md:max-w-[550px] w-full rounded-2xl overflow-hidden";
+    ? "fixed bottom-0 left-0 right-0 w-full border-t-2 border-t-black/40 z-50" 
+    : "fixed bottom-4 right-4 z-50 max-w-[550px] w-full rounded-2xl overflow-hidden";
+
+  // Handle keyboard enter key
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
 
   return (
     <div className={containerClasses}>
-      <div className="glass-panel shadow-2xl flex flex-col">
-        <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
+      <div className="glass-panel shadow-2xl flex flex-col w-full">
+        <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center w-full">
           <div className="flex items-center">
             <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
               <MessageCircle className="h-5 w-5 text-white" />
@@ -132,22 +142,22 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
               placeholder={isMobile ? "Ask about creators..." : "Ask about specific creator types, niches, or requirements..."} 
               value={inputValue} 
               onChange={e => setInputValue(e.target.value)} 
-              onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
+              onKeyPress={handleKeyPress}
               className="bg-black/60" 
             />
-            <Button onClick={handleSendMessage} className={isMobile ? "px-3" : ""}>
+            <Button onClick={handleSendMessage} className={`${isMobile ? "px-3" : ""} whitespace-nowrap`}>
               Send
             </Button>
           </div>
           <div className="flex items-center justify-between mt-2 px-1">
             <Button variant="ghost" size="sm" className="text-muted-foreground p-1 h-7">
               <Paperclip className="h-3 w-3 mr-1" />
-              Attach
+              <span className={isMobile ? "sr-only" : ""}>Attach</span>
             </Button>
             
             {!hasPremiumPlan && (
               <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <span>
+                <span className={isMobile ? "hidden" : ""}>
                   {isKOLSpecificQuery(inputValue) 
                     ? "KOL question: Uses 1 credit" 
                     : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}

@@ -3,7 +3,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>Kolerr - Your TikTok KOL Discovery Platform</title>
     <meta name="description" content="Find and connect with the perfect TikTok creators for your brand" />
     <meta name="author" content="Kolerr" />
@@ -49,6 +49,25 @@
             });
         });
       }
+      
+      // Add viewport fix for mobile devices
+      function fixViewport() {
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.content = 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+        }
+        
+        // Ensure body has no overflow
+        document.body.style.overflow = 'hidden auto';
+        document.body.style.overflowX = 'hidden';
+        document.body.style.width = '100%';
+        document.documentElement.style.overflowX = 'hidden';
+        document.documentElement.style.width = '100%';
+      }
+      
+      // Fix viewport on load and orientation change
+      window.addEventListener('load', fixViewport);
+      window.addEventListener('orientationchange', fixViewport);
     </script>
   </body>
 </html>
