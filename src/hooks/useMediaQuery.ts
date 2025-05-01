@@ -19,48 +19,18 @@ export function useMediaQuery(query: string): boolean {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // Add classes and styles to the document for proper mobile display
-    document.body.classList.add('has-responsive-elements');
-    
-    // Add essential mobile viewport styles to prevent overflow
-    document.documentElement.style.overflowX = 'hidden';
-    document.documentElement.style.width = '100%';
-    document.documentElement.style.position = 'relative';
-    document.body.style.overflowX = 'hidden';
-    document.body.style.width = '100%';
-    document.body.style.position = 'relative';
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    
     const media = window.matchMedia(query);
     
     // Update matches state initially and on changes
-    const updateMatches = () => {
-      setMatches(media.matches);
-    };
+    const updateMatches = () => setMatches(media.matches);
     updateMatches();
     
-    // Use correct event listener based on browser support
+    // Add listener for changes
     media.addEventListener('change', updateMatches);
-    
-    // Use requestAnimationFrame to handle resize events more efficiently
-    let rafId: number;
-    const handleResize = () => {
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
-      }
-      rafId = window.requestAnimationFrame(updateMatches);
-    };
-    
-    window.addEventListener('resize', handleResize, { passive: true });
     
     // Cleanup function
     return () => {
       media.removeEventListener('change', updateMatches);
-      window.removeEventListener('resize', handleResize);
-      if (rafId) {
-        window.cancelAnimationFrame(rafId);
-      }
     };
   }, [query]);
 

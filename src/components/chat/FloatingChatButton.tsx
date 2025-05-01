@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Bot } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { AgentChat } from "./AgentChat";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocation } from "react-router-dom";

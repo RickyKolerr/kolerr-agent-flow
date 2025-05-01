@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Menu, User, Languages } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,20 +21,6 @@ export const MainNav = () => {
 
   // Add state for controlling sheet visibility
   const [isOpen, setIsOpen] = useState(false);
-  
-  // Track scroll position for nav styling
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 10);
-    };
-    
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
 
   const getInitials = (name: string) => {
     return name.split(" ").map(part => part[0]).join("").toUpperCase();
@@ -51,14 +37,20 @@ export const MainNav = () => {
     { title: "About", path: "/about" },
     { title: "Features", path: "/features" },
     { title: "Pricing", path: "/pricing" },
+    // Hidden tabs (removed from navigation but still accessible via routes)
+    // { title: "Chat", path: "/chat" },
+    // { title: "Docs", path: "/docs" },
+    // { title: "Blog", path: "/blog" },
+    // { title: "API", path: "/api" },
+    // { title: "Help", path: "/help" }
   ];
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 ${scrolled ? 'bg-black/90' : 'bg-black/70'} backdrop-blur-sm border-b border-white/10 w-full`}>
-      <div className="w-full max-w-[100vw] px-4 mx-auto">
-        <div className="flex h-16 items-center justify-between w-full">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-sm border-b border-white/10">
+      <div className="container mx-auto px-4">
+        <div className="flex h-16 items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2 flex-shrink-0">
+          <Link to="/" className="flex items-center space-x-2">
             <img 
               src="/lovable-uploads/08e97b33-14d7-4575-be5f-4d924dd01d7c.png" 
               alt="Kolerr Logo" 
@@ -67,16 +59,16 @@ export const MainNav = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6 flex-shrink-0">
+          <nav className="hidden md:flex items-center space-x-6">
             {routes.map(route => (
-              <Link key={route.path} to={route.path} className="text-sm font-medium text-white hover:text-brand-pink transition-colors whitespace-nowrap">
+              <Link key={route.path} to={route.path} className="text-sm font-medium text-white hover:text-brand-pink transition-colors">
                 {t(`mainNav.${route.title.toLowerCase()}`)}
               </Link>
             ))}
           </nav>
 
           {/* Desktop Auth Buttons and Language Toggle */}
-          <div className="hidden md:flex items-center space-x-4 flex-shrink-0">
+          <div className="hidden md:flex items-center space-x-4">
             <LanguageToggle />
             {isAuthenticated ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -115,21 +107,21 @@ export const MainNav = () => {
                 <Link to="/login" className="text-sm font-medium text-white hover:text-brand-pink transition-colors">
                   {t('mainNav.login')}
                 </Link>
-                <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors whitespace-nowrap">
+                <Link to="/signup" className="rounded-full bg-brand-pink px-6 py-2 text-sm font-medium text-white hover:bg-brand-pink/90 transition-colors">
                   {t('mainNav.signup')}
                 </Link>
               </>}
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation - also update here to match the desktop nav tabs */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
-              <Button variant="ghost" size="icon" className="h-9 w-9 text-white flex-shrink-0">
+              <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
                 <Menu className="h-5 w-5" />
                 <span className="sr-only">Toggle menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[350px] max-w-[80vw] bg-zinc-900 text-white border-l border-gray-800 overflow-y-auto">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px] bg-zinc-900 text-white border-l border-gray-800">
               <nav className="flex flex-col space-y-4 mt-8">
                 {/* Use the same filtered routes for mobile */}
                 {routes.map(route => (
