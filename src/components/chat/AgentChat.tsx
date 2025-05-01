@@ -7,6 +7,7 @@ import { ChatAgentHeader } from "./ChatAgentHeader";
 import { ChatMessagesDisplay } from "./ChatMessagesDisplay";
 import { ChatAgentInput } from "./ChatAgentInput";
 import { useMessageSimulation } from "@/hooks/useMessageSimulation";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 interface AgentChatProps {
   title: string;
@@ -31,9 +32,20 @@ export const AgentChat: React.FC<AgentChatProps> = ({
     handleSendMessage, 
     initializeWithWelcomeMessage 
   } = useMessageSimulation();
+  
+  // Get user access information to personalize chat experience
+  const { user, isAuthenticated, isKOLSpecificQuery } = useUserAccess();
 
+  // Set custom placeholder based on user role
+  const getPlaceholderText = () => {
+    if (!isAuthenticated) return "Sign in to save chat history...";
+    if (user?.role === "kol") return "Ask about campaigns, opportunities...";
+    if (user?.role === "brand") return "Ask about finding KOLs, campaigns...";
+    return "Ask me anything...";
+  };
+
+  // Add welcome message on mount and when chat opens
   useEffect(() => {
-    // Add welcome message on mount and when chat opens
     if (isOpen) {
       initializeWithWelcomeMessage(initialMessage);
     }
@@ -53,14 +65,16 @@ export const AgentChat: React.FC<AgentChatProps> = ({
       <ChatAgentHeader 
         title={title} 
         subtitle={subtitle} 
-        onClose={onOpenChange ? () => onOpenChange(false) : undefined} 
+        onClose={onOpenChange ? () => onOpenChange(false) : undefined}
+        // Add any custom props if needed 
       />
       
       <ChatMessagesDisplay messages={messages} />
       
       <ChatAgentInput 
         onSendMessage={handleSendMessage} 
-        disabled={sendButtonClicked} 
+        disabled={sendButtonClicked}
+        placeholder={getPlaceholderText()}
       />
     </div>
   );
