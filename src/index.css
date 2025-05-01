@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -44,6 +43,7 @@
   
   html {
     height: 100%;
+    overflow-x: hidden; /* Add this line to prevent horizontal scrolling */
   }
   
   body {
@@ -54,7 +54,7 @@
       rgba(16, 20, 28, 1) 100%
     );
     overflow-y: auto;
-    overflow-x: hidden;
+    overflow-x: hidden; /* Add this line to prevent horizontal scrolling */
     height: 100%;
   }
 }

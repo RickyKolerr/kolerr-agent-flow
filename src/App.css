@@ -4,7 +4,7 @@
   max-width: 100%;
   margin: 0 auto;
   text-align: center;
-  overflow-x: hidden;
+  overflow-x: hidden; /* Add this line to prevent horizontal scrolling */
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -30,7 +30,7 @@
 /* Global mobile responsiveness fixes */
 html, body {
   max-width: 100vw;
-  overflow-x: hidden;
+  overflow-x: hidden; /* This line exists but reinforcing it */
   position: relative;
   margin: 0;
   padding: 0;
