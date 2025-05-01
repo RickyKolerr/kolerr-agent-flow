@@ -44,6 +44,9 @@
   
   html {
     height: 100%;
+    touch-action: manipulation;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
   
   body {
@@ -56,6 +59,9 @@
     overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
+    position: relative;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: none;
   }
 }
 
@@ -154,5 +160,29 @@
   /* Larger touch targets for mobile */
   .mobile-tab-trigger {
     @apply min-h-[3rem] px-4;
+  }
+  
+  /* Fix for carousel transform issues */
+  .carousel-content {
+    transform: none !important;
+    transition: none !important;
+    will-change: scroll-position;
+  }
+  
+  /* Zoom safe container */
+  .zoom-safe-container {
+    position: relative;
+    width: 100%;
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+    transform-style: preserve-3d;
+  }
+  
+  /* Prevent UI jumping during touch interactions */
+  .touch-stable {
+    will-change: transform;
+    transform: translateZ(0);
   }
 }
