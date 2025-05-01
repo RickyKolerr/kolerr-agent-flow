@@ -48,9 +48,9 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   // Dynamic height based on viewport and PWA context
   const messageAreaHeight = isMobile ? "280px" : "350px";
   
-  // Adjust classes for PWA standalone mode
+  // Adjust classes for PWA standalone mode and fix mobile positioning
   const containerClasses = isMobile 
-    ? `fixed bottom-0 left-0 right-0 w-full border-t-2 border-t-black/40 z-50 ${isStandalone ? 'pb-[env(safe-area-inset-bottom,0)]' : ''}` 
+    ? `fixed bottom-0 left-0 right-0 w-full border-t-2 border-t-black/40 z-50 fixed-element-class ${isStandalone ? 'pb-[env(safe-area-inset-bottom,0)]' : ''}` 
     : "fixed bottom-4 right-4 z-50 max-w-[550px] w-full rounded-2xl overflow-hidden";
 
   // Handle keyboard enter key

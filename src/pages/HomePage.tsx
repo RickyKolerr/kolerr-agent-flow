@@ -353,8 +353,8 @@ const HomePage = () => {
   const bottomSpacingClass = "pb-[500px]"; // Match the height of the floating chat
 
   return (
-    <div className="min-h-screen flex flex-col home-container hero-gradient">
-      <div className="container mx-auto px-4 pt-8 pb-16 max-w-7xl w-full overflow-x-hidden">
+    <div className="min-h-screen flex flex-col home-container hero-gradient overflow-hidden">
+      <div className="container mx-auto px-4 pt-8 pb-16 max-w-7xl w-full overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12 w-full">
           {/* Top Performers Card */}
           <div className="glass-panel rounded-2xl p-6 shadow-2xl h-full">
