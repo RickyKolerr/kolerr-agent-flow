@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -382,7 +381,7 @@ const CampaignDetail = () => {
             </Accordion>
             
             {/* Campaign Metrics Panel (only for non-draft campaigns) */}
-            {campaign.metrics && campaign.status !== 'draft' && (
+            {campaign && campaign.metrics && campaign.status !== 'draft' && (
               <Card className="bg-zinc-900 border-white/10 overflow-hidden">
                 <CardHeader>
                   <CardTitle className="text-white flex items-center">
@@ -398,14 +397,14 @@ const CampaignDetail = () => {
                           <span className="text-gray-400">Views</span>
                           <span className="text-white font-medium">{campaign.metrics.views?.toLocaleString()}</span>
                         </div>
-                        <Progress value={75} className="h-2 bg-gray-700" indicatorClassName="bg-brand-pink" />
+                        <Progress value={75} className="h-2 bg-gray-700" />
                       </div>
                       <div>
                         <div className="flex justify-between mb-2">
                           <span className="text-gray-400">Engagement</span>
                           <span className="text-white font-medium">{campaign.metrics.engagement}%</span>
                         </div>
-                        <Progress value={campaign.metrics.engagement * 10} className="h-2 bg-gray-700" indicatorClassName="bg-brand-pink" />
+                        <Progress value={campaign.metrics.engagement * 10} className="h-2 bg-gray-700" />
                       </div>
                     </div>
                     <div className="space-y-4">
@@ -414,14 +413,14 @@ const CampaignDetail = () => {
                           <span className="text-gray-400">Conversions</span>
                           <span className="text-white font-medium">{campaign.metrics.conversions?.toLocaleString()}</span>
                         </div>
-                        <Progress value={60} className="h-2 bg-gray-700" indicatorClassName="bg-brand-pink" />
+                        <Progress value={60} className="h-2 bg-gray-700" />
                       </div>
                       <div>
                         <div className="flex justify-between mb-2">
                           <span className="text-gray-400">ROI</span>
                           <span className="text-white font-medium">{campaign.metrics.roi}x</span>
                         </div>
-                        <Progress value={campaign.metrics.roi * 20} className="h-2 bg-gray-700" indicatorClassName="bg-brand-pink" />
+                        <Progress value={campaign.metrics.roi * 20} className="h-2 bg-gray-700" />
                       </div>
                     </div>
                   </div>
