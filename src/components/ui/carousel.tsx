@@ -1,14 +1,13 @@
 
 import * as React from "react"
-import useEmblaCarousel, {
-  type UseEmblaCarouselType,
-} from "embla-carousel-react"
+import useEmblaCarousel from "embla-carousel-react"
 import { ArrowLeft, ArrowRight } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
+import { useMobileDetection } from "@/hooks/use-mobile-detection"
 
-type CarouselApi = UseEmblaCarouselType[1]
+type CarouselApi = ReturnType<typeof useEmblaCarousel>[1]
 type UseCarouselParameters = Parameters<typeof useEmblaCarousel>
 type CarouselOptions = UseCarouselParameters[0]
 type CarouselPlugin = UseCarouselParameters[1]
@@ -57,15 +56,48 @@ const Carousel = React.forwardRef<
     },
     ref
   ) => {
-    const [carouselRef, api] = useEmblaCarousel(
-      {
-        ...opts,
-        axis: orientation === "horizontal" ? "x" : "y",
-      },
-      plugins
-    )
+    const { hasTouch } = useMobileDetection();
+    const axis = orientation === "horizontal" ? "x" : "y";
+    
+    const [carouselRef, api] = useEmblaCarousel({
+      ...opts,
+      axis,
+      dragFree: hasTouch ? true : false,
+      containScroll: "trimSnaps",
+      draggable: true,
+    }, plugins)
+    
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
+
+    // Helper to safely access viewport element
+    const getViewportElement = React.useCallback(() => {
+      if (!carouselRef) return null;
+      // Access the viewport element safely
+      return carouselRef.current;
+    }, [carouselRef]);
+
+    // Configure touch actions on mobile
+    React.useEffect(() => {
+      const viewportElement = getViewportElement();
+      
+      if (viewportElement && hasTouch) {
+        viewportElement.style.touchAction = "pan-y";
+        
+        // Prevent zoom on double tap
+        const preventZoom = (e: TouchEvent) => {
+          if (e.touches.length > 1) {
+            e.preventDefault();
+          }
+        };
+        
+        viewportElement.addEventListener('touchstart', preventZoom, { passive: false });
+        
+        return () => {
+          viewportElement.removeEventListener('touchstart', preventZoom);
+        };
+      }
+    }, [getViewportElement, hasTouch]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -125,8 +157,7 @@ const Carousel = React.forwardRef<
           carouselRef,
           api: api,
           opts,
-          orientation:
-            orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
+          orientation,
           scrollPrev,
           scrollNext,
           canScrollPrev,
@@ -198,6 +229,10 @@ const CarouselPrevious = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
   const { orientation, scrollPrev, canScrollPrev } = useCarousel()
+  const { isMobile } = useMobileDetection();
+
+  // Hide navigation buttons on mobile
+  if (isMobile) return null;
 
   return (
     <Button
@@ -227,6 +262,10 @@ const CarouselNext = React.forwardRef<
   React.ComponentProps<typeof Button>
 >(({ className, variant = "outline", size = "icon", ...props }, ref) => {
   const { orientation, scrollNext, canScrollNext } = useCarousel()
+  const { isMobile } = useMobileDetection();
+
+  // Hide navigation buttons on mobile
+  if (isMobile) return null;
 
   return (
     <Button
