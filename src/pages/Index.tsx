@@ -19,7 +19,6 @@ import { UserRole } from "@/contexts/AuthContext";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
-import { useTouchEvents, usePinchDetection } from "@/hooks/use-touch-events";
 
 // Add type definition for the window object at the top level of the file
 declare global {
@@ -278,8 +277,6 @@ const Index = () => {
   const [applyingTo, setApplyingTo] = useState<string | null>(null);
   const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   const { isMobile, hasTouch } = useMobileDetection();
-  const mainContainerRef = useRef<HTMLDivElement>(null);
-  const { isPinching } = usePinchDetection();
   
   // Detect user role and set initial view
   useEffect(() => {
@@ -641,18 +638,8 @@ const Index = () => {
     };
   }, [navigate, isAuthenticated, user]);
 
-  // Apply touch event handling to the main container
-  useTouchEvents(mainContainerRef, {
-    preventScroll: false,
-    preventZoom: false,
-    enablePinchToZoom: true
-  });
-
   return (
-    <div 
-      className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16 zoom-safe-container"
-      ref={mainContainerRef}
-    >
+    <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
       {/* Show the welcome tour */}
       <WelcomeTour />
       
@@ -662,7 +649,7 @@ const Index = () => {
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
       
-      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col touch-stable">
+      <div className="container mx-auto px-4 py-6 flex-1 flex flex-col">
         {!isAuthenticated && (
           <div className="flex justify-center mb-8">
             <Tabs 
@@ -693,7 +680,7 @@ const Index = () => {
           </div>
         )}
 
-        <div className="flex-1 flex flex-col md:flex-row gap-6 items-start touch-stable">
+        <div className="flex-1 flex flex-col md:flex-row gap-6 items-start">
           <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
@@ -1123,8 +1110,8 @@ const Index = () => {
           </div>
         )}
         
-        {/* General carousel section with improved mobile handling */}
-        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl relative campaign-section touch-stable">
+        {/* General carousel section */}
+        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl relative campaign-section">
           <DemoIndicator section="Top Creators & Brands" />
           <div className="flex items-center mb-5">
             <Users className="h-5 w-5 text-brand-pink mr-2" />
@@ -1134,12 +1121,12 @@ const Index = () => {
           </div>
           
           <Carousel 
-            className="w-full touch-stable" 
+            className="w-full" 
             opts={{
               align: "start",
               loop: true,
               startIndex: activeCarouselIndex,
-              dragFree: true, // Changed to true for smoother mobile experience
+              dragFree: false,
               skipSnaps: false,
               inViewThreshold: 0.6,
               duration: 30,
@@ -1150,17 +1137,17 @@ const Index = () => {
               });
             }}
           >
-            <CarouselContent className="transition-all duration-700 ease-in-out touch-stable">
+            <CarouselContent className="transition-transform duration-700 ease-in-out">
               {userView === "brand" ? (
                 // Show creators in brand view
                 allCreators.map((creator) => (
                   <CarouselItem 
                     key={creator.id} 
-                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500 touch-manipulation"
+                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
                   >
                     <div className="p-1">
                       <div 
-                        className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer touch-manipulation"
+                        className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
                         onClick={() => navigate(`/creators/${creator.id}`)}
                       >
                         <img
@@ -1168,7 +1155,6 @@ const Index = () => {
                           alt={creator.fullName}
                           onError={handleImageError}
                           className="h-full w-full object-cover transition-transform duration-500"
-                          loading="lazy"
                         />
                       </div>
                       <div className="text-center mt-3">
@@ -1183,11 +1169,11 @@ const Index = () => {
                 topBrands.map((brand) => (
                   <CarouselItem 
                     key={brand.id} 
-                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500 touch-manipulation"
+                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
                   >
                     <div className="p-1">
                       <div 
-                        className="overflow-hidden rounded-lg aspect-square border border-white/10 bg-white hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center p-4 touch-manipulation"
+                        className="overflow-hidden rounded-lg aspect-square border border-white/10 bg-white hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center p-4"
                         onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
                       >
                         <img
@@ -1195,7 +1181,6 @@ const Index = () => {
                           alt={brand.name}
                           onError={handleImageError}
                           className="h-full w-full object-contain transition-transform duration-500"
-                          loading="lazy"
                         />
                       </div>
                       <div className="text-center mt-3">
@@ -1208,8 +1193,8 @@ const Index = () => {
                 ))
               )}
             </CarouselContent>
-            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300 touch-manipulation" />
-            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300 touch-manipulation" />
+            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
+            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
           </Carousel>
           
           {/* View all button for brands */}
@@ -1217,7 +1202,7 @@ const Index = () => {
             <div className="mt-4 text-center">
               <Button 
                 onClick={() => navigate(isAuthenticated ? "/dashboard/kol/campaigns" : "/signup")} 
-                className="bg-brand-pink hover:bg-brand-pink/90 touch-manipulation"
+                className="bg-brand-pink hover:bg-brand-pink/90"
               >
                 View All Brand Campaigns
               </Button>

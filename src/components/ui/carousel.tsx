@@ -1,3 +1,4 @@
+
 import * as React from "react"
 import useEmblaCarousel, {
   type UseEmblaCarouselType,
@@ -56,46 +57,15 @@ const Carousel = React.forwardRef<
     },
     ref
   ) => {
-    // Add default touchDragAxis option for better mobile handling
-    const carouselOptions = {
-      ...opts,
-      axis: orientation === "horizontal" ? "x" : "y",
-      dragFree: true,
-      containScroll: "trimSnaps",
-      watchDrag: (enable) => {
-        // Disable drag when user is pinch-zooming
-        const isZooming = window.visualViewport && window.visualViewport.scale > 1;
-        return enable && !isZooming;
-      }
-    };
-    
-    const [carouselRef, api] = useEmblaCarousel(carouselOptions, plugins)
+    const [carouselRef, api] = useEmblaCarousel(
+      {
+        ...opts,
+        axis: orientation === "horizontal" ? "x" : "y",
+      },
+      plugins
+    )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
-
-    // Handle touch events to improve zoom behavior
-    React.useEffect(() => {
-      const preventDefault = (e: TouchEvent) => {
-        // Only prevent default if we have multiple touch points (pinch gesture)
-        if (e.touches.length > 1) {
-          // Allow the zoom but prevent carousel from trying to scroll
-          if (api) {
-            api.clickAllowed = false;
-          }
-        }
-      };
-
-      const element = carouselRef?.current;
-      if (element) {
-        element.addEventListener('touchstart', preventDefault, { passive: false });
-      }
-
-      return () => {
-        if (element) {
-          element.removeEventListener('touchstart', preventDefault);
-        }
-      }
-    }, [carouselRef, api]);
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) {
@@ -154,7 +124,7 @@ const Carousel = React.forwardRef<
         value={{
           carouselRef,
           api: api,
-          opts: carouselOptions,
+          opts,
           orientation:
             orientation || (opts?.axis === "y" ? "vertical" : "horizontal"),
           scrollPrev,
@@ -166,7 +136,7 @@ const Carousel = React.forwardRef<
         <div
           ref={ref}
           onKeyDownCapture={handleKeyDown}
-          className={cn("relative touch-stable", className)}
+          className={cn("relative", className)}
           role="region"
           aria-roledescription="carousel"
           {...props}
@@ -186,11 +156,11 @@ const CarouselContent = React.forwardRef<
   const { carouselRef, orientation } = useCarousel()
 
   return (
-    <div ref={carouselRef} className="overflow-hidden touch-manipulation">
+    <div ref={carouselRef} className="overflow-hidden">
       <div
         ref={ref}
         className={cn(
-          "flex touch-pan-y",
+          "flex",
           orientation === "horizontal" ? "-ml-4" : "-mt-4 flex-col",
           className
         )}
