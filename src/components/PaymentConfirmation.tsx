@@ -18,6 +18,7 @@ interface PaymentConfirmationProps {
   credits: number;
   amount: number;
   isProcessing: boolean;
+  isSubscription?: boolean;
 }
 
 export const PaymentConfirmation = ({
@@ -27,7 +28,8 @@ export const PaymentConfirmation = ({
   planName,
   credits,
   amount,
-  isProcessing
+  isProcessing,
+  isSubscription = false
 }: PaymentConfirmationProps) => {
   // Calculate the value per credit
   const valuePerCredit = amount / credits;
@@ -58,7 +60,7 @@ export const PaymentConfirmation = ({
             </div>
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="font-medium">Total Amount</span>
-              <span className="font-bold">${amount}</span>
+              <span className="font-bold">${amount}{isSubscription ? '/month' : ''}</span>
             </div>
           </div>
         </div>
