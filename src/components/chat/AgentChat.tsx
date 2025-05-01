@@ -54,6 +54,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   // Focus input when chat opens
   useEffect(() => {
     if (isOpen && inputRef.current) {
+      // Add a small delay to ensure the chat is visible before focusing
       setTimeout(() => {
         inputRef.current?.focus();
       }, 100);
