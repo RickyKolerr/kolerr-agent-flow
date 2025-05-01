@@ -88,7 +88,7 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4 bg-black/20 h-[350px]">
+        <ScrollArea className="flex-1 p-4 bg-black/20 h-[350px] max-h-[40vh]">
           {messages.map(message => (
             <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
               {message.type === "bot" && (
@@ -121,13 +121,15 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
         <div className="p-3 border-t border-white/10 bg-black/40">
           <div className="flex gap-2">
             <Input 
-              placeholder="Ask about specific creator types, niches, or requirements..." 
+              placeholder={isMobile ? "Ask about creators..." : "Ask about specific creator types, niches, or requirements..."} 
               value={inputValue} 
               onChange={e => setInputValue(e.target.value)} 
               onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
               className="bg-black/60" 
             />
-            <Button onClick={handleSendMessage}>Send</Button>
+            <Button onClick={handleSendMessage} className={isMobile ? "px-3" : ""}>
+              Send
+            </Button>
           </div>
           <div className="flex items-center justify-between mt-2 px-1">
             <Button variant="ghost" size="sm" className="text-muted-foreground p-1 h-7">
