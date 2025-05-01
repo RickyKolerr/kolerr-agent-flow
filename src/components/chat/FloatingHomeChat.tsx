@@ -9,6 +9,7 @@ import { useCredits } from "@/contexts/CreditContext";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
 interface Message {
   id: string;
@@ -42,13 +43,14 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const navigate = useNavigate();
   const { freeCredits, hasPremiumPlan } = useCredits();
   const isMobile = useMediaQuery('(max-width: 768px)');
+  const { isStandalone, hasSafeArea, isIOSDevice } = useMobileDetection();
 
-  // Dynamic height based on viewport
+  // Dynamic height based on viewport and PWA context
   const messageAreaHeight = isMobile ? "280px" : "350px";
   
-  // Classes adjusted for better mobile display
+  // Adjust classes for PWA standalone mode
   const containerClasses = isMobile 
-    ? "fixed bottom-0 left-0 right-0 w-full border-t-2 border-t-black/40 z-50" 
+    ? `fixed bottom-0 left-0 right-0 w-full border-t-2 border-t-black/40 z-50 ${isStandalone ? 'pb-[env(safe-area-inset-bottom,0)]' : ''}` 
     : "fixed bottom-4 right-4 z-50 max-w-[550px] w-full rounded-2xl overflow-hidden";
 
   // Handle keyboard enter key
@@ -59,8 +61,32 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
     }
   };
 
+  // Focus handling for better input experience on mobile
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  
+  // Improve scrolling behavior
+  React.useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+  
+  // Prevent body scroll when interacting with chat on mobile
+  const preventBodyScroll = (prevent: boolean) => {
+    if (!isMobile) return;
+    
+    if (prevent) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  };
+
   return (
-    <div className={containerClasses}>
+    <div 
+      className={containerClasses} 
+      style={isIOSDevice && isStandalone ? { paddingBottom: 'env(safe-area-inset-bottom, 0)' } : {}}
+    >
       <div className="glass-panel shadow-2xl flex flex-col w-full">
         <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center w-full">
           <div className="flex items-center">
@@ -104,7 +130,12 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-4 bg-black/20" style={{ height: messageAreaHeight }}>
+        <ScrollArea 
+          className="flex-1 p-4 bg-black/20" 
+          style={{ height: messageAreaHeight }}
+          onMouseEnter={() => preventBodyScroll(true)}
+          onMouseLeave={() => preventBodyScroll(false)}
+        >
           <div className="pb-2">
             {messages.map(message => (
               <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
@@ -113,7 +144,11 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
                     <MessageCircle className="h-4 w-4 text-white" />
                   </div>
                 )}
-                <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
+                <div 
+                  className={`p-3 rounded-lg max-w-[80%] ${
+                    message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"
+                  }`}
+                >
                   {message.content}
                   {message.isTyping && (
                     <span className="inline-block ml-1 animate-pulse">▌</span>
@@ -139,18 +174,31 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
         <div className="p-3 border-t border-white/10 bg-black/40">
           <div className="flex gap-2">
             <Input 
+              ref={inputRef}
               placeholder={isMobile ? "Ask about creators..." : "Ask about specific creator types, niches, or requirements..."} 
               value={inputValue} 
               onChange={e => setInputValue(e.target.value)} 
               onKeyPress={handleKeyPress}
               className="bg-black/60" 
+              onFocus={() => preventBodyScroll(true)}
+              onBlur={() => preventBodyScroll(false)}
+              style={{ touchAction: 'manipulation' }}
             />
-            <Button onClick={handleSendMessage} className={`${isMobile ? "px-3" : ""} whitespace-nowrap`}>
+            <Button 
+              onClick={handleSendMessage} 
+              className={`${isMobile ? "px-3" : ""} whitespace-nowrap touch-manipulation`}
+              style={{ minHeight: isMobile ? '44px' : undefined }}
+            >
               Send
             </Button>
           </div>
           <div className="flex items-center justify-between mt-2 px-1">
-            <Button variant="ghost" size="sm" className="text-muted-foreground p-1 h-7">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-muted-foreground p-1 h-7 touch-manipulation"
+              style={isMobile ? { minHeight: '36px' } : {}}
+            >
               <Paperclip className="h-3 w-3 mr-1" />
               <span className={isMobile ? "sr-only" : ""}>Attach</span>
             </Button>
@@ -165,8 +213,9 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
                 <Button 
                   variant="link" 
                   size="sm" 
-                  className="text-brand-pink p-0 h-auto text-xs" 
+                  className="text-brand-pink p-0 h-auto text-xs touch-manipulation" 
                   onClick={() => navigate("/pricing")}
+                  style={isMobile ? { minHeight: '36px' } : {}}
                 >
                   Upgrade
                 </Button>

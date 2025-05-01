@@ -5,6 +5,10 @@
   margin: 0 auto;
   text-align: center;
   overflow-x: hidden;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }
 
 /* Animation for logos */
@@ -33,6 +37,7 @@ html, body {
   min-height: 100%;
   width: 100%;
   box-sizing: border-box;
+  touch-action: manipulation;
 }
 
 /* Add fixed layout container for homepage */
@@ -44,6 +49,7 @@ html, body {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Fixed footer spacing to accommodate floating components */
@@ -68,6 +74,7 @@ html, body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 /* Fixed-height containers for consistent UIs */
@@ -75,6 +82,29 @@ html, body {
   position: relative;
   height: auto;
   width: 100%;
+  box-sizing: border-box;
+}
+
+/* PWA enhancements */
+.pwa-container {
+  position: absolute;
+  width: 100vw;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+}
+
+.pwa-content {
+  flex: 1 0 auto;
+  width: 100%;
+  max-width: 100vw;
+  box-sizing: border-box;
+  position: relative;
 }
 
 /* Mobile-specific fixes */
@@ -97,6 +127,7 @@ html, body {
     padding-left: 1rem !important;
     padding-right: 1rem !important;
     box-sizing: border-box !important;
+    overflow-x: hidden !important;
   }
   
   .glass-panel {
@@ -105,6 +136,28 @@ html, body {
     margin-left: 0 !important;
     margin-right: 0 !important;
   }
+  
+  .ai-chat-container {
+    height: auto !important;
+    max-height: 70vh !important;
+  }
+  
+  /* Safe area insets for notched devices */
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  
+  /* Better touch targets */
+  button, 
+  .button,
+  a {
+    min-height: 44px; /* Apple's recommended minimum tap target size */
+    touch-action: manipulation;
+  }
 }
 
 /* Fix for navigation menu */
@@ -112,6 +165,9 @@ html, body {
   width: 100%;
   max-width: 100vw;
   overflow: visible;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 /* Ensure content doesn't overflow mobile viewport */
@@ -122,3 +178,50 @@ html, body {
   box-sizing: border-box;
 }
 
+/* PWA fullscreen mode enhancements */
+@media all and (display-mode: standalone) {
+  .pwa-standalone-adjust {
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
+
+/* Carousel containment */
+.campaign-section {
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Prevent page bounce on iOS */
+html {
+  position: fixed;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Improved animation performance */
+.animate-fade-in {
+  will-change: opacity, transform;
+}
+
+/* Optimized background images */
+.hero-gradient::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  will-change: transform;
+  z-index: -1;
+}

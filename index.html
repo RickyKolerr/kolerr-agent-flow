@@ -61,6 +61,9 @@
         document.body.style.overflow = 'hidden auto';
         document.body.style.overflowX = 'hidden';
         document.body.style.width = '100%';
+        document.body.style.position = 'relative'; 
+        document.body.style.margin = '0';
+        document.body.style.padding = '0';
         document.documentElement.style.overflowX = 'hidden';
         document.documentElement.style.width = '100%';
       }
@@ -68,6 +71,7 @@
       // Fix viewport on load and orientation change
       window.addEventListener('load', fixViewport);
       window.addEventListener('orientationchange', fixViewport);
+      window.addEventListener('resize', fixViewport);
     </script>
   </body>
 </html>
