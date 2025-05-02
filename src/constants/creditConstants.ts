@@ -1,6 +1,6 @@
 
 // Credit system constants
-export const GENERAL_QUESTIONS_PER_CREDIT = 3;
+export const GENERAL_QUESTIONS_PER_CREDIT = 2; // Changed from 3 to 2
 export const RESET_HOUR = 4; // 4:00 AM
 
 // KOL-related patterns for detecting specific queries

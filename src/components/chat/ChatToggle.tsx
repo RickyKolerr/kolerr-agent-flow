@@ -33,7 +33,7 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
     } else {
       return hasPremiumPlan
         ? "Normal Mode (uses fewer premium credits)"
-        : "Normal Mode (1 credit per 3 questions)";
+        : "Normal Mode (1 credit per 2 questions)"; // Updated from 3 to 2
     }
   };
 
@@ -89,7 +89,7 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
         </Toggle>
       </div>
       <div className="mt-1 text-xs text-muted-foreground">
-        {isSearchMode ? "1:1 credit ratio" : "3:1 credit ratio"}
+        {isSearchMode ? "1:1 credit ratio" : "2:1 credit ratio"} {/* Updated from 3:1 to 2:1 */}
       </div>
     </div>
   );
