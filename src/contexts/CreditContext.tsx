@@ -4,6 +4,7 @@ import { useSearchCredits } from "@/hooks/useSearchCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { toast } from "sonner";
+import { RESET_HOUR } from "@/hooks/useSearchCredits";
 
 interface CreditContextType {
   freeCredits: number;
@@ -13,6 +14,7 @@ interface CreditContextType {
   usePremiumCredit: (amount: number) => boolean;
   timeUntilReset: string;
   hasPremiumPlan: boolean;
+  remainingGeneralQuestions: number;
   creditUsageAnalytics: {
     kolQueries: number;
     generalQueries: number;
@@ -48,7 +50,8 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     useIntelligentCredit,
     isKOLSpecificQuery,
     calculateKOLConfidence,
-    getSearchHistory
+    getSearchHistory,
+    remainingGeneralQuestions
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // New analytics state
@@ -167,6 +170,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       usePremiumCredit,
       timeUntilReset,
       hasPremiumPlan,
+      remainingGeneralQuestions,
       creditUsageAnalytics,
       getCreditHistory,
       checkMessageCredit
