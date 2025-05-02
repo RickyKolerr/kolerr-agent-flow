@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { MessageCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
@@ -51,11 +50,6 @@ export const FloatingChatButton = () => {
     return null;
   }
 
-  // Calculate available general questions based on credits
-  const availableChatMessages = hasPremiumPlan 
-    ? "∞" 
-    : remainingGeneralQuestions;
-
   return (
     <>
       <div className="fixed bottom-6 right-6 z-50">
@@ -69,16 +63,13 @@ export const FloatingChatButton = () => {
                 onClick={handleChatClick}
               >
                 <MessageCircle className="h-6 w-6 text-white" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
-                  {availableChatMessages}
-                </Badge>
               </Button>
             </TooltipTrigger>
             <TooltipContent side="top">
               <p>
                 {hasPremiumPlan 
                   ? "Unlimited AI assistant messages" 
-                  : `${availableChatMessages} general questions available`}
+                  : `${remainingGeneralQuestions} general questions available`}
               </p>
             </TooltipContent>
           </Tooltip>
