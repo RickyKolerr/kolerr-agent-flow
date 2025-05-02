@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Toggle } from "@/components/ui/toggle";
-import { LightbulbIcon, Search } from "lucide-react";
+import { Lightbulb, Search } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useCredits } from "@/contexts/CreditContext";
 
@@ -54,7 +54,7 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
               {isSearchMode ? (
                 <Search className="h-4 w-4" />
               ) : (
-                <LightbulbIcon className="h-4 w-4" />
+                <Lightbulb className="h-4 w-4" />
               )}
               <span>Chat</span>
             </button>
@@ -76,7 +76,7 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
           onPressedChange={() => onToggle(false)}
           className={`flex gap-1 items-center data-[state=on]:bg-blue-500 data-[state=on]:text-white ${!isSearchMode ? "bg-blue-500 text-white" : ""}`}
         >
-          <LightbulbIcon className="h-4 w-4" />
+          <Lightbulb className="h-4 w-4" />
           {showLabels && <span className="text-xs">Normal</span>}
         </Toggle>
         <Toggle

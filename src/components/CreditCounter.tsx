@@ -1,7 +1,6 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CreditCard, MessageSquare, Search, Info, LightbulbIcon } from "lucide-react";
+import { CreditCard, MessageSquare, Search, Info, Lightbulb } from "lucide-react";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { useCredits } from "@/contexts/CreditContext";
 import { Toggle } from "@/components/ui/toggle";
@@ -42,7 +41,7 @@ export function CreditCounter({ variant = "standard", className = "" }: CreditCo
             onPressedChange={() => setIsSearchMode(false)}
             className={`flex gap-1 items-center data-[state=on]:bg-blue-500 data-[state=on]:text-white ${!isSearchMode ? "bg-blue-500 text-white" : ""}`}
           >
-            <LightbulbIcon className="h-4 w-4" />
+            <Lightbulb className="h-4 w-4" />
             <span className="text-xs">General</span>
           </Toggle>
           <Toggle
