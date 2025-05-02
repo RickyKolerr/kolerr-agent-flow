@@ -9,6 +9,7 @@ import { useCredits } from "@/contexts/CreditContext";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useNavigate } from "react-router-dom";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface Message {
   id: string;
@@ -94,32 +95,48 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
 
         <ScrollArea className="flex-1 p-4 bg-black/20" style={{ height: messageAreaHeight }}>
           <div className="pb-2">
-            {messages.map(message => (
-              <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                {message.type === "bot" && (
-                  <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                    <MessageCircle className="h-4 w-4 text-white" />
+            {messages.map(message => {
+              // Add typing effect for bot messages
+              const { displayedText, isComplete } = message.type === "bot" ? 
+                useTypingEffect({
+                  text: message.content,
+                  typingSpeed: 30, // Faster typing speed
+                  startDelay: 300,
+                  humanizedTyping: true,
+                }) : { displayedText: message.content, isComplete: true };
+
+              return (
+                <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
+                  {message.type === "bot" && (
+                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                      <MessageCircle className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                  <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
+                    {message.type === "bot" ? (
+                      <span className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}>
+                        {displayedText}
+                      </span>
+                    ) : message.content}
+                    
+                    {message.isTyping && (
+                      <span className="inline-block ml-1 animate-pulse">▌</span>
+                    )}
+                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
+                    )}
+                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
+                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                    )}
                   </div>
-                )}
-                <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                  {message.content}
-                  {message.isTyping && (
-                    <span className="inline-block ml-1 animate-pulse">▌</span>
-                  )}
-                  {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                    <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                  )}
-                  {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                    <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
+                  {message.type === "user" && (
+                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
+                      <User className="h-4 w-4" />
+                    </div>
                   )}
                 </div>
-                {message.type === "user" && (
-                  <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                    <User className="h-4 w-4" />
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+            })}
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>

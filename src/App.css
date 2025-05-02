@@ -61,6 +61,21 @@
   font-weight: 600;
 }
 
+/* Wave animation for emoji */
+@keyframes wave {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-15deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(15deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.wave-emoji {
+  display: inline-block;
+  animation: wave 1.5s ease-in-out 2;
+  transform-origin: 70% 70%;
+}
+
 /* Safe area insets for notched devices */
 .pb-safe {
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0));
@@ -293,4 +308,11 @@ html, body {
   color: rgba(255, 255, 255, 0.95);
   font-weight: 400;
   letter-spacing: 0.015em;
+}
+
+/* Emoji animation - wave */
+.emoji-wave {
+  display: inline-block;
+  animation: wave 2s ease-in-out 2;
+  transform-origin: 70% 70%;
 }

@@ -131,11 +131,13 @@ export const useMessageSimulation = () => {
       let welcomeMessage = initialMessage;
       
       if (user?.role === "kol") {
-        welcomeMessage = `Welcome back ${user.name || 'creator'}! How can I help with your campaigns or creator opportunities today?`;
+        welcomeMessage = `👋 Looking for paid opportunities? Let me help you find the right match!`;
       } else if (user?.role === "brand") {
-        welcomeMessage = `Welcome back ${user.name || 'brand partner'}! Need help finding the perfect KOLs for your campaign?`;
+        welcomeMessage = `👋 Need creators for your campaign? Tell me what you're looking for.`;
       }
       
+      // We set it directly without any typing initially,
+      // the typing effect will be handled by the ChatMessage component
       setMessages([
         {
           id: "welcome",
