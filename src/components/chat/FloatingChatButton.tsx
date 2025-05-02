@@ -40,15 +40,16 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
         return "Discover campaign opportunities";
       default:
         return isSearchMode 
-          ? "Search for specific KOLs or campaigns (1 credit per search)"
-          : "Ask me anything about Kolerr (1 credit per 3 questions)";
+          ? "Search for specific KOLs or campaigns (uses more credits)"
+          : "Ask me anything about Kolerr (uses fewer credits)";
     }
   };
 
   return (
     <>
       <div className="fixed bottom-4 right-4 z-50 flex items-center space-x-3">
-        {!hasPremiumPlan && chatType === "general" && (
+        {/* Removed hasPremiumPlan condition to show toggle for all users */}
+        {chatType === "general" && (
           <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1 border border-white/10 shadow-lg">
             <ChatToggle
               isSearchMode={isSearchMode}

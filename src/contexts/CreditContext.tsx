@@ -31,7 +31,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   // Initialize intelligent credits system
   const { 
     freeCredits,
-    useIntelligentCredit,
+    useIntelligentCredit: useIntelligentCreditInternal,
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // Load premium credits from localStorage or set default
@@ -59,6 +59,21 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('premium_credits', premiumCredits.toString());
     }
   }, [premiumCredits, isAuthenticated]);
+  
+  // Wrap the internal intelligent credit function to handle premium credits
+  const useIntelligentCredit = (message: string) => {
+    // Premium users use premium credits
+    if (hasPremiumPlan) {
+      const isSpecific = useIntelligentCreditInternal(message);
+      if (isSpecific) {
+        return usePremiumCredit(1);
+      }
+      return true;
+    } 
+    
+    // Non-premium users use the regular intelligent credit system
+    return useIntelligentCreditInternal(message);
+  };
   
   // New useFreeCredit that uses the intelligent system
   const useFreeCredit = () => {

@@ -3,6 +3,7 @@ import React from "react";
 import { Toggle } from "@/components/ui/toggle";
 import { LightbulbIcon, Search } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCredits } from "@/contexts/CreditContext";
 
 interface ChatToggleProps {
   isSearchMode: boolean;
@@ -17,8 +18,23 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
   variant = "default",
   showLabels = true
 }) => {
+  const { hasPremiumPlan } = useCredits();
+  
   const handleToggle = () => {
     onToggle(!isSearchMode);
+  };
+
+  // Generate appropriate tooltip text based on user's plan
+  const getTooltipText = () => {
+    if (isSearchMode) {
+      return hasPremiumPlan 
+        ? "Search Mode (1 premium credit per search)" 
+        : "Search Mode (1 credit per search)";
+    } else {
+      return hasPremiumPlan
+        ? "Normal Mode (uses fewer premium credits)"
+        : "Normal Mode (1 credit per 3 questions)";
+    }
   };
 
   // Pill variant similar to the screenshot
@@ -44,7 +60,7 @@ export const ChatToggle: React.FC<ChatToggleProps> = ({
             </button>
           </TooltipTrigger>
           <TooltipContent side="top">
-            <p>{isSearchMode ? "Search Mode (1 credit per search)" : "Normal Mode (1 credit per 3 questions)"}</p>
+            <p>{getTooltipText()}</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

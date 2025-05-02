@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { GENERAL_QUESTIONS_PER_CREDIT, RESET_HOUR } from "@/constants/creditConstants";
@@ -41,21 +42,22 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
    * @returns True if credit usage was successful, false otherwise
    */
   const useIntelligentCredit = (message: string): boolean => {
-    // Premium users don't consume credits
-    if (hasPremiumPlan) {
-      return true;
-    }
+    // Premium users still consume credits, but from their premium pool
+    // This is handled in the CreditContext, we just track the usage pattern here
     
     // Check if this is a KOL-specific query
     const isKOLQuery = isKOLSpecificQuery(message);
     
     // For KOL-specific queries, use 1 full credit
     if (isKOLQuery) {
-      if (creditState.freeCredits > 0) {
-        setCreditState(prev => ({
-          ...prev,
-          freeCredits: prev.freeCredits - 1
-        }));
+      if (creditState.freeCredits > 0 || hasPremiumPlan) {
+        // Only decrement for non-premium users
+        if (!hasPremiumPlan) {
+          setCreditState(prev => ({
+            ...prev,
+            freeCredits: prev.freeCredits - 1
+          }));
+        }
         return true;
       } else {
         showCreditExhaustedToast();
@@ -68,12 +70,21 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
       
       // If we've reached the threshold, reset counter and consume a credit
       if (newCounter >= GENERAL_QUESTIONS_PER_CREDIT) {
-        if (creditState.freeCredits > 0) {
-          setCreditState(prev => ({
-            ...prev,
-            generalQuestionCounter: 0,
-            freeCredits: prev.freeCredits - 1
-          }));
+        if (creditState.freeCredits > 0 || hasPremiumPlan) {
+          // Only decrement for non-premium users
+          if (!hasPremiumPlan) {
+            setCreditState(prev => ({
+              ...prev,
+              generalQuestionCounter: 0,
+              freeCredits: prev.freeCredits - 1
+            }));
+          } else {
+            // For premium users, just reset the counter
+            setCreditState(prev => ({
+              ...prev,
+              generalQuestionCounter: 0
+            }));
+          }
           return true;
         } else {
           showCreditExhaustedToast();

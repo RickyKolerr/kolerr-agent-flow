@@ -43,7 +43,7 @@ export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
   onOpenChange,
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const { freeCredits, hasPremiumPlan, generalQuestionsPerCredit } = useCredits();
+  const { freeCredits, hasPremiumPlan, generalQuestionsPerCredit, premiumCredits } = useCredits();
 
   // Set custom placeholder based on chat type and user role
   const getPlaceholderText = () => {
@@ -66,8 +66,7 @@ export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
   };
 
   const renderCreditInfo = () => {
-    if (hasPremiumPlan) return null;
-    
+    // Show credit info for all users now, but with different wording for premium users
     return (
       <div className="p-3 border-t border-white/10">
         <div className="rounded-md bg-brand-pink/10 p-2 border border-brand-pink/20">
@@ -77,7 +76,7 @@ export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
               <span className="font-medium text-xs">Credit Usage</span>
             </div>
             <Badge variant="outline" className="text-brand-pink text-xs">
-              {freeCredits} left
+              {hasPremiumPlan ? `${premiumCredits} premium` : `${freeCredits} free`}
             </Badge>
           </div>
           <div className="mt-1 text-xs grid grid-cols-2 gap-1">
@@ -125,8 +124,8 @@ export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
         onClose={onOpenChange ? () => onOpenChange(false) : undefined}
       />
       
-      {/* Credit info for non-premium users */}
-      {!hasPremiumPlan && !isDashboard && renderCreditInfo()}
+      {/* Credit info for all users now */}
+      {!isDashboard && renderCreditInfo()}
       
       {/* Floating toggle for mobile */}
       {renderFloatingToggle()}
