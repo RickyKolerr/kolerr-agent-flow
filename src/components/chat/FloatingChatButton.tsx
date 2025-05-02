@@ -153,7 +153,6 @@ export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({
       if (freeCredits >= 1) {
         // Confirm with toast that this will use a credit
         toast({
-          title: "Unlock this conversation?",
           description: "This will use 1 credit to contact this brand",
           action: {
             label: "Confirm",

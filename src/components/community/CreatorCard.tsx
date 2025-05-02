@@ -1,4 +1,3 @@
-
 import { Check, MessageSquare, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -66,7 +65,6 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
     // Handle credit confirmation if needed
     if (requiresCredit) {
       toast({
-        title: "Use 1 credit?",
         description: "Contacting this creator will use 1 credit",
         action: {
           label: "Confirm",
