@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 /**
  * This hook applies fixes for various viewport issues that can occur on mobile browsers,
  * particularly those related to dynamic viewport height calculation and horizontal overflow.
+ * Enhanced for dark mode compatibility.
  */
 export function useViewportFix() {
   useEffect(() => {
@@ -31,6 +32,9 @@ export function useViewportFix() {
         '--safe-area-inset-bottom', 
         `env(safe-area-inset-bottom, 0px)`
       );
+      
+      // Ensure dark mode background extends to edges on mobile
+      document.body.style.backgroundColor = '#171b23';
     };
 
     // Fix for content jumping when keyboard appears on mobile

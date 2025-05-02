@@ -262,3 +262,35 @@ html, body {
 .action-button:hover:before {
   left: 100%;
 }
+
+/* Dark mode specific text enhancements */
+.dark-text {
+  color: white;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.dark-heading {
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Glass card for dark theme */
+.glass-card-dark {
+  background: rgba(30, 30, 40, 0.4);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+}
+
+/* Dark mode content area */
+.dark-content {
+  background: linear-gradient(to bottom, rgba(23, 27, 35, 0.9), rgba(16, 20, 28, 0.9));
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* High contrast text for better readability */
+.high-contrast-text {
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 400;
+  letter-spacing: 0.015em;
+}
