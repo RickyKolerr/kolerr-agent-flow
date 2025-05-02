@@ -14,8 +14,6 @@ interface AgentChatProps {
   onOpenChange?: (open: boolean) => void;
   chatType?: "kol_search" | "campaign_search" | "general";
   isDashboard?: boolean;
-  profileId?: string;
-  profileType?: "kol" | "brand";
 }
 
 export const AgentChat: React.FC<AgentChatProps> = ({ 
@@ -25,9 +23,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   isOpen = false,
   onOpenChange,
   chatType = "general",
-  isDashboard = false,
-  profileId,
-  profileType
+  isDashboard = false
 }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
   const { hasPremiumPlan, generalQuestionsPerCredit } = useCredits();
@@ -41,7 +37,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
     handleSearchModeChange,
     resultsShown,
     resultLimit
-  } = useChatAgent(initialMessage, chatType, isOpen, profileId, profileType);
+  } = useChatAgent(initialMessage, chatType, isOpen);
   
   return (
     <ChatAgentWrapper 
@@ -65,8 +61,6 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         isMobile={isMobile}
         isOpen={isOpen}
         onOpenChange={onOpenChange}
-        profileId={profileId}
-        profileType={profileType}
       />
     </ChatAgentWrapper>
   );

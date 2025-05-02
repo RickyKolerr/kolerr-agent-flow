@@ -1,11 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { useMessageSimulation } from "@/hooks/useMessageSimulation";
 import { useRolePermissions } from "@/hooks/useRolePermissions";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { useChatPermissions } from "@/hooks/useChatPermissions";
 
 export interface ChatAgentState {
   isSearchFocused: boolean;
@@ -15,22 +13,19 @@ export interface ChatAgentState {
 export const useChatAgent = (
   initialMessage: string,
   chatType: "kol_search" | "campaign_search" | "general",
-  isOpen: boolean,
-  profileId?: string,
-  profileType?: "kol" | "brand"
+  isOpen: boolean
 ) => {
   const navigate = useNavigate();
   const { 
     messages, 
     sendButtonClicked, 
-    handleSendMessage: handleSendRawMessage, 
+    handleSendMessage, 
     initializeWithWelcomeMessage 
   } = useMessageSimulation();
   
   // Get user access information to personalize chat experience
   const { user, isAuthenticated, isKOLSpecificQuery } = useUserAccess();
   const { canPerform, getSearchResultLimit } = useRolePermissions();
-  const { canMessageProfile, trackMessageSent } = useChatPermissions();
   
   // Track if this chat is focused on search
   const [isSearchFocused, setIsSearchFocused] = useState(
@@ -44,20 +39,9 @@ export const useChatAgent = (
   // Add welcome message on mount and when chat opens
   useEffect(() => {
     if (isOpen) {
-      // Customize welcome message for profile chats
-      let welcomeMsg = initialMessage;
-      
-      if (profileId && profileType && isAuthenticated) {
-        if (profileType === "kol" && user?.role === "brand") {
-          welcomeMsg = `You're now chatting with ${profileId}. Discuss collaboration opportunities and campaign details.`;
-        } else if (profileType === "brand" && user?.role === "kol") {
-          welcomeMsg = `You've connected with ${profileId}. Discuss potential opportunities and showcase your value.`;
-        }
-      }
-      
-      initializeWithWelcomeMessage(welcomeMsg);
+      initializeWithWelcomeMessage(initialMessage);
     }
-  }, [initialMessage, isOpen, initializeWithWelcomeMessage, profileId, profileType, isAuthenticated, user]);
+  }, [initialMessage, isOpen, initializeWithWelcomeMessage]);
 
   // Update permission checks based on number of results shown and resets
   useEffect(() => {
@@ -85,44 +69,7 @@ export const useChatAgent = (
   };
 
   // Wrap the handleSendMessage to apply our business logic
-  const handleSendMessage = (input: string) => {
-    // Special handling for profile-specific chats
-    if (profileId && profileType) {
-      // Check if user has permission to message this profile
-      const { canMessage, reason } = canMessageProfile(profileId, profileType);
-      
-      if (!canMessage) {
-        if (!isAuthenticated) {
-          toast.error("Please sign in to continue", {
-            description: "Create an account to message this profile",
-            action: {
-              label: "Sign In",
-              onClick: () => navigate("/login")
-            }
-          });
-          return;
-        }
-        
-        toast.error("Cannot send message", {
-          description: reason || "You don't have permission to message this profile",
-          action: {
-            label: "Learn More",
-            onClick: () => navigate("/pricing")
-          }
-        });
-        return;
-      }
-      
-      // Track this message in the permission system
-      trackMessageSent(profileId, profileType);
-      
-      // Send the message
-      handleSendRawMessage(input);
-      return;
-    }
-    
-    // From here, standard chat agent logic continues
-    
+  const handleMessageWithCredits = (input: string) => {
     // Force search mode if this is a search query
     const detectSearchQuery = isKOLSpecificQuery(input);
     if (detectSearchQuery && !isSearchFocused) {
@@ -161,13 +108,13 @@ export const useChatAgent = (
     }
     
     // If all checks pass, send the message
-    handleSendRawMessage(input);
+    handleSendMessage(input);
   };
 
   return {
     messages,
     sendButtonClicked,
-    handleSendMessage,
+    handleSendMessage: handleMessageWithCredits,
     isSearchFocused,
     handleSearchModeChange,
     resultsShown,

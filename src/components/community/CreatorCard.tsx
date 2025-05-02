@@ -1,3 +1,4 @@
+
 import { Check, MessageSquare, UserPlus } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +10,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useUserAccess } from "@/hooks/useUserAccess";
-import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
-import { useChatPermissions } from "@/hooks/useChatPermissions";
 
 interface Creator {
   id: string;
@@ -37,7 +36,6 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
   const navigate = useNavigate();
   const { isAuthenticated, canAccessFeature, hasPremiumPlan, getRedirectPath, user } = useUserAccess();
-  const { canMessageProfile, trackMessageSent } = useChatPermissions();
 
   const handleContactCreator = () => {
     if (!isAuthenticated) {
@@ -48,40 +46,9 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
       return;
     }
 
-    // Instead of opening dialog, directly check permissions and open chat if allowed
-    const { canMessage, reason, requiresCredit } = canMessageProfile(creator.id, "kol");
-    
-    if (!canMessage) {
-      toast.error("Cannot contact creator", {
-        description: reason || "Please upgrade your plan to contact more creators",
-        action: {
-          label: "Upgrade",
-          onClick: () => navigate("/pricing")
-        }
-      });
-      return;
-    }
-    
-    // Handle credit confirmation if needed
-    if (requiresCredit) {
-      toast({
-        description: "Contacting this creator will use 1 credit",
-        action: {
-          label: "Confirm",
-          onClick: () => {
-            // Credit usage is handled in the chat component now
-            navigate(`/chat?recipient=${creator.id}&name=${encodeURIComponent(creator.name)}`);
-          }
-        },
-        cancel: {
-          label: "Cancel"
-        }
-      });
-      return;
-    }
-    
-    // Navigate to chat
-    navigate(`/chat?recipient=${creator.id}&name=${encodeURIComponent(creator.name)}`);
+    // Open message dialog
+    setSelectedCreator(creator);
+    setIsDialogOpen(true);
   };
 
   const handleRequestCollab = () => {
