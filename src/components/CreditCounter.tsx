@@ -58,6 +58,12 @@ export function CreditCounter({ variant = "standard", className = "" }: CreditCo
               </div>
               <div className="pt-2 border-t border-border">
                 <div className="flex items-center justify-between">
+                  <span>Daily credits:</span>
+                  <Badge variant="outline" className="font-normal border-brand-pink/30 text-brand-pink">
+                    5 (resets at 7AM)
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
                   <span>Remaining searches:</span>
                   <Badge variant="outline" className="font-normal border-brand-pink/30 text-brand-pink">
                     {remainingSearches}
@@ -104,7 +110,7 @@ export function CreditCounter({ variant = "standard", className = "" }: CreditCo
           <span className="text-sm">General questions: <span className="font-medium">{remainingGeneral} left</span></span>
         </div>
         <div className="text-xs text-muted-foreground mt-1">
-          {generalQuestionsPerCredit} general questions = 1 credit
+          {generalQuestionsPerCredit} general questions = 1 credit (resets at 7AM)
         </div>
       </div>
     </div>

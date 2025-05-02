@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HelpCircle, Search, Book, FileText, MessageSquare, Phone } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -16,22 +15,22 @@ const HelpCenter = () => {
 
   const popularTopics = [
     {
-      title: "Getting Started with KOL Discovery",
+      title: "Understanding the Credit System",
       icon: Book,
-      link: "#",
+      link: "#credit-faq",
     },
     {
-      title: "Campaign Performance Metrics Explained",
+      title: "KOL Search Best Practices",
+      icon: Search,
+      link: "#search-tips",
+    },
+    {
+      title: "Role-Based Access Permissions",
       icon: FileText,
-      link: "#",
+      link: "#feature-comparison",
     },
     {
-      title: "Billing and Subscription Management",
-      icon: FileText,
-      link: "#",
-    },
-    {
-      title: "Security Best Practices",
+      title: "Subscription Benefits & Upgrades",
       icon: FileText,
       link: "#",
     }
@@ -39,20 +38,20 @@ const HelpCenter = () => {
   
   const commonFaqs = [
     {
-      question: "How do I find the right influencers for my campaign?",
-      answer: "Use our advanced search filters to narrow down influencers by audience demographics, engagement rates, content categories, and location. Our AI-powered matching system can also recommend creators based on your specific campaign goals and target audience."
+      question: "How do credits work in the AI assistant?",
+      answer: "Our AI assistant uses a credit system that differentiates between search queries and general conversation. KOL/campaign searches use 1 credit per search, while general questions follow a 3:1 ratio (3 questions per credit). All users receive 5 free credits daily, which reset at 7:00 AM."
     },
     {
-      question: "What metrics are available to track campaign performance?",
-      answer: "Kolerr provides comprehensive analytics including reach, impressions, engagement rate, click-through rate, conversions, ROI, and sentiment analysis. You can view these metrics in real-time on your campaign dashboard and export detailed reports."
+      question: "What can I do as a guest vs. registered user?",
+      answer: "Guest users can perform basic searches with limited results (3 maximum) and view basic profile information. Registered users get personalized experiences based on their role (KOL or Brand) with access to save searches, contact creators, view full campaign details, and more depending on their subscription tier."
     },
     {
-      question: "How are creator payments processed?",
-      answer: "Creator payments are securely processed through our platform after campaign completion and performance verification. We support multiple payment methods including bank transfers, PayPal, and cryptocurrency. Payments typically process within 14 days of campaign completion."
+      question: "What are the differences between KOL and Brand permissions?",
+      answer: "KOLs can search profiles, view full campaign details, save campaigns, and apply for jobs. Brands can search for KOLs, contact them, and invite them to campaigns. Some advanced features like viewing detailed metrics require premium plans for both user types."
     },
     {
-      question: "Can I cancel my subscription?",
-      answer: "Yes, you can cancel your subscription at any time through your account settings. Your access will continue until the end of your current billing cycle. We don't charge cancellation fees, and you can download your data before cancellation."
+      question: "When do my free credits reset?",
+      answer: "Free credits reset daily at 7:00 AM. Premium plan subscribers receive additional credits that may have different reset periods based on their subscription tier."
     }
   ];
 
@@ -113,7 +112,7 @@ const HelpCenter = () => {
           <TabsContent value="faq">
             <Card>
               <CardHeader>
-                <CardTitle>Common Questions</CardTitle>
+                <CardTitle>Credit System & Permissions</CardTitle>
               </CardHeader>
               <CardContent>
                 <Accordion type="single" collapsible className="w-full">
@@ -145,8 +144,8 @@ const HelpCenter = () => {
                   </div>
                 </div>
                 <CardContent className="pt-4">
-                  <h3 className="font-medium mb-2">Platform Navigation Tutorial</h3>
-                  <p className="text-sm text-muted-foreground">Learn how to navigate through the Kolerr dashboard and access key features.</p>
+                  <h3 className="font-medium mb-2">Understanding the Credit System</h3>
+                  <p className="text-sm text-muted-foreground">Learn how our credit system works and how to optimize your searches.</p>
                 </CardContent>
               </Card>
               
@@ -159,8 +158,8 @@ const HelpCenter = () => {
                   </div>
                 </div>
                 <CardContent className="pt-4">
-                  <h3 className="font-medium mb-2">Campaign Creation Walkthrough</h3>
-                  <p className="text-sm text-muted-foreground">Step-by-step guide to creating and launching your first influencer campaign.</p>
+                  <h3 className="font-medium mb-2">Maximizing Your Free Credits</h3>
+                  <p className="text-sm text-muted-foreground">Tips and tricks to make the most of your daily free credits.</p>
                 </CardContent>
               </Card>
               
@@ -207,11 +206,17 @@ const HelpCenter = () => {
           </TabsContent>
         </Tabs>
         
-        <div className="space-y-8">
+        <div className="space-y-8" id="help-content">
           <SearchTutorial />
-          <CreditFAQ />
-          <SearchTips />
-          <FeatureComparison />
+          <div id="credit-faq">
+            <CreditFAQ />
+          </div>
+          <div id="search-tips">
+            <SearchTips />
+          </div>
+          <div id="feature-comparison">
+            <FeatureComparison />
+          </div>
         </div>
         
         <div className="mt-12 bg-brand-pink/5 border border-brand-pink/20 rounded-lg p-6 text-center">
