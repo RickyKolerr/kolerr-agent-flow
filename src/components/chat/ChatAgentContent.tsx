@@ -24,6 +24,8 @@ interface ChatAgentContentProps {
   isMobile: boolean;
   isOpen: boolean;
   onOpenChange?: (open: boolean) => void;
+  profileId?: string;
+  profileType?: "kol" | "brand";
 }
 
 export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
@@ -41,6 +43,8 @@ export const ChatAgentContent: React.FC<ChatAgentContentProps> = ({
   isMobile,
   isOpen,
   onOpenChange,
+  profileId,
+  profileType
 }) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { freeCredits, hasPremiumPlan, generalQuestionsPerCredit, premiumCredits } = useCredits();
