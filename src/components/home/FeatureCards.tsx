@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from "react";
 import { Search } from "lucide-react";
 
@@ -21,17 +20,20 @@ const useTilt = (ref: React.RefObject<HTMLDivElement>) => {
       const tiltX = (y - centerY) / 15;
       const tiltY = (centerX - x) / 15;
       
-      element.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
+      // Fix: Cast the element to HTMLElement to access the style property
+      (element as HTMLElement).style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale3d(1.02, 1.02, 1.02)`;
     };
     
     const handleMouseLeave = () => {
       if (!element) return;
-      element.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+      // Fix: Cast the element to HTMLElement to access the style property
+      (element as HTMLElement).style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
     };
     
     const handleMouseEnter = () => {
       if (!element) return;
-      element.style.transition = 'none';
+      // Fix: Cast the element to HTMLElement to access the style property
+      (element as HTMLElement).style.transition = 'none';
     };
     
     element.addEventListener('mousemove', handleMouseMove);
@@ -62,7 +64,8 @@ export const FeatureCards = () => {
         entries.forEach((entry, index) => {
           if (entry.isIntersecting) {
             entry.target.classList.add('animate-fade-in');
-            entry.target.style.animationDelay = `${index * 200}ms`;
+            // Fix: Cast entry.target to HTMLElement to access the style property
+            (entry.target as HTMLElement).style.animationDelay = `${index * 200}ms`;
           }
         });
       },
