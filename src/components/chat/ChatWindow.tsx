@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { ChatHeader } from "./ChatHeader";
 import { MessageInput } from "./MessageInput";
@@ -183,8 +182,13 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           {messages.map((message) => (
             <ChatMessageComponent
               key={message.id}
-              message={message}
-              isOwnMessage={message.senderId === "current-user"}
+              message={{
+                ...message,
+                isKolSpecific: false, // Add default value
+                hasAccess: true, // Add default value
+                requiresUpgrade: false // Add default value
+              }}
+              isLastMessage={false} // Add required prop from ChatMessageProps
             />
           ))}
           {messages.length === 0 && (

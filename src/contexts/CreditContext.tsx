@@ -12,6 +12,8 @@ interface CreditContextType {
   usePremiumCredit: (amount: number) => boolean;
   timeUntilReset: string;
   hasPremiumPlan: boolean;
+  useIntelligentCredit: (message: string) => boolean;
+  generalQuestionsPerCredit: number;
 }
 
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
@@ -27,7 +29,8 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   // Initialize intelligent credits system
   const { 
     freeCredits,
-    useIntelligentCredit
+    useIntelligentCredit,
+    generalQuestionsPerCredit
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // Load premium credits from localStorage or set default
@@ -82,7 +85,9 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       useFreeCredit,
       usePremiumCredit,
       timeUntilReset,
-      hasPremiumPlan
+      hasPremiumPlan,
+      useIntelligentCredit,
+      generalQuestionsPerCredit
     }}>
       {children}
     </CreditContext.Provider>
