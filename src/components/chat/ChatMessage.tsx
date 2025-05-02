@@ -13,7 +13,7 @@ interface ChatMessageProps {
   typingSpeed?: number;
 }
 
-export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 55 }) => {
+export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage, typingSpeed = 35 }) => {
   // Find sender in conversations
   const sender = mockConversations
     .flatMap((c) => c.participants)
@@ -22,11 +22,11 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
   // Check if message comes from agent in the welcome message
   const isAgentMessage = message.senderId === "agent" || (!isOwnMessage && message.id === "welcome");
   
-  // Use typing effect for agent greeting messages with more human typing parameters
+  // Use typing effect for agent messages with optimized typing parameters
   const { displayedText, isComplete } = useTypingEffect({
     text: message.content,
-    typingSpeed: message.isThinking ? 600 : typingSpeed,
-    startDelay: message.isThinking ? 0 : 700,
+    typingSpeed: message.isThinking ? 600 : typingSpeed, // Faster typing for better UX
+    startDelay: message.isThinking ? 0 : 300, // Reduced delay
     humanizedTyping: !message.isThinking,
     highlightText: "Kolerr", 
     highlightSpeed: 120,
@@ -91,7 +91,7 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({ message, isOwnMessage,
               className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}
               dangerouslySetInnerHTML={{ 
                 __html: displayedText
-                  .replace(/👋/g, '<span style="display:inline-block;transform:rotate(-20deg);">👋</span>')
+                  .replace(/👋/g, '<span class="emoji-wave">👋</span>')
                   .replace(/Kolerr/g, '<span class="highlight-text">Kolerr</span>')
                   .replace(/TikTok/g, '<span class="highlight-text">TikTok</span>')
                   .replace(/Meta/g, '<span class="highlight-text">Meta</span>')
