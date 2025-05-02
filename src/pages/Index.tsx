@@ -1,9 +1,9 @@
 
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, MessageCircle } from "lucide-react";
+import { Search } from "lucide-react";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
@@ -103,7 +103,9 @@ const HomePage = () => {
           
           <div className="glass-panel rounded-xl p-6 text-center">
             <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="h-8 w-8 text-blue-500" />
+              <svg className="h-8 w-8 text-blue-500" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 12H12M12 12H16M12 12V8M12 12V16M22 12C22 17.5228 17.5228 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2C17.5228 2 22 6.47715 22 12Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
             </div>
             <h2 className="text-xl font-bold mb-3">Chat Assistant</h2>
             <p className="text-muted-foreground">Get recommendations and insights through our intuitive chat interface.</p>
