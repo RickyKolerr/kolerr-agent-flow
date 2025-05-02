@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,8 @@ import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
+import { RESET_HOUR } from "@/constants/creditConstants";
+import { getTimeUntilReset } from "@/utils/creditUtils";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { CreditCounter } from "@/components/CreditCounter";

@@ -77,3 +77,4 @@ export const shouldResetCredits = (lastReset: string): boolean => {
      now.getFullYear() > resetTime.getFullYear())
   );
 };
+

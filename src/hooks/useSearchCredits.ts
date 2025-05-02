@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react";
 import { RESET_HOUR } from "@/constants/creditConstants";
-import { getTimeUntilReset } from "@/utils/creditUtils";
+import { getTimeUntilReset, shouldResetCredits } from "@/utils/creditUtils";
 
 // Number of free searches per day
 const DEFAULT_FREE_CREDITS = 5;
@@ -21,25 +21,6 @@ export const useSearchCredits = () => {
     
     return parseInt(storedCredits);
   });
-
-  // Check if we need to reset credits (at 4:00 AM each day)
-  function shouldResetCredits(lastResetDate: string) {
-    const now = new Date();
-    const lastReset = new Date(lastResetDate);
-    
-    // If it's a different day and past the reset hour
-    if (now.getDate() !== lastReset.getDate() || 
-        now.getMonth() !== lastReset.getMonth() || 
-        now.getFullYear() !== lastReset.getFullYear()) {
-      
-      // Only reset if we're past the reset hour (4:00 AM)
-      if (now.getHours() >= RESET_HOUR) {
-        return true;
-      }
-    }
-    
-    return false;
-  }
 
   // Update localStorage when credits change
   useEffect(() => {
@@ -75,5 +56,6 @@ export const useSearchCredits = () => {
   };
 };
 
-// Export constants for use in other files
-export { RESET_HOUR };
+// Re-export these functions for backward compatibility
+export { RESET_HOUR, getTimeUntilReset, shouldResetCredits };
+
