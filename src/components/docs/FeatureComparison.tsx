@@ -25,6 +25,11 @@ export const FeatureComparison = () => {
       pro: "Unlimited conversations",
     },
     {
+      name: "Chat Toggle Modes",
+      free: "Manual switching between normal/search",
+      pro: "Smart mode detection & unlimited usage",
+    },
+    {
       name: "Contact KOLs",
       free: "Limited (requires registration)",
       pro: "Unlimited direct messaging",

@@ -17,6 +17,10 @@ export const CreditFAQ = () => {
       answer: "KOL/campaign searches (finding creators, campaigns, etc.) use 1 credit per search. General conversation uses 1 credit for every 3 questions.",
     },
     {
+      question: "How does the chat toggle work?",
+      answer: "The chat toggle lets you switch between Normal Mode (3:1 question ratio) and Search Mode (1:1 ratio). Use Normal Mode for general information and Search Mode when looking for specific KOLs or campaigns.",
+    },
+    {
       question: "What can I do as a guest user?",
       answer: "Guest users can use credits for basic searches but are limited to 3 view-only results. Registration is required to save searches, contact KOLs, or access premium features.",
     },

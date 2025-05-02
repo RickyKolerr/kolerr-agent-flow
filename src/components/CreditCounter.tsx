@@ -1,12 +1,14 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { CreditCard, MessageSquare, Search, Info } from "lucide-react";
+import { CreditCard, MessageSquare, Search, Info, LightbulbIcon } from "lucide-react";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { useCredits } from "@/contexts/CreditContext";
+import { Toggle } from "@/components/ui/toggle";
+import { useState } from "react";
 
 interface CreditCounterProps {
-  variant?: "compact" | "standard" | "tooltip";
+  variant?: "compact" | "standard" | "tooltip" | "toggle";
   className?: string;
 }
 
@@ -17,6 +19,8 @@ export function CreditCounter({ variant = "standard", className = "" }: CreditCo
     remainingGeneralQuestions, 
     generalQuestionsPerCredit 
   } = useIntelligentCredits(originalCredits, hasPremiumPlan);
+  
+  const [isSearchMode, setIsSearchMode] = useState(false);
 
   const calculateRemainingSearches = () => {
     return freeCredits;
@@ -28,6 +32,39 @@ export function CreditCounter({ variant = "standard", className = "" }: CreditCo
 
   const remainingSearches = calculateRemainingSearches();
   const remainingGeneral = calculateRemainingGeneralQuestions();
+
+  if (variant === "toggle") {
+    return (
+      <div className={`flex flex-col items-center ${className}`}>
+        <div className="flex items-center space-x-2 rounded-md border p-1">
+          <Toggle
+            pressed={!isSearchMode}
+            onPressedChange={() => setIsSearchMode(false)}
+            className={`flex gap-1 items-center data-[state=on]:bg-blue-500 data-[state=on]:text-white ${!isSearchMode ? "bg-blue-500 text-white" : ""}`}
+          >
+            <LightbulbIcon className="h-4 w-4" />
+            <span className="text-xs">General</span>
+          </Toggle>
+          <Toggle
+            pressed={isSearchMode}
+            onPressedChange={() => setIsSearchMode(true)}
+            className={`flex gap-1 items-center data-[state=on]:bg-brand-pink data-[state=on]:text-white ${isSearchMode ? "bg-brand-pink text-white" : ""}`}
+          >
+            <Search className="h-4 w-4" />
+            <span className="text-xs">Search</span>
+          </Toggle>
+        </div>
+        <div className="mt-2">
+          <Badge variant="outline" className="border-brand-pink/30 text-brand-pink">
+            {isSearchMode ? `${remainingSearches} searches left` : `${remainingGeneral} questions left`}
+          </Badge>
+        </div>
+        <div className="mt-1 text-xs text-muted-foreground text-center">
+          {isSearchMode ? "1:1 credit ratio" : `${generalQuestionsPerCredit}:1 credit ratio`}
+        </div>
+      </div>
+    );
+  }
 
   if (variant === "tooltip") {
     return (

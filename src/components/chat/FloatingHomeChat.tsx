@@ -1,15 +1,16 @@
 
-import React from "react";
-import { CreditCard, MessageCircle, MessageSquare, Paperclip, Search, User } from "lucide-react";
+import React, { useState } from 'react';
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCredits } from "@/contexts/CreditContext";
-import { CreditBadge } from "@/components/CreditBadge";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useTypingEffect } from "@/hooks/useTypingEffect";
+import { X, Send, Search, MessageCircle } from 'lucide-react';
+import { CreditBadge } from '@/components/CreditBadge';
+import { useUserAccess } from '@/hooks/useUserAccess';
+import { useCredits } from '@/contexts/CreditContext';
+import { ChatToggle } from './ChatToggle';
+import { toast } from 'sonner';
 
 interface Message {
   id: string;
@@ -25,9 +26,11 @@ interface FloatingHomeChatProps {
   setInputValue: (value: string) => void;
   handleSendMessage: () => void;
   messagesEndRef: React.RefObject<HTMLDivElement>;
-  isKOLSpecificQuery: (input: string) => boolean;
   generalQuestionCounter: number;
   generalQuestionsPerCredit: number;
+  isKOLSpecificQuery: (message: string) => boolean;
+  isSearchMode?: boolean;
+  setIsSearchMode?: (isSearchMode: boolean) => void;
 }
 
 export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
@@ -36,150 +39,144 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   setInputValue,
   handleSendMessage,
   messagesEndRef,
-  isKOLSpecificQuery,
   generalQuestionCounter,
-  generalQuestionsPerCredit
+  generalQuestionsPerCredit,
+  isKOLSpecificQuery,
+  isSearchMode = false,
+  setIsSearchMode
 }) => {
-  const navigate = useNavigate();
+  const [minimized, setMinimized] = useState(false);
+  const { isAuthenticated } = useUserAccess();
   const { freeCredits, hasPremiumPlan } = useCredits();
-  const isMobile = useMediaQuery('(max-width: 768px)');
 
-  // Fixed heights for better stability
-  const chatContainerHeight = "500px";
-  const messageAreaHeight = "350px";
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(e.target.value);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && inputValue.trim() !== '') {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+  
+  const handleToggleSearchMode = (newMode: boolean) => {
+    if (setIsSearchMode) {
+      setIsSearchMode(newMode);
+      toast.info(
+        newMode ? "Switched to Search Mode" : "Switched to Normal Mode", 
+        {
+          description: newMode
+            ? "Each search uses 1 credit. Use this for finding specific KOLs or campaigns."
+            : `Normal chat uses 1 credit for every ${generalQuestionsPerCredit} questions.`
+        }
+      );
+    }
+  };
+
+  if (minimized) {
+    return (
+      <div className="fixed bottom-24 right-4 z-40">
+        <Button 
+          onClick={() => setMinimized(false)}
+          className="rounded-full py-3 px-5 shadow-lg bg-gradient-to-r from-brand-pink to-purple-600"
+        >
+          Continue Chat
+        </Button>
+      </div>
+    );
+  }
 
   return (
-    <div className={`fixed bottom-0 right-0 z-50 md:max-w-[550px] w-full rounded-t-2xl overflow-hidden shadow-2xl`}>
-      <div className="glass-panel shadow-2xl flex flex-col h-auto">
-        <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
-              <MessageCircle className="h-5 w-5 text-white" />
+    <div className="fixed bottom-24 right-4 z-40">
+      <Card className="w-80 md:w-96 shadow-2xl border border-white/10 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-xl">
+        <CardHeader className="p-3 flex flex-row justify-between items-center space-y-0 border-b border-white/10">
+          <div className="flex items-center space-x-2">
+            <div className="w-10 h-10 rounded-full bg-brand-pink flex items-center justify-center">
+              {isSearchMode ? (
+                <Search className="h-5 w-5 text-white" />
+              ) : (
+                <MessageCircle className="h-5 w-5 text-white" />
+              )}
             </div>
             <div>
-              <h2 className="font-bold text-lg">AI KOL Discovery Agent</h2>
-              <p className="text-sm text-muted-foreground">
-                {hasPremiumPlan ? "Premium plan activated" : `${freeCredits} free ${freeCredits === 1 ? 'search' : 'searches'} remaining`}
-              </p>
-            </div>
-          </div>
-          {!hasPremiumPlan && (
-            <CreditBadge variant="compact" />
-          )}
-        </div>
-
-        <div className="bg-black/40 p-3 border-b border-white/10">
-          <div className="rounded-md bg-brand-pink/10 p-2 border border-brand-pink/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <CreditCard className="h-3 w-3 text-brand-pink mr-2" />
-                <span className="font-medium text-xs">Credit Usage</span>
-              </div>
-            </div>
-            <div className="mt-1 text-xs grid grid-cols-2 gap-1">
-              <div className="flex items-center">
-                <Badge variant="outline" className="flex items-center mr-1 bg-brand-pink/5 border-brand-pink/20 h-5">
-                  <Search className="h-2 w-2 mr-1 text-brand-pink" />
-                </Badge>
-                <span className="text-xs">KOL specific: 1 credit</span>
-              </div>
-              <div className="flex items-center">
-                <Badge variant="outline" className="flex items-center mr-1 bg-brand-pink/5 border-brand-pink/20 h-5">
-                  <MessageSquare className="h-2 w-2 mr-1 text-brand-pink" />
-                </Badge>
-                <span className="text-xs">General: {generalQuestionsPerCredit} questions = 1 credit</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <ScrollArea className="flex-1 p-4 bg-black/20" style={{ height: messageAreaHeight }}>
-          <div className="pb-2">
-            {messages.map(message => {
-              // Add typing effect for bot messages
-              const { displayedText, isComplete } = message.type === "bot" ? 
-                useTypingEffect({
-                  text: message.content,
-                  typingSpeed: 30, // Faster typing speed
-                  startDelay: 300,
-                  humanizedTyping: true,
-                }) : { displayedText: message.content, isComplete: true };
-
-              return (
-                <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                      <MessageCircle className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                    {message.type === "bot" ? (
-                      <span className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}>
-                        {displayedText}
-                      </span>
-                    ) : message.content}
-                    
-                    {message.isTyping && (
-                      <span className="inline-block ml-1 animate-pulse">▌</span>
-                    )}
-                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                    )}
-                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
-                    )}
+              <div className="font-semibold">{isSearchMode ? "Search Agent" : "Kolerr Assistant"}</div>
+              <div className="text-xs text-muted-foreground">
+                {!hasPremiumPlan && (
+                  <div className="flex items-center">
+                    <Badge variant="outline" className="text-xs font-normal text-muted-foreground border-white/10">
+                      {isSearchMode 
+                        ? `${freeCredits} search${freeCredits !== 1 ? 'es' : ''} left` 
+                        : `${generalQuestionsPerCredit - generalQuestionCounter}/${generalQuestionsPerCredit} questions left`}
+                    </Badge>
                   </div>
-                  {message.type === "user" && (
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                      <User className="h-4 w-4" />
-                    </div>
+                )}
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center space-x-1">
+            {!hasPremiumPlan && (
+              <ChatToggle 
+                isSearchMode={isSearchMode} 
+                onToggle={handleToggleSearchMode}
+                variant="pill" 
+                showLabels={false}
+              />
+            )}
+            <Button variant="ghost" size="icon" onClick={() => setMinimized(true)}>
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <ScrollArea className="h-[300px] p-4">
+            {messages.map(message => (
+              <div
+                key={message.id}
+                className={`mb-4 max-w-[90%] ${
+                  message.type === 'user' ? 'ml-auto text-right' : ''
+                }`}
+              >
+                <div
+                  className={`inline-block rounded-2xl px-4 py-2 ${
+                    message.type === 'user'
+                      ? 'bg-brand-pink text-white rounded-tr-none'
+                      : 'bg-white/5 border border-white/10 rounded-tl-none'
+                  }`}
+                >
+                  {message.content}
+                  {message.isTyping && (
+                    <span className="typing-indicator ml-1">
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                      <span className="dot"></span>
+                    </span>
                   )}
                 </div>
-              );
-            })}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-
-        <div className="p-3 border-t border-white/10 bg-black/40">
-          <div className="flex gap-2">
-            <Input 
-              placeholder={isMobile ? "Ask about creators..." : "Ask about specific creator types, niches, or requirements..."} 
-              value={inputValue} 
-              onChange={e => setInputValue(e.target.value)} 
-              onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
-              className="bg-black/60" 
-            />
-            <Button onClick={handleSendMessage} className={isMobile ? "px-3" : ""}>
-              Send
-            </Button>
-          </div>
-          <div className="flex items-center justify-between mt-2 px-1">
-            <Button variant="ghost" size="sm" className="text-muted-foreground p-1 h-7">
-              <Paperclip className="h-3 w-3 mr-1" />
-              Attach
-            </Button>
-            
-            {!hasPremiumPlan && (
-              <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <span>
-                  {isKOLSpecificQuery(inputValue) 
-                    ? "KOL question: Uses 1 credit" 
-                    : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
-                </span>
-                <Button 
-                  variant="link" 
-                  size="sm" 
-                  className="text-brand-pink p-0 h-auto text-xs" 
-                  onClick={() => navigate("/pricing")}
-                >
-                  Upgrade
-                </Button>
               </div>
-            )}
+            ))}
+            <div ref={messagesEndRef} />
+          </ScrollArea>
+        </CardContent>
+        <CardFooter className="p-3 pt-2 border-t border-white/10">
+          <div className="flex w-full gap-2">
+            <Input
+              placeholder={isSearchMode ? "Search for KOLs or campaigns..." : "Ask a question..."}
+              value={inputValue}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyPress}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={!inputValue.trim()} 
+              className={isSearchMode ? "bg-brand-pink hover:bg-brand-pink/90" : ""}
+            >
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
-        </div>
-      </div>
+        </CardFooter>
+      </Card>
     </div>
   );
 };
