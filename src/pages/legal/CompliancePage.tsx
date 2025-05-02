@@ -1,159 +1,190 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, FileCheck, CheckCircle, AlertCircle } from "lucide-react";
+import { CheckCircle, FileText, Globe, Scale } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { Separator } from "@/components/ui/separator";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 const CompliancePage = () => {
   const { t } = useLanguage();
-  
-  const certifications = [
-    {
-      name: "SOC 2 Type II",
-      description: "Independent verification of our security controls, processes, and procedures.",
-      icon: FileCheck
-    },
-    {
-      name: "ISO 27001",
-      description: "International standard for information security management systems.",
-      icon: Shield
-    },
-    {
-      name: "GDPR Compliance",
-      description: "Full compliance with European data protection regulations.",
-      icon: CheckCircle
-    },
-    {
-      name: "CCPA Compliance",
-      description: "Adherence to California Consumer Privacy Act requirements.",
-      icon: CheckCircle
-    }
-  ];
-  
-  const complianceFaqs = [
-    {
-      question: "How does Kolerr handle data subject requests?",
-      answer: "We have established dedicated processes for handling data subject requests (access, rectification, erasure, etc.) within legal timeframes. All requests are tracked, documented, and executed in accordance with applicable privacy laws."
-    },
-    {
-      question: "Is data stored in compliance with international transfer requirements?",
-      answer: "Yes, all international data transfers are conducted in compliance with relevant regulations. We utilize EU Standard Contractual Clauses and other appropriate transfer mechanisms as required by GDPR and other privacy laws."
-    },
-    {
-      question: "What measures are in place for processing children's data?",
-      answer: "Kolerr implements enhanced protection for any data that may pertain to children, including age verification mechanisms, parental consent flows, and strict data minimization principles in accordance with COPPA and similar regulations."
-    },
-    {
-      question: "How often are compliance audits conducted?",
-      answer: "We conduct internal compliance audits quarterly and undergo independent third-party audits annually. Additionally, we perform continuous automated compliance monitoring through specialized tools integrated with our systems."
-    }
-  ];
 
   return (
     <div className="container mx-auto py-12">
       <div className="max-w-4xl mx-auto px-4">
         <div className="flex items-center gap-3 mb-8">
           <div className="p-2 rounded-lg bg-brand-pink/10">
-            <FileCheck className="h-6 w-6 text-brand-pink" />
+            <CheckCircle className="h-6 w-6 text-brand-pink" />
           </div>
-          <h1 className="text-3xl font-bold">{t('legal.compliance.title')}</h1>
+          <h1 className="text-3xl font-bold">Compliance</h1>
         </div>
         
-        <p className="text-xl text-muted-foreground mb-8">
-          {t('legal.compliance.description')}
+        <p className="text-muted-foreground mb-8">
+          Last updated: April 30, 2025
         </p>
-        
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-brand-pink" />
-              {t('legal.compliance.standards')}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="prose prose-gray max-w-none">
-            <p className="text-muted-foreground mb-6">
-              {t('legal.compliance.standardsDesc')}
-            </p>
-            
-            <div className="grid sm:grid-cols-2 gap-6">
-              {certifications.map((cert, index) => (
-                <div key={index} className="flex gap-4">
-                  <div className="p-2 bg-brand-pink/10 rounded-md h-fit">
-                    <cert.icon className="h-5 w-5 text-brand-pink" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium">{cert.name}</h3>
-                    <p className="text-sm text-muted-foreground">{cert.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-brand-pink" />
-              {t('legal.compliance.dataHandling')}
+              <Globe className="h-5 w-5 text-brand-pink" />
+              Global Regulatory Compliance
             </CardTitle>
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              {t('legal.compliance.dataHandlingDesc')}
+              At Kolerr, we are committed to adhering to global regulations and standards that govern data privacy, digital marketing, and influencer relationships. Our platform is designed to maintain compliance with various regional and international legal frameworks.
             </p>
             
-            <div className="mt-6 space-y-4">
-              <div className="bg-black/20 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Data Protection Impact Assessments</h3>
-                <p className="text-sm text-muted-foreground">
-                  We conduct comprehensive DPIAs for all new features and processes involving personal data to identify and mitigate privacy risks before implementation.
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+              <div className="bg-secondary/50 p-4 rounded-md">
+                <h4 className="text-lg font-medium mb-2">GDPR Compliance</h4>
+                <p className="text-muted-foreground text-sm">
+                  Our platform adheres to the European Union's General Data Protection Regulation (GDPR), ensuring proper data processing, user consent mechanisms, and data subject rights.
                 </p>
               </div>
               
-              <div className="bg-black/20 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Vendor Assessment Program</h3>
-                <p className="text-sm text-muted-foreground">
-                  All third-party service providers undergo thorough security and compliance assessments before integration with our platform to ensure end-to-end compliance.
+              <div className="bg-secondary/50 p-4 rounded-md">
+                <h4 className="text-lg font-medium mb-2">CCPA Compliance</h4>
+                <p className="text-muted-foreground text-sm">
+                  We respect the California Consumer Privacy Act (CCPA) requirements, providing California residents with specific rights regarding their personal information.
                 </p>
               </div>
               
-              <div className="bg-black/20 p-4 rounded-lg">
-                <h3 className="font-medium mb-2">Retention and Deletion Policies</h3>
-                <p className="text-sm text-muted-foreground">
-                  We maintain strict data retention schedules and secure deletion protocols to ensure data is not kept longer than necessary for its intended purpose.
+              <div className="bg-secondary/50 p-4 rounded-md">
+                <h4 className="text-lg font-medium mb-2">FTC Guidelines</h4>
+                <p className="text-muted-foreground text-sm">
+                  All campaign templates and influencer contracts include Federal Trade Commission (FTC) disclosure requirements for transparent sponsored content.
+                </p>
+              </div>
+              
+              <div className="bg-secondary/50 p-4 rounded-md">
+                <h4 className="text-lg font-medium mb-2">ASA Standards</h4>
+                <p className="text-muted-foreground text-sm">
+                  Our UK campaigns follow the Advertising Standards Authority (ASA) guidelines for influencer marketing and sponsored content disclosure.
                 </p>
               </div>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-brand-pink" />
-              Compliance FAQ
+              <FileText className="h-5 w-5 text-brand-pink" />
+              Documentation & Record Keeping
             </CardTitle>
           </CardHeader>
           <CardContent>
+            <p className="text-muted-foreground mb-6">
+              Our platform automatically maintains records required for regulatory compliance, ensuring both brands and creators can easily demonstrate adherence to relevant laws and regulations.
+            </p>
+            
             <Accordion type="single" collapsible className="w-full">
-              {complianceFaqs.map((faq, index) => (
-                <AccordionItem key={index} value={`item-${index}`}>
-                  <AccordionTrigger>{faq.question}</AccordionTrigger>
-                  <AccordionContent>
-                    <p className="text-muted-foreground">{faq.answer}</p>
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
+              <AccordionItem value="item-1">
+                <AccordionTrigger>Campaign Documentation</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-muted-foreground mb-2">
+                    All campaigns on Kolerr include:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    <li>Detailed terms and conditions</li>
+                    <li>Required disclosures based on jurisdiction</li>
+                    <li>Payment terms and deliverable specifications</li>
+                    <li>Content approval workflows with timestamped records</li>
+                    <li>Performance metrics and engagement data</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-2">
+                <AccordionTrigger>Contract Compliance</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-muted-foreground mb-2">
+                    Our digital contract system ensures:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    <li>Legally binding e-signatures</li>
+                    <li>Immutable contract records</li>
+                    <li>Automated reminder systems for deliverables</li>
+                    <li>Clear disclosure requirements for sponsored content</li>
+                    <li>Proper tax documentation collection</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+              
+              <AccordionItem value="item-3">
+                <AccordionTrigger>Data Retention Policies</AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-muted-foreground mb-2">
+                    We maintain comprehensive data retention policies that:
+                  </p>
+                  <ul className="list-disc pl-5 space-y-1 text-muted-foreground">
+                    <li>Follow region-specific retention requirements</li>
+                    <li>Provide data export capabilities for users</li>
+                    <li>Include secure data deletion processes</li>
+                    <li>Support legal hold procedures when necessary</li>
+                    <li>Allow configuration of custom retention periods</li>
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
             </Accordion>
+          </CardContent>
+        </Card>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Scale className="h-5 w-5 text-brand-pink" />
+              Industry Standards & Self-Regulation
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="prose prose-gray max-w-none">
+            <p className="text-muted-foreground">
+              Beyond legal compliance, Kolerr adheres to industry best practices and self-regulatory frameworks to maintain the highest ethical standards in influencer marketing.
+            </p>
+            
+            <div className="mt-6 space-y-4">
+              <div>
+                <h4 className="text-lg font-medium mb-2">IAB Guidelines</h4>
+                <p className="text-muted-foreground">
+                  We implement the Interactive Advertising Bureau's guidelines for social media marketing, ensuring transparency and ethical advertising practices.
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-2">Platform-Specific Requirements</h4>
+                <p className="text-muted-foreground">
+                  Our campaign tools are updated regularly to comply with the latest requirements from social media platforms like Instagram, TikTok, and YouTube for branded content and sponsorship disclosure.
+                </p>
+              </div>
+              
+              <div>
+                <h4 className="text-lg font-medium mb-2">Ethical Marketing Pledge</h4>
+                <p className="text-muted-foreground">
+                  All users of Kolerr agree to our Ethical Marketing Pledge, which prohibits misleading claims, requires transparency, and promotes honest engagement practices.
+                </p>
+              </div>
+            </div>
+            
+            <div className="bg-brand-pink/10 p-4 rounded-md mt-6 border border-brand-pink/20">
+              <h4 className="text-lg font-medium mb-2 text-brand-pink">Compliance Assistance</h4>
+              <p className="text-muted-foreground">
+                Our platform includes built-in compliance tools to help both brands and creators navigate regulatory requirements:
+              </p>
+              <ul className="list-disc pl-5 space-y-1 text-muted-foreground mt-2">
+                <li>Automated disclosure reminders</li>
+                <li>Region-specific compliance templates</li>
+                <li>Content review checklists</li>
+                <li>Tax documentation management</li>
+                <li>Regulatory update notifications</li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
         
         <div className="mt-8 text-center">
           <p className="text-muted-foreground mb-4">
-            For detailed compliance documentation or specific inquiries, please contact our compliance team:
+            For compliance-related inquiries or to request our detailed compliance documentation, please contact:
           </p>
           <Button variant="outline">
             compliance@kolerr.ai
