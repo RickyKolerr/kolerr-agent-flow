@@ -1,80 +1,79 @@
 
-import { useState, useEffect } from 'react';
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
+import { RESET_HOUR } from "@/constants/creditConstants";
+import { getTimeUntilReset } from "@/utils/creditUtils";
 
-export const DAILY_CREDITS = 5;
-export const RESET_HOUR = 7; // 7 AM
-
-export const getTimeUntilReset = (): string => {
-  const now = new Date();
-  const tomorrow = new Date();
-  
-  if (now.getHours() < RESET_HOUR) {
-    tomorrow.setDate(now.getDate());
-  } else {
-    tomorrow.setDate(now.getDate() + 1);
-  }
-  
-  tomorrow.setHours(RESET_HOUR, 0, 0, 0);
-  
-  const hoursLeft = Math.floor((tomorrow.getTime() - now.getTime()) / (1000 * 60 * 60));
-  const minutesLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
-  
-  return `${hoursLeft}h ${minutesLeft}m`;
-};
+// Number of free searches per day
+const DEFAULT_FREE_CREDITS = 5;
 
 export const useSearchCredits = () => {
-  const [creditsLeft, setCreditsLeft] = useState<number>(() => {
-    const stored = localStorage.getItem('search_credits');
-    if (!stored) return DAILY_CREDITS;
+  // Get the current available credits from localStorage or use default
+  const [creditsLeft, setCreditsLeft] = useState(() => {
+    const storedCredits = localStorage.getItem("search_credits");
+    const lastResetDate = localStorage.getItem("credits_last_reset");
     
-    const { credits, lastReset } = JSON.parse(stored);
-    const now = new Date();
-    const resetTime = new Date(lastReset);
-    resetTime.setHours(RESET_HOUR, 0, 0, 0);
-    
-    if (now.getTime() > resetTime.getTime() && 
-        (now.getDate() > resetTime.getDate() || 
-         now.getMonth() > resetTime.getMonth() ||
-         now.getFullYear() > resetTime.getFullYear())) {
-      return DAILY_CREDITS;
+    // If this is the first time or we need to reset based on date
+    if (!storedCredits || !lastResetDate || shouldResetCredits(lastResetDate)) {
+      localStorage.setItem("search_credits", DEFAULT_FREE_CREDITS.toString());
+      localStorage.setItem("credits_last_reset", new Date().toISOString());
+      return DEFAULT_FREE_CREDITS;
     }
     
-    return credits;
+    return parseInt(storedCredits);
   });
 
+  // Check if we need to reset credits (at 4:00 AM each day)
+  function shouldResetCredits(lastResetDate: string) {
+    const now = new Date();
+    const lastReset = new Date(lastResetDate);
+    
+    // If it's a different day and past the reset hour
+    if (now.getDate() !== lastReset.getDate() || 
+        now.getMonth() !== lastReset.getMonth() || 
+        now.getFullYear() !== lastReset.getFullYear()) {
+      
+      // Only reset if we're past the reset hour (4:00 AM)
+      if (now.getHours() >= RESET_HOUR) {
+        return true;
+      }
+    }
+    
+    return false;
+  }
+
+  // Update localStorage when credits change
   useEffect(() => {
-    localStorage.setItem('search_credits', JSON.stringify({
-      credits: creditsLeft,
-      lastReset: new Date().toISOString()
-    }));
+    localStorage.setItem("search_credits", creditsLeft.toString());
   }, [creditsLeft]);
 
+  // Use one credit and return if successful
   const useCredit = () => {
     if (creditsLeft > 0) {
       setCreditsLeft(prev => prev - 1);
       return true;
     }
-    
-    toast.error(
-      "You've used all your free searches for today", 
-      { 
-        description: `Get more searches with a premium plan or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
-        action: {
-          label: "Upgrade",
-          onClick: () => window.location.href = "/pricing"
-        }
-      }
-    );
-    
     return false;
   };
 
-  return { 
-    creditsLeft, 
+  // Reset credits to default amount
+  const resetCredits = () => {
+    setCreditsLeft(DEFAULT_FREE_CREDITS);
+    localStorage.setItem("credits_last_reset", new Date().toISOString());
+  };
+
+  // Set credits to a specific amount
+  const setCredits = (amount: number) => {
+    setCreditsLeft(amount);
+  };
+
+  return {
+    creditsLeft,
     useCredit,
-    dailyLimit: DAILY_CREDITS,
+    resetCredits,
+    setCredits,
     getTimeUntilReset,
-    resetHour: RESET_HOUR
   };
 };
+
+// Export constants for use in other files
+export { RESET_HOUR };

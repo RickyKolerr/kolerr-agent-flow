@@ -3,6 +3,8 @@ import { createContext, useContext, ReactNode, useState, useEffect } from "react
 import { useSearchCredits } from "@/hooks/useSearchCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
+import { getTimeUntilReset } from "@/utils/creditUtils";
+import { GENERAL_QUESTIONS_PER_CREDIT } from "@/constants/creditConstants";
 
 interface CreditContextType {
   freeCredits: number;
@@ -19,7 +21,7 @@ interface CreditContextType {
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
 
 export const CreditProvider = ({ children }: { children: ReactNode }) => {
-  const { creditsLeft, useCredit, getTimeUntilReset } = useSearchCredits();
+  const { creditsLeft, useCredit } = useSearchCredits();
   const [premiumCredits, setPremiumCredits] = useState<number>(0);
   const { user, isAuthenticated } = useAuth();
   
@@ -30,7 +32,6 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   const { 
     freeCredits,
     useIntelligentCredit,
-    generalQuestionsPerCredit
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // Load premium credits from localStorage or set default
@@ -87,7 +88,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       timeUntilReset,
       hasPremiumPlan,
       useIntelligentCredit,
-      generalQuestionsPerCredit
+      generalQuestionsPerCredit: GENERAL_QUESTIONS_PER_CREDIT
     }}>
       {children}
     </CreditContext.Provider>

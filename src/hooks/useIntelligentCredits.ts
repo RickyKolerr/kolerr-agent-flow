@@ -1,36 +1,10 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
-import { getTimeUntilReset, RESET_HOUR } from "./useSearchCredits";
+import { GENERAL_QUESTIONS_PER_CREDIT, RESET_HOUR } from "@/constants/creditConstants";
+import { isKOLSpecificQuery, getTimeUntilReset, shouldResetCredits } from "@/utils/creditUtils";
+import { IntelligentCreditStore, IntelligentCreditResult } from "@/types/credits";
 
-// Constants for credit system
-const GENERAL_QUESTIONS_PER_CREDIT = 3;
-const KOL_PATTERNS = [
-  // Core KOL-related terms
-  'kol', 'creator', 'influencer', 'tiktok', 'search', 'find', 'campaign',
-  'follower', 'niche', 'engagement',
-  
-  // Industry/category terms that indicate KOL search
-  'fashion', 'beauty', 'gaming', 'tech', 'travel', 'food', 'fitness', 
-  'lifestyle', 'music', 'sports', 'comedy',
-  
-  // Action words indicating search intent
-  'recommend', 'suggest', 'locate', 'identify', 'discover', 'show me',
-  
-  // Monetary terms indicating commercial intent
-  'sponsor', 'promote', 'advertise', 'collaborate', 'partnership', 'deal', 'cost',
-  
-  // Specific metrics
-  'views', 'likes', 'followers', 'engagement rate', 'audience'
-];
-
-interface IntelligentCreditStore {
-  freeCredits: number;
-  generalQuestionCounter: number;
-  lastReset: string;
-}
-
-export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan: boolean) => {
+export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan: boolean): IntelligentCreditResult => {
   // Initialize from localStorage or with default values
   const [creditState, setCreditState] = useState<IntelligentCreditStore>(() => {
     const stored = localStorage.getItem('intelligent_credits');
@@ -43,19 +17,13 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
     }
     
     const parsedStore = JSON.parse(stored);
-    const now = new Date();
-    const resetTime = new Date(parsedStore.lastReset);
-    resetTime.setHours(RESET_HOUR, 0, 0, 0);
     
-    if (now.getTime() > resetTime.getTime() && 
-        (now.getDate() > resetTime.getDate() || 
-         now.getMonth() > resetTime.getMonth() ||
-         now.getFullYear() > resetTime.getFullYear())) {
-      // Reset credits if it's past the reset time
+    // Check if we need to reset credits based on time
+    if (shouldResetCredits(parsedStore.lastReset)) {
       return {
         freeCredits: initialFreeCredits,
         generalQuestionCounter: 0,
-        lastReset: now.toISOString()
+        lastReset: new Date().toISOString()
       };
     }
     
@@ -68,44 +36,11 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   }, [creditState]);
 
   /**
-   * Determines if a message is KOL/campaign-specific or general
-   * Using an enhanced algorithm for better detection
-   * @param message The user message to classify
-   * @returns True if the message is KOL/campaign-specific, false if general
-   */
-  const isKOLSpecificQuery = (message: string) => {
-    const lowerMsg = message.toLowerCase();
-    
-    // Quick check for explicit KOL-related keywords
-    if (KOL_PATTERNS.some(pattern => lowerMsg.includes(pattern))) {
-      return true;
-    }
-    
-    // Enhanced context detection - check for phrases that suggest looking for specific creators
-    const findingPhrases = [
-      "who can", "who should", "looking for someone", "need a creator", 
-      "best creator", "top influencer", "recommend", "suggestion"
-    ];
-    
-    if (findingPhrases.some(phrase => lowerMsg.includes(phrase))) {
-      return true;
-    }
-    
-    // Check for questions about specific demographics or metrics
-    const metricPatterns = ["followers", "engagement", "audience", "demographic", "reach", "views"];
-    if (metricPatterns.some(metric => lowerMsg.includes(metric))) {
-      return true;
-    }
-    
-    return false;
-  };
-
-  /**
    * Uses credits based on the message classification
    * @param message The user message
    * @returns True if credit usage was successful, false otherwise
    */
-  const useIntelligentCredit = (message: string) => {
+  const useIntelligentCredit = (message: string): boolean => {
     // Premium users don't consume credits
     if (hasPremiumPlan) {
       return true;
@@ -156,7 +91,7 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
     }
   };
 
-  const showCreditExhaustedToast = () => {
+  const showCreditExhaustedToast = (): void => {
     toast.error("Out of free credits", {
       description: `Upgrade your plan to continue searching or wait until ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
       action: {
@@ -170,7 +105,7 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   const remainingGeneralQuestions = GENERAL_QUESTIONS_PER_CREDIT - creditState.generalQuestionCounter;
 
   // Reset credits to a specific amount (used for testing or admin functions)
-  const resetCredits = (amount: number) => {
+  const resetCredits = (amount: number): void => {
     setCreditState(prev => ({
       ...prev,
       freeCredits: amount,
@@ -179,7 +114,7 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   };
 
   // Set credits to a specific amount without affecting the counter
-  const setCredits = (amount: number) => {
+  const setCredits = (amount: number): void => {
     setCreditState(prev => ({
       ...prev,
       freeCredits: amount
@@ -187,7 +122,7 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   };
 
   // Add credits to the current amount
-  const addCredits = (amount: number) => {
+  const addCredits = (amount: number): void => {
     setCreditState(prev => ({
       ...prev,
       freeCredits: prev.freeCredits + amount
