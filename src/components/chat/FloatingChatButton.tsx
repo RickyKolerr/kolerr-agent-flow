@@ -1,83 +1,60 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { MessagesSquare } from "lucide-react";
-import { AgentChat } from "./AgentChat";
-import { CreditBadge } from "@/components/CreditBadge";
-import { useCredits } from "@/contexts/CreditContext";
-import { ChatToggle } from "./ChatToggle";
+import { MessageCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { useLocation, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useMobileDetection } from "@/hooks/use-mobile-detection";
 
-interface FloatingChatButtonProps {
-  initialMessage?: string;
-  chatType?: "kol_search" | "campaign_search" | "general";
-}
+export const FloatingChatButton = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { isMobile } = useMobileDetection();
+  const [isVisible, setIsVisible] = useState(true);
 
-export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ 
-  initialMessage = "👋 Hello! How can I assist you today?",
-  chatType = "general" 
-}) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSearchMode, setIsSearchMode] = useState(false);
-  const { hasPremiumPlan } = useCredits();
-  
-  // Determine title and subtitle based on chat type and search mode
-  const getTitle = () => {
-    switch (chatType) {
-      case "kol_search":
-        return "KOL Discovery Agent";
-      case "campaign_search":
-        return "Campaign Search Agent";
-      default:
-        return isSearchMode ? "Search Assistant" : "AI Assistant";
+  // Check if we should hide the button based on current route
+  useEffect(() => {
+    // Hide on chat pages, auth pages, and certain dashboard pages
+    const shouldHide = 
+      location.pathname.startsWith('/chat') || 
+      ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
+      location.pathname.startsWith('/onboarding') ||
+      location.pathname === '/' || // Hide on home page
+      location.pathname === '/home'; // Also hide on /home route
+    
+    setIsVisible(!shouldHide);
+  }, [location.pathname]);
+
+  // Handle chat button click
+  const handleChatClick = () => {
+    if (!user) {
+      navigate('/login', { state: { from: location.pathname, message: 'Please log in to access chat' } });
+      return;
     }
+
+    // If already authenticated, navigate to chat
+    navigate('/chat');
   };
-  
-  const getSubtitle = () => {
-    switch (chatType) {
-      case "kol_search":
-        return "Find the perfect creator for your brand";
-      case "campaign_search":
-        return "Discover campaign opportunities";
-      default:
-        return isSearchMode 
-          ? "Search for specific KOLs or campaigns (uses more credits)"
-          : "Ask me anything about Kolerr (uses fewer credits)";
-    }
-  };
+
+  if (!isVisible) {
+    return null;
+  }
 
   return (
-    <>
-      <div className="fixed bottom-4 right-4 z-50 flex items-center space-x-3">
-        {/* Removed hasPremiumPlan condition to show toggle for all users */}
-        {chatType === "general" && (
-          <div className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1 border border-white/10 shadow-lg">
-            <ChatToggle
-              isSearchMode={isSearchMode}
-              onToggle={setIsSearchMode}
-              variant="pill"
-            />
-          </div>
-        )}
-      
-        <Button
-          onClick={() => setIsOpen(true)}
-          className={`rounded-full h-14 w-14 shadow-lg ${
-            isSearchMode ? "bg-brand-pink hover:bg-brand-pink/90" : "bg-blue-500 hover:bg-blue-600"
-          }`}
-        >
-          <MessagesSquare className="h-6 w-6" />
-          <span className="sr-only">Chat with AI Assistant</span>
-        </Button>
-      </div>
-
-      <AgentChat
-        title={getTitle()}
-        subtitle={getSubtitle()}
-        initialMessage={initialMessage}
-        isOpen={isOpen}
-        onOpenChange={setIsOpen}
-        chatType={chatType}
-      />
-    </>
+    <div className="fixed bottom-6 right-6 z-50">
+      <Button
+        variant="secondary"
+        size="lg"
+        className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
+        onClick={handleChatClick}
+      >
+        <MessageCircle className="h-6 w-6 text-white" />
+        <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
+          3
+        </Badge>
+      </Button>
+    </div>
   );
 };

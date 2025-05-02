@@ -1,4 +1,3 @@
-
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,8 +11,7 @@ import { mockCreatorData } from "@/data/mockCreators";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { RESET_HOUR } from "@/constants/creditConstants";
-import { getTimeUntilReset } from "@/utils/creditUtils";
+import { RESET_HOUR, getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { useTypingEffect } from "@/hooks/useTypingEffect";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { CreditCounter } from "@/components/CreditCounter";
@@ -64,9 +62,6 @@ const HomePage = () => {
     generalQuestionsPerCredit
   } = useIntelligentCredits(originalFreeCredits, hasPremiumPlan);
 
-  // Add state for chat mode toggle
-  const [isSearchMode, setIsSearchMode] = useState(false);
-
   // Enhanced typing effect with super slow speed for specific phrases
   const { displayedText, isComplete } = useTypingEffect({
     text: welcomeMessage,
@@ -108,15 +103,6 @@ const HomePage = () => {
     
     // Analyze if the message is KOL-specific
     const isSpecific = isKOLSpecificQuery(inputValue);
-    
-    // If this is a search query but we're not in search mode,
-    // automatically switch to search mode
-    if (isSpecific && !isSearchMode) {
-      setIsSearchMode(true);
-      toast.info("Switched to Search Mode", {
-        description: "Your question appears to be a search query. Each search uses 1 credit."
-      });
-    }
     
     // Check if we have enough credits
     if (!hasPremiumPlan && freeCredits === 0) {
@@ -603,8 +589,6 @@ const HomePage = () => {
         isKOLSpecificQuery={isKOLSpecificQuery}
         generalQuestionCounter={generalQuestionCounter}
         generalQuestionsPerCredit={generalQuestionsPerCredit}
-        isSearchMode={isSearchMode}
-        setIsSearchMode={setIsSearchMode}
       />
 
       {/* Add fixed bottom padding to prevent content from being hidden behind floating chat */}

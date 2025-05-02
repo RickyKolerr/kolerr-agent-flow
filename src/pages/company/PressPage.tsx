@@ -114,7 +114,7 @@ const PressPage = () => {
               {t('company.press.contactDesc')}
             </p>
             <p className="font-medium">
-              {t('company.press.email')}: <a href="mailto:press@kolerr.ai" className="text-brand-pink hover:underline">press@kolerr.ai</a>
+              {t('company.press.email')}: <a href="mailto:press@kolerr.com" className="text-brand-pink hover:underline">press@kolerr.com</a>
             </p>
           </CardContent>
         </Card>

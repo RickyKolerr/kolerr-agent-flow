@@ -1,83 +1,95 @@
 
 import React, { useEffect, useRef } from "react";
+import { ChatMessage } from "@/components/chat/ChatMessage";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChatMessage } from "./ChatMessage";
-import type { Message } from "@/hooks/useMessageSimulation";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Lock, Info } from "lucide-react";
-import { useRolePermissions } from "@/hooks/useRolePermissions";
-import { useCredits } from "@/contexts/CreditContext";
+import { Message } from "@/hooks/useMessageSimulation";
 
 interface ChatMessagesDisplayProps {
   messages: Message[];
 }
 
 export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({ messages }) => {
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { getSearchResultLimit } = useRolePermissions();
-  const { hasPremiumPlan } = useCredits();
-  
-  const resultLimit = getSearchResultLimit();
-  const userMessages = messages.filter(m => m.senderId === "current-user");
-  const isApproachingLimit = !hasPremiumPlan && userMessages.length >= (resultLimit - 2) && userMessages.length < resultLimit;
-  const hasReachedLimit = !hasPremiumPlan && userMessages.length >= resultLimit;
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const endOfMessagesRef = useRef<HTMLDivElement>(null);
 
+  // Effect for scrolling to bottom on new messages
   useEffect(() => {
-    // Scroll to the bottom when messages change
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    if (endOfMessagesRef.current) {
+      endOfMessagesRef.current.scrollIntoView({ behavior: "smooth" });
+    } else if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
 
-  return (
-    <ScrollArea className="h-full overflow-y-auto p-4" ref={scrollAreaRef}>
-      {/* Show empty state if no messages */}
-      {messages.length === 0 && (
-        <div className="h-full flex items-center justify-center text-center p-4">
-          <div className="max-w-sm">
-            <h3 className="font-medium text-lg mb-2">No messages yet</h3>
-            <p className="text-muted-foreground text-sm">
-              Start the conversation by sending a message below.
-            </p>
-          </div>
-        </div>
-      )}
+  // Function to group messages by date
+  const groupMessagesByDate = () => {
+    const groups: { [key: string]: Message[] } = {};
+    
+    messages.forEach(message => {
+      const date = new Date(message.timestamp);
+      const dateKey = new Date(
+        date.getFullYear(), 
+        date.getMonth(), 
+        date.getDate()
+      ).toISOString();
       
-      {/* Display the message list */}
-      <div className="flex flex-col">
-        {messages.map((message, i) => (
-          <ChatMessage 
-            key={message.id} 
-            message={message} 
-            isLastMessage={i === messages.length - 1} 
-          />
+      if (!groups[dateKey]) {
+        groups[dateKey] = [];
+      }
+      
+      groups[dateKey].push(message);
+    });
+    
+    return groups;
+  };
+
+  // Format date for display
+  const formatDate = (dateKey: string) => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    const date = new Date(dateKey);
+    
+    if (date.toDateString() === today.toDateString()) return 'Today';
+    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+    
+    return date.toLocaleDateString(undefined, { 
+      weekday: 'long', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  };
+
+  const messageGroups = groupMessagesByDate();
+
+  return (
+    <ScrollArea className="flex-1 p-4" ref={scrollRef as any}>
+      <div className="space-y-6 pb-2">
+        {Object.entries(messageGroups).map(([dateKey, msgs]) => (
+          <div key={dateKey} className="space-y-4">
+            <div className="flex justify-center">
+              <div className="px-2.5 py-1 bg-black/20 rounded-full">
+                <span className="text-xs text-gray-400">
+                  {formatDate(dateKey)}
+                </span>
+              </div>
+            </div>
+            
+            {msgs.map((message) => (
+              <div key={message.id} className="animate-fade-in">
+                <ChatMessage
+                  message={{...message, isThinking: message.isThinking || false} as any}
+                  isOwnMessage={message.senderId === "current-user"}
+                  typingSpeed={message.isThinking ? 500 : 1}
+                />
+              </div>
+            ))}
+          </div>
         ))}
         
-        {/* Show warning when approaching search limit */}
-        {isApproachingLimit && (
-          <Alert className="mt-4 bg-yellow-500/10 border-yellow-500/30 text-yellow-400">
-            <Info className="h-4 w-4" />
-            <AlertTitle>Search limit approaching</AlertTitle>
-            <AlertDescription>
-              You have {resultLimit - userMessages.length} searches remaining. 
-              Upgrade for unlimited searches.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        {/* Show error when reached search limit */}
-        {hasReachedLimit && (
-          <Alert className="mt-4 bg-red-500/10 border-red-500/30 text-red-400">
-            <Lock className="h-4 w-4" />
-            <AlertTitle>Search limit reached</AlertTitle>
-            <AlertDescription>
-              You've used all {resultLimit} free searches. Upgrade for unlimited searches.
-            </AlertDescription>
-          </Alert>
-        )}
-        
-        <div ref={messagesEndRef} />
+        {/* Invisible element to scroll to */}
+        <div ref={endOfMessagesRef} />
       </div>
     </ScrollArea>
   );

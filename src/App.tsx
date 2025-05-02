@@ -4,7 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { HashRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { useState, useEffect, ReactNode } from "react";
+import { useState, useEffect } from "react";
 import { useViewportFix } from "@/hooks/useViewportFix";
 
 // Context providers
@@ -90,11 +90,7 @@ import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
 
 // Helper component to conditionally render MainNav and Footer
-interface LayoutProps {
-  children: ReactNode;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout = ({ children }) => {
   const location = useLocation();
   const isDashboardRoute = location.pathname.startsWith('/dashboard');
   const isAuthRoute = ['/login', '/signup', '/forgot-password'].includes(location.pathname) || location.pathname.startsWith('/onboarding');

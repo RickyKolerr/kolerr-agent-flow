@@ -2,7 +2,6 @@
 import { useAuth } from "@/contexts/AuthContext";
 import { useCredits } from "@/contexts/CreditContext";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
-import { isKOLSpecificQuery as checkKolQuery } from "@/utils/creditUtils";
 
 export const useUserAccess = () => {
   const { user, isAuthenticated } = useAuth();

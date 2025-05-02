@@ -3,8 +3,6 @@ import { createContext, useContext, ReactNode, useState, useEffect } from "react
 import { useSearchCredits } from "@/hooks/useSearchCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
-import { getTimeUntilReset } from "@/utils/creditUtils";
-import { GENERAL_QUESTIONS_PER_CREDIT } from "@/constants/creditConstants";
 
 interface CreditContextType {
   freeCredits: number;
@@ -14,14 +12,12 @@ interface CreditContextType {
   usePremiumCredit: (amount: number) => boolean;
   timeUntilReset: string;
   hasPremiumPlan: boolean;
-  useIntelligentCredit: (message: string) => boolean;
-  generalQuestionsPerCredit: number;
 }
 
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
 
 export const CreditProvider = ({ children }: { children: ReactNode }) => {
-  const { creditsLeft, useCredit } = useSearchCredits();
+  const { creditsLeft, useCredit, getTimeUntilReset } = useSearchCredits();
   const [premiumCredits, setPremiumCredits] = useState<number>(0);
   const { user, isAuthenticated } = useAuth();
   
@@ -31,7 +27,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   // Initialize intelligent credits system
   const { 
     freeCredits,
-    useIntelligentCredit: useIntelligentCreditInternal,
+    useIntelligentCredit
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
   
   // Load premium credits from localStorage or set default
@@ -60,21 +56,6 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [premiumCredits, isAuthenticated]);
   
-  // Wrap the internal intelligent credit function to handle premium credits
-  const useIntelligentCredit = (message: string) => {
-    // Premium users use premium credits
-    if (hasPremiumPlan) {
-      const isSpecific = useIntelligentCreditInternal(message);
-      if (isSpecific) {
-        return usePremiumCredit(1);
-      }
-      return true;
-    } 
-    
-    // Non-premium users use the regular intelligent credit system
-    return useIntelligentCreditInternal(message);
-  };
-  
   // New useFreeCredit that uses the intelligent system
   const useFreeCredit = () => {
     // Direct use of a credit bypassing the question classification
@@ -101,9 +82,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       useFreeCredit,
       usePremiumCredit,
       timeUntilReset,
-      hasPremiumPlan,
-      useIntelligentCredit,
-      generalQuestionsPerCredit: GENERAL_QUESTIONS_PER_CREDIT
+      hasPremiumPlan
     }}>
       {children}
     </CreditContext.Provider>

@@ -1,10 +1,13 @@
 
-import React from "react";
-import { useCredits } from "@/contexts/CreditContext";
+import React, { useEffect, useRef } from "react";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { ChatAgentContent } from "./ChatAgentContent";
-import { ChatAgentWrapper } from "./ChatAgentWrapper";
-import { useChatAgent } from "./useChatAgent";
+import { ChatAgentHeader } from "./ChatAgentHeader";
+import { ChatMessagesDisplay } from "./ChatMessagesDisplay";
+import { ChatAgentInput } from "./ChatAgentInput";
+import { useMessageSimulation } from "@/hooks/useMessageSimulation";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 interface AgentChatProps {
   title: string;
@@ -12,8 +15,6 @@ interface AgentChatProps {
   initialMessage: string;
   isOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
-  chatType?: "kol_search" | "campaign_search" | "general";
-  isDashboard?: boolean;
 }
 
 export const AgentChat: React.FC<AgentChatProps> = ({ 
@@ -21,47 +22,85 @@ export const AgentChat: React.FC<AgentChatProps> = ({
   subtitle, 
   initialMessage,
   isOpen = false,
-  onOpenChange,
-  chatType = "general",
-  isDashboard = false
+  onOpenChange
 }) => {
   const isMobile = useMediaQuery("(max-width: 768px)");
-  const { hasPremiumPlan, generalQuestionsPerCredit } = useCredits();
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { 
+    messages, 
+    sendButtonClicked, 
+    handleSendMessage, 
+    initializeWithWelcomeMessage 
+  } = useMessageSimulation();
   
-  // Use our custom hook for chat functionality
-  const {
-    messages,
-    sendButtonClicked,
-    handleSendMessage,
-    isSearchFocused,
-    handleSearchModeChange,
-    resultsShown,
-    resultLimit
-  } = useChatAgent(initialMessage, chatType, isOpen);
-  
-  return (
-    <ChatAgentWrapper 
-      title={title} 
-      isOpen={isOpen} 
-      onOpenChange={onOpenChange}
-    >
-      <ChatAgentContent
-        title={title}
-        subtitle={subtitle}
-        initialMessage={initialMessage}
-        messages={messages}
-        sendButtonClicked={sendButtonClicked}
-        handleSendMessage={handleSendMessage}
-        chatType={chatType}
-        isDashboard={isDashboard}
-        isSearchFocused={isSearchFocused}
-        handleSearchModeChange={handleSearchModeChange}
-        resultsShown={resultsShown}
-        resultLimit={resultLimit}
-        isMobile={isMobile}
-        isOpen={isOpen}
-        onOpenChange={onOpenChange}
+  // Get user access information to personalize chat experience
+  const { user, isAuthenticated, isKOLSpecificQuery } = useUserAccess();
+
+  // Set custom placeholder based on user role
+  const getPlaceholderText = () => {
+    if (!isAuthenticated) return "Sign in to save chat history...";
+    if (user?.role === "kol") return "Ask about campaigns, opportunities...";
+    if (user?.role === "brand") return "Ask about finding KOLs, campaigns...";
+    return "Ask me anything...";
+  };
+
+  // Add welcome message on mount and when chat opens
+  useEffect(() => {
+    if (isOpen) {
+      initializeWithWelcomeMessage(initialMessage);
+    }
+  }, [initialMessage, isOpen, initializeWithWelcomeMessage]);
+
+  // Focus input when chat opens
+  useEffect(() => {
+    if (isOpen && inputRef.current) {
+      // Add a small delay to ensure the chat is visible before focusing
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 100);
+    }
+  }, [isOpen]);
+
+  const renderChatContent = () => (
+    <div className="flex flex-col h-full">
+      <ChatAgentHeader 
+        title={title} 
+        subtitle={subtitle} 
+        onClose={onOpenChange ? () => onOpenChange(false) : undefined}
       />
-    </ChatAgentWrapper>
+      
+      {/* Fixed height for the chat messages area */}
+      <div className="flex-1 overflow-hidden" style={{ minHeight: "350px" }}>
+        <ChatMessagesDisplay messages={messages} />
+      </div>
+      
+      <ChatAgentInput 
+        onSendMessage={handleSendMessage} 
+        disabled={sendButtonClicked}
+        placeholder={getPlaceholderText()}
+        inputRef={inputRef}
+      />
+    </div>
+  );
+
+  // For mobile devices, use a Sheet component that slides in from bottom
+  if (isMobile) {
+    return (
+      <Sheet open={isOpen} onOpenChange={onOpenChange}>
+        <SheetContent side="bottom" className="h-[80vh] p-0 rounded-t-xl border-t border-white/10 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-xl">
+          {renderChatContent()}
+        </SheetContent>
+      </Sheet>
+    );
+  }
+  
+  // For desktop, use Dialog component to create a modal-like experience
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[550px] h-[70vh] p-0 bg-gradient-to-br from-black/80 to-black/60 backdrop-blur-xl border border-white/10 shadow-lg rounded-2xl overflow-hidden">
+        <DialogTitle className="sr-only">{title}</DialogTitle>
+        {renderChatContent()}
+      </DialogContent>
+    </Dialog>
   );
 };

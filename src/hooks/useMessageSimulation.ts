@@ -1,8 +1,6 @@
+
 import { useState, useCallback } from "react";
 import { useUserAccess } from "@/hooks/useUserAccess";
-import { useRolePermissions } from "@/hooks/useRolePermissions";
-import { useCredits } from "@/contexts/CreditContext";
-import { toast } from "sonner";
 
 export interface Message {
   id: string;
@@ -12,18 +10,12 @@ export interface Message {
   conversationId: string;
   status?: "sending" | "sent" | "delivered" | "read";
   isThinking?: boolean;
-  isKolSpecific?: boolean;
-  hasAccess?: boolean; // Indicates if user has access to this content
-  requiresUpgrade?: boolean; // Indicates if upgrade is needed to view full content
 }
 
 export const useMessageSimulation = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [sendButtonClicked, setSendButtonClicked] = useState(false);
   const { isKOLSpecificQuery, user } = useUserAccess();
-  const { canPerform, getSearchResultLimit } = useRolePermissions();
-  const { useIntelligentCredit, hasPremiumPlan } = useCredits();
-  const resultLimit = getSearchResultLimit();
 
   // Clear all messages
   const clearMessages = useCallback(() => {
@@ -45,33 +37,13 @@ export const useMessageSimulation = () => {
     
     setMessages(prev => [...prev, thinkingMessage]);
     
-    // Check if this is a KOL-specific query
-    const isKolQuery = isKOLSpecificQuery(userMessageContent);
-    
     // Generate a response based on message content and user role
     let responseContent = "I'm processing your request. This is a placeholder response that would be replaced with actual AI response in a production environment.";
-    let hasAccess = true;
-    let requiresUpgrade = false;
     
-    // Check permissions for KOL-specific queries
-    if (isKolQuery) {
-      const permission = canPerform("view_kol_profiles");
-      hasAccess = permission.allowed;
-      requiresUpgrade = permission.requiresUpgrade || false;
-      
-      // For KOL searches, check if we're over the limit for non-premium users
-      const userMessages = messages.filter(msg => msg.senderId === "current-user").length;
-      
-      if (!hasPremiumPlan && userMessages >= resultLimit) {
-        hasAccess = false;
-        requiresUpgrade = true;
-        responseContent = `You've reached the limit of ${resultLimit} search results as a ${user?.role || 'guest'} user. Please upgrade your plan to continue searching.`;
-      }
-    }
-    
-    // Personalized responses based on user role and query
+    // Check if message contains certain keywords to personalize response
     const lowerCaseMsg = userMessageContent.toLowerCase();
     
+    // Personalized responses based on user role and query
     if (user?.role === "kol") {
       if (lowerCaseMsg.includes("campaign")) {
         responseContent = "I can help you find campaigns that match your profile. Currently we have several opportunities in fashion and lifestyle categories.";
@@ -91,17 +63,6 @@ export const useMessageSimulation = () => {
       responseContent = "Kolerr connects brands with influencers (KOLs) for marketing campaigns. Brands can find, vet, and collaborate with influencers while KOLs can discover opportunities that match their audience and values.";
     }
     
-    // If user doesn't have access, modify the response accordingly
-    if (!hasAccess) {
-      if (requiresUpgrade) {
-        responseContent = "This feature requires a premium plan. Please upgrade to access detailed information and unlimited searches.";
-      } else if (!user) {
-        responseContent = "Please sign in to view full results and save your searches. Create an account to unlock all features.";
-      } else {
-        responseContent = "You don't have permission to access this information. Please contact support if you believe this is an error.";
-      }
-    }
-    
     // Add thinking delay based on message complexity
     const thinkingTime = Math.max(1000, Math.min(userMessageContent.length * 20, 3000));
     
@@ -116,16 +77,13 @@ export const useMessageSimulation = () => {
                 content: responseContent,
                 timestamp: new Date().toISOString(),
                 conversationId: "agent-chat",
-                isThinking: false,
-                isKolSpecific: isKolQuery,
-                hasAccess,
-                requiresUpgrade
+                isThinking: false
               } 
             : msg
         )
       );
     }, thinkingTime);
-  }, [user, isKOLSpecificQuery, canPerform, getSearchResultLimit, hasPremiumPlan, resultLimit, messages]);
+  }, [user?.role]);
 
   const handleSendMessage = useCallback((input: string) => {
     // Prevent multiple submissions by checking if button was already clicked
@@ -133,13 +91,6 @@ export const useMessageSimulation = () => {
     
     // Set the button as clicked to prevent double submissions
     setSendButtonClicked(true);
-    
-    // Check if we can use a credit for this message
-    if (!useIntelligentCredit(input)) {
-      setSendButtonClicked(false);
-      toast.error("You don't have enough credits for this action");
-      return;
-    }
     
     // Add user message
     const userMessage: Message = {
@@ -149,7 +100,6 @@ export const useMessageSimulation = () => {
       timestamp: new Date().toISOString(),
       status: "sending" as const,
       conversationId: "agent-chat",
-      isKolSpecific: isKOLSpecificQuery(input)
     };
     
     setMessages(prev => [...prev, userMessage]);
@@ -172,7 +122,7 @@ export const useMessageSimulation = () => {
     setTimeout(() => {
       simulateResponse(input);
     }, 200);
-  }, [sendButtonClicked, simulateResponse, useIntelligentCredit, isKOLSpecificQuery]);
+  }, [sendButtonClicked, simulateResponse]);
 
   const initializeWithWelcomeMessage = useCallback((initialMessage: string) => {
     // Only add welcome message if no messages exist yet
@@ -181,13 +131,11 @@ export const useMessageSimulation = () => {
       let welcomeMessage = initialMessage;
       
       if (user?.role === "kol") {
-        welcomeMessage = `👋 Looking for paid opportunities? Let me help you find the right match!`;
+        welcomeMessage = `Welcome back ${user.name || 'creator'}! How can I help with your campaigns or creator opportunities today?`;
       } else if (user?.role === "brand") {
-        welcomeMessage = `👋 Need creators for your campaign? Tell me what you're looking for.`;
+        welcomeMessage = `Welcome back ${user.name || 'brand partner'}! Need help finding the perfect KOLs for your campaign?`;
       }
       
-      // We set it directly without any typing initially,
-      // the typing effect will be handled by the ChatMessage component
       setMessages([
         {
           id: "welcome",
@@ -195,7 +143,6 @@ export const useMessageSimulation = () => {
           content: welcomeMessage,
           timestamp: new Date().toISOString(),
           conversationId: "agent-chat",
-          hasAccess: true
         }
       ]);
     }

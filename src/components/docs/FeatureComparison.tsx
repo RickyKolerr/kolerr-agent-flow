@@ -6,38 +6,28 @@ export const FeatureComparison = () => {
   const features = [
     {
       name: "Search Credits",
-      free: "5 daily credits (resets at 7AM)",
+      free: "5 daily credits",
       pro: "Up to 2000 monthly credits",
     },
     {
-      name: "Search Results",
-      free: "3 results for guests, limited view",
-      pro: "Unlimited results with full details",
+      name: "Advanced Filters",
+      free: "Basic filters only",
+      pro: "All filters included",
     },
     {
-      name: "KOL Metrics",
-      free: "Basic profile information",
-      pro: "Detailed engagement & audience metrics",
+      name: "Saved Searches",
+      free: "Up to 3 saved searches",
+      pro: "Unlimited saved searches",
     },
     {
-      name: "General Questions",
-      free: "15 questions daily (3:1 ratio)",
-      pro: "Unlimited conversations",
-    },
-    {
-      name: "Chat Toggle Modes",
-      free: "Manual switching between normal/search",
-      pro: "Smart mode detection & unlimited usage",
-    },
-    {
-      name: "Contact KOLs",
-      free: "Limited (requires registration)",
-      pro: "Unlimited direct messaging",
-    },
-    {
-      name: "Result Analytics",
+      name: "Analytics",
       free: "Basic metrics",
       pro: "Advanced analytics & reporting",
+    },
+    {
+      name: "One-time Credit Packs",
+      free: "Available ($20-$200)",
+      pro: "Available for additional needs",
     },
   ];
 
