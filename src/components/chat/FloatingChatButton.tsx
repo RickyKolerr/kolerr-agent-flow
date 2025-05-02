@@ -6,6 +6,7 @@ import { AgentChat } from "./AgentChat";
 import { CreditBadge } from "@/components/CreditBadge";
 import { useCredits } from "@/contexts/CreditContext";
 import { ChatToggle } from "./ChatToggle";
+import { toast } from "sonner";
 
 interface FloatingChatButtonProps {
   initialMessage?: string;
