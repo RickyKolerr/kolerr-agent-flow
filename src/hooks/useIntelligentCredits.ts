@@ -1,10 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 import { getTimeUntilReset, RESET_HOUR } from "./useSearchCredits";
 
 // Constants for credit system
-const GENERAL_QUESTIONS_PER_CREDIT = 3;
+const GENERAL_QUESTIONS_PER_CREDIT = 2;
 
 // Enhanced pattern detection with more comprehensive categories
 const KOL_PATTERNS = {
