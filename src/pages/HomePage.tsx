@@ -42,7 +42,7 @@ const HomePage = () => {
         const yPos = scrolled * speed;
         const rotation = scrolled * (0.02 + (index % 3) * 0.01);
         particle.style.transform = `translateY(${yPos}px) rotate(${rotation}deg)`;
-        particle.style.opacity = Math.max(0, 1 - (scrolled * 0.001));
+        particle.style.opacity = String(Math.max(0, 1 - (scrolled * 0.001))); // Converting number to string
       });
     };
     
@@ -105,7 +105,7 @@ const HomePage = () => {
           ref={featuresRef} 
           className="mt-32 pt-16 w-full"
           style={{
-            opacity: Math.min(1, scrollPosition / 300),
+            opacity: Math.min(1, scrollPosition / 300).toString(), // Convert number to string
             transform: `translateY(${Math.max(0, 50 - scrollPosition / 10)}px)`
           }}
         >
