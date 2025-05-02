@@ -35,7 +35,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const [isLoading, setIsLoading] = useState(true);
   
   const getDashboardPath = useCallback(() => {
-    return user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages";
+    return user?.role === 'kol' ? "/dashboard/kol" : "/dashboard";
   }, [user?.role]);
 
   useEffect(() => {

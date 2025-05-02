@@ -41,7 +41,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         )}
         
         {isDashboardChat && (
-          <Link to={dashboardUrl} className="mr-2 hidden md:flex">
+          <Link to={dashboardUrl} className="mr-2">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <LayoutDashboard className="h-5 w-5" />
               <span className="sr-only">Back to Dashboard</span>
