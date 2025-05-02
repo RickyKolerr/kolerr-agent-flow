@@ -1,76 +1,71 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { MessageCircle } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useLocation } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { useMobileDetection } from "@/hooks/use-mobile-detection";
+import { MessagesSquare } from "lucide-react";
 import { AgentChat } from "./AgentChat";
+import { CreditBadge } from "@/components/CreditBadge";
+import { useCredits } from "@/contexts/CreditContext";
 
-export const FloatingChatButton = () => {
-  const location = useLocation();
-  const { user } = useAuth();
-  const { isMobile } = useMobileDetection();
-  const [isVisible, setIsVisible] = useState(true);
-  const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
+interface FloatingChatButtonProps {
+  initialMessage?: string;
+  chatType?: "kol_search" | "campaign_search" | "general";
+}
 
-  // Check if we should hide the button based on current route
-  useEffect(() => {
-    // Hide on chat pages, auth pages, and certain dashboard pages
-    const shouldHide = 
-      location.pathname.startsWith('/chat') || 
-      ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
-      location.pathname.startsWith('/onboarding') ||
-      location.pathname === '/' || // Hide on home page
-      location.pathname === '/home'; // Also hide on /home route
-    
-    setIsVisible(!shouldHide);
-  }, [location.pathname]);
-
-  // Handle chat button click to open agent chat
-  const handleChatClick = () => {
-    setIsAgentChatOpen(true);
+export const FloatingChatButton: React.FC<FloatingChatButtonProps> = ({ 
+  initialMessage = "👋 Hello! How can I assist you today?",
+  chatType = "general" 
+}) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const { hasPremiumPlan } = useCredits();
+  
+  // Determine title and subtitle based on chat type
+  const getTitle = () => {
+    switch (chatType) {
+      case "kol_search":
+        return "KOL Discovery Agent";
+      case "campaign_search":
+        return "Campaign Search Agent";
+      default:
+        return "AI Assistant";
+    }
   };
-
-  // Generate welcome message based on user type
-  const getWelcomeMessage = () => {
-    if (!user) {
-      return "👋 Hello there! I'm your Kolerr AI assistant. How can I help you today?";
-    } else if (user.role === "kol") {
-      return "👋 Welcome back! Need help finding campaign opportunities or managing your profile?";
-    } else {
-      return "👋 Welcome back! Need help finding the right KOLs for your campaigns or managing your brand account?";
+  
+  const getSubtitle = () => {
+    switch (chatType) {
+      case "kol_search":
+        return "Find the perfect creator for your brand";
+      case "campaign_search":
+        return "Discover campaign opportunities";
+      default:
+        return "Ask me anything about Kolerr";
     }
   };
 
-  if (!isVisible) {
-    return null;
-  }
-
   return (
     <>
-      <div className="fixed bottom-6 right-6 z-50">
+      <div className="fixed bottom-4 right-4 z-50 flex items-center">
+        {!hasPremiumPlan && (
+          <div className="mr-2">
+            <CreditBadge variant="compact" />
+          </div>
+        )}
+      
         <Button
-          variant="secondary"
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
-          onClick={handleChatClick}
+          onClick={() => setIsOpen(true)}
+          className="rounded-full h-14 w-14 bg-brand-pink hover:bg-brand-pink/90 shadow-lg"
         >
-          <MessageCircle className="h-6 w-6 text-white" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
-            3
-          </Badge>
+          <MessagesSquare className="h-6 w-6" />
+          <span className="sr-only">Chat with AI Assistant</span>
         </Button>
       </div>
 
-      {/* Agent Chat Modal/Sheet */}
       <AgentChat
-        title="Kolerr AI Assistant"
-        subtitle={user ? `Hi ${user.name || 'there'}! How can I help you today?` : "Ask me anything about Kolerr"}
-        initialMessage={getWelcomeMessage()}
-        isOpen={isAgentChatOpen}
-        onOpenChange={setIsAgentChatOpen}
+        title={getTitle()}
+        subtitle={getSubtitle()}
+        initialMessage={initialMessage}
+        isOpen={isOpen}
+        onOpenChange={setIsOpen}
+        chatType={chatType}
       />
     </>
   );

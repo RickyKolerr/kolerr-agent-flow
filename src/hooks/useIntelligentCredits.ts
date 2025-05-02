@@ -157,7 +157,7 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   };
 
   const showCreditExhaustedToast = () => {
-    toast.error("Out of free searches", {
+    toast.error("Out of free credits", {
       description: `Upgrade your plan to continue searching or wait until ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
       action: {
         label: "Upgrade",
@@ -169,6 +169,31 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   // Calculate how many general questions remain before a credit is used
   const remainingGeneralQuestions = GENERAL_QUESTIONS_PER_CREDIT - creditState.generalQuestionCounter;
 
+  // Reset credits to a specific amount (used for testing or admin functions)
+  const resetCredits = (amount: number) => {
+    setCreditState(prev => ({
+      ...prev,
+      freeCredits: amount,
+      generalQuestionCounter: 0
+    }));
+  };
+
+  // Set credits to a specific amount without affecting the counter
+  const setCredits = (amount: number) => {
+    setCreditState(prev => ({
+      ...prev,
+      freeCredits: amount
+    }));
+  };
+
+  // Add credits to the current amount
+  const addCredits = (amount: number) => {
+    setCreditState(prev => ({
+      ...prev,
+      freeCredits: prev.freeCredits + amount
+    }));
+  };
+
   return {
     freeCredits: creditState.freeCredits,
     generalQuestionCounter: creditState.generalQuestionCounter,
@@ -177,6 +202,9 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
     isKOLSpecificQuery,
     timeUntilReset: getTimeUntilReset(),
     resetHour: RESET_HOUR,
-    generalQuestionsPerCredit: GENERAL_QUESTIONS_PER_CREDIT
+    generalQuestionsPerCredit: GENERAL_QUESTIONS_PER_CREDIT,
+    resetCredits,
+    setCredits,
+    addCredits
   };
 };
