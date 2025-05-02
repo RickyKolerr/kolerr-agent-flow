@@ -60,12 +60,18 @@ export const AgentChat: React.FC<AgentChatProps> = ({
     }
   }, [initialMessage, isOpen, initializeWithWelcomeMessage]);
 
+  const handleClose = () => {
+    if (onOpenChange) {
+      onOpenChange(false);
+    }
+  };
+
   const renderChatContent = () => (
     <div className="flex flex-col h-full">
       <ChatAgentHeader 
         title={title} 
         subtitle={subtitle} 
-        onClose={onOpenChange ? () => onOpenChange(false) : undefined}
+        onClose={handleClose}
       />
       
       {/* Fixed height for the chat messages area */}
