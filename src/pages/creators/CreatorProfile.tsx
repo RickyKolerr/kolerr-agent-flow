@@ -37,6 +37,7 @@ import { mockCreatorData } from "@/data/mockCreators";
 import { mockConversations } from "@/components/chat/mockChatData";
 import { useCredits } from "@/contexts/CreditContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
+import { FloatingChatButton } from "@/components/chat/FloatingChatButton";
 
 const CreatorProfile = () => {
   const { creatorId } = useParams();
@@ -137,31 +138,8 @@ const CreatorProfile = () => {
   
   // Handle contact request for creators
   const handleContactCreator = () => {
-    if (!isAuthenticated) {
-      toast.error("Create an account to contact creators", {
-        action: {
-          label: "Sign Up",
-          onClick: () => navigate("/signup")
-        }
-      });
-      return;
-    }
-    
-    // Check if a conversation with this creator already exists
-    const existingConversation = mockConversations.find(conv => 
-      conv.participants.some(p => p.name === creator.fullName)
-    );
-    
-    if (existingConversation) {
-      // Navigate to existing conversation
-      navigate(`/chat/${existingConversation.id}`);
-      toast.success(`Continuing conversation with ${creator.fullName}`);
-    } else {
-      // In a real app, we would create a new conversation here
-      // For now, just navigate to chat and show a message
-      toast.success(`Starting conversation with ${creator.fullName}`);
-      navigate(`/chat`);
-    }
+    // This is now handled by the FloatingChatButton component
+    // The button will handle all permissions, credits and routing
   };
   
   // Handle collaboration request
@@ -261,17 +239,14 @@ const CreatorProfile = () => {
                   </div>
                 </div>
                 
-                <Button 
-                  className="bg-brand-pink hover:bg-brand-pink/90 mt-2 md:mt-0"
-                  onClick={handleContactCreator}
-                >
-                  {isAuthenticated ? "Contact Creator" : (
-                    <>
-                      <Lock className="h-4 w-4 mr-1" />
-                      Contact Creator
-                    </>
-                  )}
-                </Button>
+                {/* Replace the Contact Creator button with our smart FloatingChatButton */}
+                <FloatingChatButton
+                  initialMessage={`Hi ${creator.fullName}, I'm interested in working with you.`}
+                  chatType="general"
+                  profileId={creator.id}
+                  profileName={creator.fullName}
+                  profileType="kol"
+                />
               </div>
               
               <div className="flex flex-wrap gap-2 mt-2">

@@ -40,7 +40,7 @@ const HomePage = () => {
       </div>
       
       <FloatingChatButton 
-        initialMessage="👋 Hello! How can I assist you today?"
+        initialMessage="👋 Hello! How can I assist you today with finding the perfect creators or campaigns?"
         chatType="general"
       />
     </div>
