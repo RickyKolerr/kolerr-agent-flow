@@ -3,6 +3,9 @@ import React, { useRef, useEffect } from "react";
 import { Message } from "@/hooks/useMessageSimulation";
 import { Avatar } from "@/components/ui/avatar";
 import { User } from "lucide-react";
+import { useCredits } from "@/contexts/CreditContext";
+import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface ChatMessagesDisplayProps {
   messages: Message[];
@@ -12,6 +15,7 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   messages 
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { checkMessageCredit, hasPremiumPlan } = useCredits();
 
   // Auto-scroll to bottom of messages when new messages arrive
   useEffect(() => {
@@ -33,6 +37,12 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
       {messages.map((message, index) => {
         const isBot = message.senderId === "agent";
         
+        // Only analyze user messages for credit estimation
+        let creditInfo = null;
+        if (!isBot && !hasPremiumPlan) {
+          creditInfo = checkMessageCredit(message.content);
+        }
+        
         return (
           <div 
             key={message.id || index} 
@@ -44,17 +54,42 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
               </Avatar>
             )}
             
-            <div 
-              className={`rounded-lg px-4 py-3 max-w-[80%] 
-                ${isBot 
-                  ? "bg-secondary text-secondary-foreground" 
-                  : "bg-primary text-primary-foreground ml-auto"
-                }
-                ${message.isThinking ? "animate-pulse" : ""}
-              `}
-            >
-              {message.content}
-              {message.isThinking && <span className="inline-block ml-1">...</span>}
+            <div className="flex flex-col gap-1">
+              <div 
+                className={`rounded-lg px-4 py-3 max-w-[80%] 
+                  ${isBot 
+                    ? "bg-secondary text-secondary-foreground" 
+                    : "bg-primary text-primary-foreground ml-auto"
+                  }
+                  ${message.isThinking ? "animate-pulse" : ""}
+                `}
+              >
+                {message.content}
+                {message.isThinking && <span className="inline-block ml-1">...</span>}
+              </div>
+              
+              {!isBot && creditInfo && (
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Badge 
+                        variant={creditInfo.isKOLQuery ? "default" : "outline"} 
+                        className={`self-end text-xs ${creditInfo.isKOLQuery ? "bg-brand-pink" : "text-muted-foreground"}`}
+                      >
+                        {creditInfo.isKOLQuery ? "KOL Query" : "General Query"} 
+                        {" "} ({creditInfo.estimatedCost.toFixed(2)} credit{creditInfo.estimatedCost !== 1 ? "s" : ""})
+                      </Badge>
+                    </TooltipTrigger>
+                    <TooltipContent side="bottom">
+                      <div className="text-xs space-y-1">
+                        <p>Confidence: {creditInfo.confidenceScore}%</p>
+                        <p>Type: {creditInfo.isKOLQuery ? "KOL/Creator specific" : "General question"}</p>
+                        <p>Cost: {creditInfo.estimatedCost.toFixed(2)} credit{creditInfo.estimatedCost !== 1 ? "s" : ""}</p>
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              )}
             </div>
             
             {!isBot && (

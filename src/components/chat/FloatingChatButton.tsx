@@ -7,6 +7,8 @@ import { useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import { AgentChat } from "./AgentChat";
+import { useCredits } from "@/contexts/CreditContext";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export const FloatingChatButton = () => {
   const location = useLocation();
@@ -14,6 +16,7 @@ export const FloatingChatButton = () => {
   const { isMobile } = useMobileDetection();
   const [isVisible, setIsVisible] = useState(true);
   const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
+  const { freeCredits, remainingGeneralQuestions, hasPremiumPlan } = useCredits();
 
   // Check if we should hide the button based on current route
   useEffect(() => {
@@ -48,20 +51,38 @@ export const FloatingChatButton = () => {
     return null;
   }
 
+  // Calculate available general questions based on credits
+  const availableChatMessages = hasPremiumPlan 
+    ? "∞" 
+    : remainingGeneralQuestions;
+
   return (
     <>
       <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          variant="secondary"
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
-          onClick={handleChatClick}
-        >
-          <MessageCircle className="h-6 w-6 text-white" />
-          <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
-            3
-          </Badge>
-        </Button>
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
+                onClick={handleChatClick}
+              >
+                <MessageCircle className="h-6 w-6 text-white" />
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center">
+                  {availableChatMessages}
+                </Badge>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="top">
+              <p>
+                {hasPremiumPlan 
+                  ? "Unlimited AI assistant messages" 
+                  : `${availableChatMessages} general questions available`}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       {/* Agent Chat Modal/Sheet */}

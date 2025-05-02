@@ -5,29 +5,49 @@ import { getTimeUntilReset, RESET_HOUR } from "./useSearchCredits";
 
 // Constants for credit system
 const GENERAL_QUESTIONS_PER_CREDIT = 3;
-const KOL_PATTERNS = [
+
+// Enhanced pattern detection with more comprehensive categories
+const KOL_PATTERNS = {
   // Core KOL-related terms
-  'kol', 'creator', 'influencer', 'tiktok', 'search', 'find', 'campaign',
-  'follower', 'niche', 'engagement',
+  core: ['kol', 'creator', 'influencer', 'tiktok', 'search', 'find', 'campaign',
+    'follower', 'niche', 'engagement'],
   
   // Industry/category terms that indicate KOL search
-  'fashion', 'beauty', 'gaming', 'tech', 'travel', 'food', 'fitness', 
-  'lifestyle', 'music', 'sports', 'comedy',
+  industries: ['fashion', 'beauty', 'gaming', 'tech', 'travel', 'food', 'fitness', 
+    'lifestyle', 'music', 'sports', 'comedy', 'education', 'finance', 'health', 
+    'wellness', 'automotive', 'pets', 'parenting', 'home', 'decor', 'luxury'],
   
   // Action words indicating search intent
-  'recommend', 'suggest', 'locate', 'identify', 'discover', 'show me',
+  actions: ['recommend', 'suggest', 'locate', 'identify', 'discover', 'show me',
+    'find me', 'search for', 'who should', 'who can', 'best', 'top', 'popular'],
   
   // Monetary terms indicating commercial intent
-  'sponsor', 'promote', 'advertise', 'collaborate', 'partnership', 'deal', 'cost',
+  commercial: ['sponsor', 'promote', 'advertise', 'collaborate', 'partnership', 'deal', 'cost',
+    'budget', 'roi', 'conversion', 'revenue', 'sales', 'monetize', 'profit', 'payment', 'earnings'],
   
   // Specific metrics
-  'views', 'likes', 'followers', 'engagement rate', 'audience'
+  metrics: ['views', 'likes', 'followers', 'engagement rate', 'audience', 'reach',
+    'impressions', 'conversion rate', 'demographics', 'analytics', 'performance', 'growth']
+};
+
+// Identifying phrases that strongly indicate specific search intents
+const SEARCH_INTENT_PHRASES = [
+  "who can", "who should", "looking for someone", "need a creator", 
+  "best creator", "top influencer", "recommend", "suggestion",
+  "find me", "help me find", "search for", "show me", 
+  "campaign suitable for", "match me with", "connect with"
 ];
 
 interface IntelligentCreditStore {
   freeCredits: number;
   generalQuestionCounter: number;
   lastReset: string;
+  searchHistory: Array<{
+    query: string;
+    creditCost: number;
+    type: "kol" | "general";
+    timestamp: number;
+  }>;
 }
 
 export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan: boolean) => {
@@ -38,7 +58,8 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
       return {
         freeCredits: initialFreeCredits,
         generalQuestionCounter: 0,
-        lastReset: new Date().toISOString()
+        lastReset: new Date().toISOString(),
+        searchHistory: []
       };
     }
     
@@ -55,8 +76,14 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
       return {
         freeCredits: initialFreeCredits,
         generalQuestionCounter: 0,
-        lastReset: now.toISOString()
+        lastReset: now.toISOString(),
+        searchHistory: parsedStore.searchHistory || []
       };
+    }
+    
+    // Ensure searchHistory exists
+    if (!parsedStore.searchHistory) {
+      parsedStore.searchHistory = [];
     }
     
     return parsedStore;
@@ -67,47 +94,82 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
     localStorage.setItem('intelligent_credits', JSON.stringify(creditState));
   }, [creditState]);
 
+  // Calculate confidence score for KOL-specific query (0-100)
+  const calculateKOLConfidence = (message: string): number => {
+    const lowerMsg = message.toLowerCase();
+    let score = 0;
+    
+    // Check for core KOL terms (highest weight)
+    KOL_PATTERNS.core.forEach(term => {
+      if (lowerMsg.includes(term)) score += 15;
+    });
+    
+    // Check for industry/category terms (medium weight)
+    KOL_PATTERNS.industries.forEach(term => {
+      if (lowerMsg.includes(term)) score += 10;
+    });
+    
+    // Check for action verbs indicating search (high weight)
+    KOL_PATTERNS.actions.forEach(term => {
+      if (lowerMsg.includes(term)) score += 12;
+    });
+    
+    // Check for commercial terms (very high weight)
+    KOL_PATTERNS.commercial.forEach(term => {
+      if (lowerMsg.includes(term)) score += 18;
+    });
+    
+    // Check for metrics (high weight)
+    KOL_PATTERNS.metrics.forEach(term => {
+      if (lowerMsg.includes(term)) score += 15;
+    });
+    
+    // Check for specific intent phrases (highest weight)
+    SEARCH_INTENT_PHRASES.forEach(phrase => {
+      if (lowerMsg.includes(phrase)) score += 25;
+    });
+    
+    // Cap the score at 100
+    return Math.min(score, 100);
+  };
+
   /**
-   * Determines if a message is KOL/campaign-specific or general
-   * Using an enhanced algorithm for better detection
+   * Determines if a message is KOL/campaign-specific or general using enhanced detection
    * @param message The user message to classify
    * @returns True if the message is KOL/campaign-specific, false if general
    */
   const isKOLSpecificQuery = (message: string) => {
-    const lowerMsg = message.toLowerCase();
+    const confidenceScore = calculateKOLConfidence(message);
     
-    // Quick check for explicit KOL-related keywords
-    if (KOL_PATTERNS.some(pattern => lowerMsg.includes(pattern))) {
-      return true;
-    }
-    
-    // Enhanced context detection - check for phrases that suggest looking for specific creators
-    const findingPhrases = [
-      "who can", "who should", "looking for someone", "need a creator", 
-      "best creator", "top influencer", "recommend", "suggestion"
-    ];
-    
-    if (findingPhrases.some(phrase => lowerMsg.includes(phrase))) {
-      return true;
-    }
-    
-    // Check for questions about specific demographics or metrics
-    const metricPatterns = ["followers", "engagement", "audience", "demographic", "reach", "views"];
-    if (metricPatterns.some(metric => lowerMsg.includes(metric))) {
-      return true;
-    }
-    
-    return false;
+    // Consider it a KOL query if confidence is above threshold
+    return confidenceScore >= 40;
   };
 
   /**
-   * Uses credits based on the message classification
+   * Logs the search to history for analytics
+   */
+  const logSearchHistory = (query: string, creditCost: number, type: "kol" | "general") => {
+    setCreditState(prev => ({
+      ...prev,
+      searchHistory: [...prev.searchHistory, {
+        query,
+        creditCost,
+        type,
+        timestamp: Date.now()
+      }].slice(-100) // Keep only the last 100 searches to avoid localStorage overflow
+    }));
+  };
+
+  /**
+   * Uses credits based on the message classification with adaptive allocation
    * @param message The user message
    * @returns True if credit usage was successful, false otherwise
    */
   const useIntelligentCredit = (message: string) => {
     // Premium users don't consume credits
     if (hasPremiumPlan) {
+      // Still log the search for analytics
+      logSearchHistory(message, 0, isKOLSpecificQuery(message) ? "kol" : "general");
       return true;
     }
     
@@ -121,6 +183,9 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
           ...prev,
           freeCredits: prev.freeCredits - 1
         }));
+        
+        // Log the search
+        logSearchHistory(message, 1, "kol");
         return true;
       } else {
         showCreditExhaustedToast();
@@ -139,6 +204,9 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
             generalQuestionCounter: 0,
             freeCredits: prev.freeCredits - 1
           }));
+          
+          // Log the search
+          logSearchHistory(message, 1, "general");
           return true;
         } else {
           showCreditExhaustedToast();
@@ -151,6 +219,9 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
           ...prev,
           generalQuestionCounter: newCounter
         }));
+        
+        // Log the search with fractional credit cost
+        logSearchHistory(message, 1/GENERAL_QUESTIONS_PER_CREDIT, "general");
         return true;
       }
     }
@@ -169,12 +240,17 @@ export const useIntelligentCredits = (initialFreeCredits: number, hasPremiumPlan
   // Calculate how many general questions remain before a credit is used
   const remainingGeneralQuestions = GENERAL_QUESTIONS_PER_CREDIT - creditState.generalQuestionCounter;
 
+  // Get search history for analytics
+  const getSearchHistory = () => creditState.searchHistory;
+
   return {
     freeCredits: creditState.freeCredits,
     generalQuestionCounter: creditState.generalQuestionCounter,
     remainingGeneralQuestions,
     useIntelligentCredit,
     isKOLSpecificQuery,
+    getSearchHistory,
+    calculateKOLConfidence,
     timeUntilReset: getTimeUntilReset(),
     resetHour: RESET_HOUR,
     generalQuestionsPerCredit: GENERAL_QUESTIONS_PER_CREDIT

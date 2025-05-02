@@ -3,6 +3,7 @@ import { createContext, useContext, ReactNode, useState, useEffect } from "react
 import { useSearchCredits } from "@/hooks/useSearchCredits";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
+import { toast } from "sonner";
 
 interface CreditContextType {
   freeCredits: number;
@@ -12,6 +13,23 @@ interface CreditContextType {
   usePremiumCredit: (amount: number) => boolean;
   timeUntilReset: string;
   hasPremiumPlan: boolean;
+  creditUsageAnalytics: {
+    kolQueries: number;
+    generalQueries: number;
+    totalQueries: number;
+    creditEfficiency: number;
+  };
+  getCreditHistory: () => Array<{
+    query: string;
+    creditCost: number;
+    type: "kol" | "general";
+    timestamp: number;
+  }>;
+  checkMessageCredit: (message: string) => {
+    isKOLQuery: boolean;
+    confidenceScore: number;
+    estimatedCost: number;
+  };
 }
 
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
@@ -27,8 +45,41 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   // Initialize intelligent credits system
   const { 
     freeCredits,
-    useIntelligentCredit
+    useIntelligentCredit,
+    isKOLSpecificQuery,
+    calculateKOLConfidence,
+    getSearchHistory
   } = useIntelligentCredits(creditsLeft, hasPremiumPlan);
+  
+  // New analytics state
+  const [creditUsageAnalytics, setCreditUsageAnalytics] = useState({
+    kolQueries: 0,
+    generalQueries: 0,
+    totalQueries: 0,
+    creditEfficiency: 0
+  });
+  
+  // Calculate analytics based on search history
+  useEffect(() => {
+    const history = getSearchHistory();
+    
+    if (history.length > 0) {
+      const kolQueries = history.filter(item => item.type === "kol").length;
+      const generalQueries = history.filter(item => item.type === "general").length;
+      const totalQueries = history.length;
+      
+      // Calculate credit efficiency (queries per credit)
+      const totalCreditCost = history.reduce((sum, item) => sum + item.creditCost, 0);
+      const creditEfficiency = totalCreditCost > 0 ? totalQueries / totalCreditCost : 0;
+      
+      setCreditUsageAnalytics({
+        kolQueries,
+        generalQueries,
+        totalQueries,
+        creditEfficiency
+      });
+    }
+  }, [getSearchHistory]);
   
   // Load premium credits from localStorage or set default
   useEffect(() => {
@@ -56,6 +107,24 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [premiumCredits, isAuthenticated]);
   
+  // Check if user has low credits and should be notified
+  useEffect(() => {
+    // Skip notifications for premium users
+    if (hasPremiumPlan) return;
+    
+    // Show notification when credits are running low (20% or less)
+    const lowCreditThreshold = Math.ceil(creditsLeft * 0.2);
+    if (freeCredits <= lowCreditThreshold && freeCredits > 0) {
+      toast.warning("Credits running low", {
+        description: `You have ${freeCredits} free ${freeCredits === 1 ? 'credit' : 'credits'} remaining. Credits reset at ${RESET_HOUR}:00 AM.`,
+        action: {
+          label: "Get More",
+          onClick: () => window.location.href = "/pricing"
+        }
+      });
+    }
+  }, [freeCredits, hasPremiumPlan, creditsLeft]);
+  
   // New useFreeCredit that uses the intelligent system
   const useFreeCredit = () => {
     // Direct use of a credit bypassing the question classification
@@ -71,6 +140,21 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     return false;
   };
   
+  // Analyze a message to determine credit cost before actual use
+  const checkMessageCredit = (message: string) => {
+    const isKOLQuery = isKOLSpecificQuery(message);
+    const confidenceScore = calculateKOLConfidence(message);
+    const estimatedCost = isKOLQuery ? 1 : (1/3); // General questions cost 1/3 credit
+    
+    return {
+      isKOLQuery,
+      confidenceScore,
+      estimatedCost
+    };
+  };
+  
+  const getCreditHistory = () => getSearchHistory();
+  
   const totalCredits = freeCredits + premiumCredits;
   const timeUntilReset = getTimeUntilReset();
   
@@ -82,7 +166,10 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       useFreeCredit,
       usePremiumCredit,
       timeUntilReset,
-      hasPremiumPlan
+      hasPremiumPlan,
+      creditUsageAnalytics,
+      getCreditHistory,
+      checkMessageCredit
     }}>
       {children}
     </CreditContext.Provider>
