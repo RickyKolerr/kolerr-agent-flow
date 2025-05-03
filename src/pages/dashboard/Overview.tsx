@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -13,6 +12,7 @@ import { ChartContainer } from "@/components/ui/chart";
 import { BarChart, Users, CreditCard, Calendar, ArrowUpRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { CreatorEarningsCard } from "@/components/kol/CreatorEarningsCard";
 
 const Overview = () => {
   const navigate = useNavigate();
@@ -161,6 +161,9 @@ const Overview = () => {
         ))}
       </div>
 
+      {/* Creator Earnings Section */}
+      <CreatorEarningsCard />
+      
       <div className="grid gap-4 md:grid-cols-2">
         {/* Performance Chart */}
         <Card className="col-span-2 md:col-span-1">
