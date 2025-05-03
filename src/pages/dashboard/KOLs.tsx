@@ -29,7 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import BookingModal from "@/components/booking/BookingModal";
+import { BookingModal } from "@/components/booking/BookingModal";
 
 // Define KOL interface
 interface KOL {
