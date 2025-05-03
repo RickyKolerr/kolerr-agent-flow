@@ -1,6 +1,9 @@
 
+import { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { DollarSign, FileText, Star, Users, TrendingUp, Clock } from "lucide-react";
+import { RewardsStats } from "@/types/rewards";
+import { getCreatorEarningsStats } from "@/services/rewardsService";
 
 interface EarningStatProps {
   icon: React.ReactNode;
@@ -41,6 +44,32 @@ const EarningStat = ({ icon, value, label, bgColor, trending }: EarningStatProps
 };
 
 export const CreatorEarningsCard = () => {
+  const [stats, setStats] = useState<RewardsStats | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getCreatorEarningsStats();
+        setStats(data);
+      } catch (error) {
+        console.error("Failed to fetch creator earnings stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchStats();
+  }, []);
+
+  if (isLoading) {
+    return <div className="p-6 text-center">Loading creator earnings data...</div>;
+  }
+
+  if (!stats) {
+    return <div className="p-6 text-center">Unable to load earnings data.</div>;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex items-center space-x-2">
@@ -53,31 +82,31 @@ export const CreatorEarningsCard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <EarningStat 
           icon={<DollarSign className="h-6 w-6 text-brand-pink" />}
-          value="$2,450"
+          value={stats.averageCampaignPayment}
           label="Average Campaign Payment"
           bgColor="bg-brand-pink"
-          trending={{ value: "+15% this month", positive: true }}
+          trending={{ value: "+22% this month", positive: true }}
         />
         
         <EarningStat 
           icon={<FileText className="h-6 w-6 text-blue-500" />}
-          value="286"
+          value={stats.availableOpportunities.toString()}
           label="Available Opportunities"
           bgColor="bg-blue-500"
-          trending={{ value: "+24 new", positive: true }}
+          trending={{ value: "+36 new", positive: true }}
         />
         
         <EarningStat 
           icon={<Star className="h-6 w-6 text-yellow-500" />}
-          value="$8,700"
+          value={stats.topCreatorEarnings}
           label="Top Creator Earnings"
           bgColor="bg-yellow-500"
-          trending={{ value: "+32% vs last month", positive: true }}
+          trending={{ value: "+42% vs last month", positive: true }}
         />
         
         <EarningStat 
           icon={<Clock className="h-6 w-6 text-purple-500" />}
-          value="48 hrs"
+          value={stats.averageCompletionTime}
           label="Average Completion Time"
           bgColor="bg-purple-500"
         />
@@ -88,7 +117,7 @@ export const CreatorEarningsCard = () => {
           <div className="flex flex-col md:flex-row md:items-center justify-between">
             <div className="space-y-2">
               <h3 className="font-semibold text-lg">Ready to start earning?</h3>
-              <p className="text-sm text-muted-foreground">Join our top creators earning over $10,000 monthly</p>
+              <p className="text-sm text-muted-foreground">Join our top creators earning over $18,000 monthly</p>
             </div>
             <div className="mt-4 md:mt-0 flex items-center">
               <div className="flex -space-x-3 mr-4">
