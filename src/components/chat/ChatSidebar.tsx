@@ -58,18 +58,24 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
           <div className="flex items-center gap-2">
-            <Link to={getDashboardPath()} className="hover:opacity-80 transition-opacity flex items-center">
-              <div className="flex items-center gap-1 text-brand-pink">
-                <LayoutDashboard className="h-4 w-4" />
-                <span className="text-sm font-medium">Dashboard</span>
-              </div>
-            </Link>
-            <Link to="/" className="hover:opacity-80 transition-opacity flex items-center">
-              <div className="flex items-center gap-1 text-brand-pink">
-                <Home className="h-4 w-4" />
-                <span className="text-sm font-medium">Home</span>
-              </div>
-            </Link>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate(getDashboardPath())} 
+              className="flex items-center gap-1 text-brand-pink hover:bg-brand-pink/10"
+            >
+              <LayoutDashboard className="h-4 w-4" />
+              <span className="text-sm font-medium">Dashboard</span>
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => navigate('/')}
+              className="flex items-center gap-1 text-brand-pink hover:bg-brand-pink/10"
+            >
+              <Home className="h-4 w-4" />
+              <span className="text-sm font-medium">Home</span>
+            </Button>
           </div>
         </div>
         <div className="relative">
