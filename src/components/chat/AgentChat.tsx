@@ -74,9 +74,12 @@ export const AgentChat: React.FC<AgentChatProps> = ({
         onClose={handleClose}
       />
       
-      {/* Fixed height for the chat messages area */}
+      {/* Fixed height for the chat messages area - disabled auto-scroll */}
       <div className="flex-1 overflow-hidden relative" style={{ minHeight: "350px" }}>
-        <ChatMessagesDisplay messages={messages} />
+        <ChatMessagesDisplay 
+          messages={messages} 
+          autoScroll={false} // Disable auto-scrolling
+        />
       </div>
       
       <ChatAgentInput 

@@ -48,6 +48,12 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   const chatContainerHeight = "500px";
   const messageAreaHeight = "350px";
 
+  // Prevent auto scrolling by providing a custom scroll handler
+  const handleManualScroll = () => {
+    // This empty function prevents automatic scrolling
+    // We're intentionally not calling messagesEndRef.current.scrollIntoView()
+  };
+
   return (
     <div className={`fixed bottom-0 right-0 z-50 md:max-w-[550px] w-full rounded-t-2xl overflow-hidden shadow-2xl`}>
       <div className="glass-panel shadow-2xl flex flex-col h-auto">
@@ -137,7 +143,7 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
                 </div>
               );
             })}
-            <div ref={messagesEndRef} />
+            <div ref={messagesEndRef} onClick={handleManualScroll} />
           </div>
         </ScrollArea>
 

@@ -9,20 +9,22 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 
 interface ChatMessagesDisplayProps {
   messages: Message[];
+  autoScroll?: boolean;
 }
 
 export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({ 
-  messages 
+  messages,
+  autoScroll = false
 }) => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { checkMessageCredit, hasPremiumPlan } = useCredits();
 
-  // Auto-scroll to bottom of messages when new messages arrive
+  // Auto-scroll to bottom of messages only when autoScroll is true
   useEffect(() => {
-    if (messagesEndRef.current) {
+    if (autoScroll && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, autoScroll]);
 
   if (messages.length === 0) {
     return (
