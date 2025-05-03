@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -28,6 +29,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import BookingModal from "@/components/booking/BookingModal";
 
 // Define KOL interface
 interface KOL {
@@ -50,6 +52,8 @@ const KOLsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [activeView, setActiveView] = useState("all");
   const navigate = useNavigate();
+  const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
@@ -199,8 +203,9 @@ const KOLsPage = () => {
     toast.success("Contact request sent");
   };
 
-  const handleBookSlot = (kolId: string) => {
-    toast.success("Redirecting to booking page...");
+  const handleBookSlot = (kol: KOL) => {
+    setSelectedKOL(kol);
+    setIsBookingModalOpen(true);
   };
   
   const handleViewProfile = (kolId: string) => {
@@ -297,6 +302,15 @@ const KOLsPage = () => {
           />
         </TabsContent>
       </Tabs>
+
+      {/* Booking Modal */}
+      {selectedKOL && (
+        <BookingModal
+          open={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          contactName={selectedKOL.name}
+        />
+      )}
     </div>
   );
 };
@@ -306,7 +320,7 @@ interface KOLsTableProps {
   formatFollowers: (num: number) => string;
   onAddToList: (kolId: string) => void;
   onContactKOL: (kolId: string) => void;
-  onBookSlot: (kolId: string) => void;
+  onBookSlot: (kol: KOL) => void;
   onViewProfile: (kolId: string) => void;
 }
 
@@ -387,7 +401,7 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     <Button 
                       size="sm"
                       className="bg-brand-pink hover:bg-brand-pink/90"
-                      onClick={() => onBookSlot(kol.id)}
+                      onClick={() => onBookSlot(kol)}
                     >
                       <Calendar className="h-4 w-4 mr-1" />
                       Book

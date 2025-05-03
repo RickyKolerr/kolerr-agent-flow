@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -88,6 +87,9 @@ import CampaignDetail from "@/pages/campaigns/CampaignDetail";
 // Components
 import { MainNav } from "@/components/MainNav";
 import { Footer } from "@/components/Footer";
+
+// New booking related components
+import BookingSuccess from "@/components/booking/BookingSuccess";
 
 // Helper component to conditionally render MainNav and Footer
 const Layout = ({ children }) => {
@@ -200,6 +202,9 @@ const App = () => {
                       <Route path="bookings" element={<BookingsPage />} />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
+                      
+                      {/* Booking routes */}
+                      <Route path="booking-success" element={<BookingSuccess />} />
                       
                       {/* Contract routes */}
                       <Route path="contracts" element={<ContractsPage />} />

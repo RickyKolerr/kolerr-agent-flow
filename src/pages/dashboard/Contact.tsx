@@ -1,9 +1,9 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Search, MessageCircle, Mail, Phone, Plus } from "lucide-react";
+import { Search, MessageCircle, Mail, Phone, Plus, Calendar, Eye } from "lucide-react";
 import { 
   Table, 
   TableBody, 
@@ -15,6 +15,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import BookingModal from "@/components/booking/BookingModal";
+import { useNavigate } from "react-router-dom";
 
 // Contact type definition
 interface Contact {
@@ -30,7 +32,10 @@ interface Contact {
 }
 
 const ContactPage = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedContact, setSelectedContact] = useState<Contact | null>(null);
+  const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
 
   // Mock contacts data with real portrait images
   const mockContacts: Contact[] = [
@@ -130,6 +135,15 @@ const ContactPage = () => {
     toast.success(`Opening message composer for ${contact.name}`);
   };
 
+  const handleViewProfile = (contact: Contact) => {
+    navigate(`/creators/${contact.id}`);
+  };
+
+  const handleBookContact = (contact: Contact) => {
+    setSelectedContact(contact);
+    setIsBookingModalOpen(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -194,6 +208,13 @@ const ContactPage = () => {
                   <TableCell className="text-right">
                     <div className="flex justify-end space-x-2">
                       <Button 
+                        onClick={() => handleViewProfile(contact)} 
+                        variant="outline"
+                        size="sm"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button 
                         onClick={() => handleContactEmail(contact)} 
                         variant="outline"
                         size="sm"
@@ -209,10 +230,17 @@ const ContactPage = () => {
                       </Button>
                       <Button 
                         onClick={() => handleContactMessage(contact)} 
-                        className="bg-brand-pink hover:bg-brand-pink/90"
+                        variant="outline"
                         size="sm"
                       >
                         <MessageCircle className="h-4 w-4" />
+                      </Button>
+                      <Button 
+                        onClick={() => handleBookContact(contact)} 
+                        className="bg-brand-pink hover:bg-brand-pink/90"
+                        size="sm"
+                      >
+                        <Calendar className="mr-1 h-4 w-4" /> Book
                       </Button>
                     </div>
                   </TableCell>
@@ -231,6 +259,15 @@ const ContactPage = () => {
           </TableBody>
         </Table>
       </div>
+
+      {/* Booking Modal */}
+      {selectedContact && (
+        <BookingModal
+          open={isBookingModalOpen}
+          onClose={() => setIsBookingModalOpen(false)}
+          contactName={selectedContact.name}
+        />
+      )}
     </div>
   );
 };

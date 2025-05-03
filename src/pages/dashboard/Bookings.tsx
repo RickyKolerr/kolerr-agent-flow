@@ -11,6 +11,12 @@ import {
   TableHeader, 
   TableRow 
 } from "@/components/ui/table";
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Calendar, Clock, VideoIcon } from "lucide-react";
@@ -34,6 +40,7 @@ interface Booking {
 
 const BookingsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [activeTab, setActiveTab] = useState("upcoming");
 
   // Mock bookings data with real portrait images
   const mockBookings: Booking[] = [
@@ -109,11 +116,18 @@ const BookingsPage = () => {
     }
   ];
 
-  // Filter bookings based on search
-  const filteredBookings = mockBookings.filter(booking => 
-    booking.kol.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    booking.kol.handle.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Filter bookings based on search and active tab
+  const filteredBookings = mockBookings
+    .filter(booking => 
+      booking.kol.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      booking.kol.handle.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter(booking => {
+      if (activeTab === "upcoming") {
+        return ["upcoming", "rescheduled"].includes(booking.status);
+      }
+      return booking.status === "completed" || booking.status === "canceled";
+    });
 
   const handleScheduleBooking = () => {
     toast.success("Opening booking scheduler...");
@@ -188,102 +202,169 @@ const BookingsPage = () => {
         </CardContent>
       </Card>
 
-      {/* Bookings table */}
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>KOL</TableHead>
-              <TableHead>Date & Time</TableHead>
-              <TableHead>Duration</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredBookings.length > 0 ? (
-              filteredBookings.map((booking) => (
-                <TableRow key={booking.id}>
-                  <TableCell>
-                    <div className="flex items-center space-x-3">
-                      <Avatar>
-                        <AvatarImage src={booking.kol.avatar} alt={booking.kol.name} />
-                        <AvatarFallback>{booking.kol.name.substring(0, 2)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-medium">{booking.kol.name}</div>
-                        <div className="text-sm text-muted-foreground">{booking.kol.handle}</div>
-                      </div>
+      {/* Tabs for upcoming/past bookings */}
+      <Tabs defaultValue="upcoming" value={activeTab} onValueChange={setActiveTab}>
+        <div className="flex justify-between items-center">
+          <TabsList>
+            <TabsTrigger value="upcoming">Upcoming</TabsTrigger>
+            <TabsTrigger value="past">Past Bookings</TabsTrigger>
+          </TabsList>
+          <span className="text-sm text-muted-foreground">
+            Showing {filteredBookings.length} results
+          </span>
+        </div>
+
+        <TabsContent value="upcoming" className="mt-4">
+          {/* Bookings table */}
+          <BookingsTable 
+            bookings={filteredBookings} 
+            formatDate={formatDate}
+            getStatusColor={getStatusColor}
+            getTypeIcon={getTypeIcon}
+            onJoinCall={handleJoinCall}
+            onReschedule={handleReschedule}
+            onCancel={handleCancel}
+          />
+        </TabsContent>
+
+        <TabsContent value="past" className="mt-4">
+          {/* Past Bookings table */}
+          <BookingsTable 
+            bookings={filteredBookings} 
+            formatDate={formatDate}
+            getStatusColor={getStatusColor}
+            getTypeIcon={getTypeIcon}
+            onJoinCall={handleJoinCall}
+            onReschedule={handleReschedule}
+            onCancel={handleCancel}
+            isPast={true}
+          />
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+interface BookingsTableProps {
+  bookings: Booking[];
+  formatDate: (date: string) => string;
+  getStatusColor: (status: Booking['status']) => string;
+  getTypeIcon: (type: Booking['type']) => JSX.Element;
+  onJoinCall: (booking: Booking) => void;
+  onReschedule: (booking: Booking) => void;
+  onCancel: (booking: Booking) => void;
+  isPast?: boolean;
+}
+
+const BookingsTable = ({
+  bookings,
+  formatDate,
+  getStatusColor,
+  getTypeIcon,
+  onJoinCall,
+  onReschedule,
+  onCancel,
+  isPast = false
+}: BookingsTableProps) => {
+  return (
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>KOL</TableHead>
+            <TableHead>Date & Time</TableHead>
+            <TableHead>Duration</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {bookings.length > 0 ? (
+            bookings.map((booking) => (
+              <TableRow key={booking.id}>
+                <TableCell>
+                  <div className="flex items-center space-x-3">
+                    <Avatar>
+                      <AvatarImage src={booking.kol.avatar} alt={booking.kol.name} />
+                      <AvatarFallback>{booking.kol.name.substring(0, 2)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium">{booking.kol.name}</div>
+                      <div className="text-sm text-muted-foreground">{booking.kol.handle}</div>
                     </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium">{formatDate(booking.date)}</div>
-                    <div className="text-sm text-muted-foreground">{booking.time}</div>
-                  </TableCell>
-                  <TableCell>{booking.duration}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center space-x-1">
-                      {getTypeIcon(booking.type)}
-                      <span className="capitalize">{booking.type}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant="outline" className={getStatusColor(booking.status)}>
-                      {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end space-x-2">
-                      {booking.status === 'upcoming' && (
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <div className="font-medium">{formatDate(booking.date)}</div>
+                  <div className="text-sm text-muted-foreground">{booking.time}</div>
+                </TableCell>
+                <TableCell>{booking.duration}</TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-1">
+                    {getTypeIcon(booking.type)}
+                    <span className="capitalize">{booking.type}</span>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <Badge variant="outline" className={getStatusColor(booking.status)}>
+                    {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <div className="flex justify-end space-x-2">
+                    {!isPast && booking.status === 'upcoming' && (
+                      <Button 
+                        onClick={() => onJoinCall(booking)} 
+                        className="bg-brand-pink hover:bg-brand-pink/90"
+                        size="sm"
+                      >
+                        <VideoIcon className="mr-1 h-4 w-4" /> Join
+                      </Button>
+                    )}
+                    {!isPast && booking.status === 'upcoming' && (
+                      <>
                         <Button 
-                          onClick={() => handleJoinCall(booking)} 
-                          className="bg-brand-pink hover:bg-brand-pink/90"
+                          onClick={() => onReschedule(booking)} 
+                          variant="outline" 
                           size="sm"
                         >
-                          <VideoIcon className="mr-1 h-4 w-4" /> Join
+                          Reschedule
                         </Button>
-                      )}
-                      {booking.status === 'upcoming' && (
-                        <>
-                          <Button 
-                            onClick={() => handleReschedule(booking)} 
-                            variant="outline" 
-                            size="sm"
-                          >
-                            Reschedule
-                          </Button>
-                          <Button 
-                            onClick={() => handleCancel(booking)} 
-                            variant="ghost" 
-                            size="sm"
-                          >
-                            Cancel
-                          </Button>
-                        </>
-                      )}
-                      {booking.status === 'completed' && (
-                        <Button variant="outline" size="sm">
-                          View Summary
+                        <Button 
+                          onClick={() => onCancel(booking)} 
+                          variant="ghost" 
+                          size="sm"
+                        >
+                          Cancel
                         </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={6} className="h-24 text-center">
-                  <div className="flex flex-col items-center">
-                    <Search className="h-8 w-8 text-muted-foreground mb-2" />
-                    <p className="text-muted-foreground">No bookings found.</p>
+                      </>
+                    )}
+                    {isPast && booking.status === 'completed' && (
+                      <Button variant="outline" size="sm">
+                        View Summary
+                      </Button>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={6} className="h-24 text-center">
+                <div className="flex flex-col items-center">
+                  <Search className="h-8 w-8 text-muted-foreground mb-2" />
+                  <p className="text-muted-foreground">
+                    {isPast 
+                      ? "No past bookings found." 
+                      : "No upcoming bookings found."}
+                  </p>
+                </div>
+              </TableCell>
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
     </div>
   );
 };
