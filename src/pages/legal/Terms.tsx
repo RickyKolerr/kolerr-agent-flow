@@ -1,12 +1,11 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, Shield, AlertTriangle } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from 'react-i18next';
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
 const TermsPage = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto py-12">
@@ -31,7 +30,7 @@ const TermsPage = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              By creating an account on Kolerr, you agree to these Terms of Service. You are responsible for maintaining the security of your account and password. Kolerr cannot and will not be liable for any loss or damage from your failure to comply with this security obligation.
+              {t('legal.terms.accountTermsDesc')}
             </p>
             
             <p className="text-muted-foreground">
@@ -56,7 +55,7 @@ const TermsPage = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              Kolerr reserves the right at any time to modify or discontinue, temporarily or permanently, the Service (or any part thereof) with or without notice. Kolerr shall not be liable to you or to any third party for any modification, suspension, or discontinuance of the Service.
+              {t('legal.terms.serviceTermsDesc')}
             </p>
             
             <p className="text-muted-foreground mt-4">

@@ -1,12 +1,11 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Info, Lock, UserCheck, Database } from "lucide-react";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from 'react-i18next';
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 
 const PrivacyPage = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="container mx-auto py-12">
@@ -25,7 +24,7 @@ const PrivacyPage = () => {
         <div className="bg-brand-pink/5 border border-brand-pink/20 rounded-lg p-6 mb-8">
           <h2 className="text-xl font-semibold mb-2">Privacy Commitment</h2>
           <p className="text-muted-foreground">
-            At Kolerr, we take your privacy seriously. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our platform. Please read this privacy policy carefully. If you do not agree with the terms of this privacy policy, please do not access the platform.
+            {t('legal.privacy.description')}
           </p>
         </div>
 
@@ -38,7 +37,7 @@ const PrivacyPage = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              We collect information that you provide directly to us when you register on our platform, create or modify your profile, set preferences, or make purchases through the platform.
+              {t('legal.privacy.dataCollectionDesc')}
             </p>
             
             <div className="mt-4 space-y-2">
@@ -70,7 +69,7 @@ const PrivacyPage = () => {
           </CardHeader>
           <CardContent className="prose prose-gray max-w-none">
             <p className="text-muted-foreground">
-              We use your personal information to provide and improve our services, process transactions, send you communications, and as otherwise required by law.
+              {t('legal.privacy.dataUsageDesc')}
             </p>
             
             <div className="mt-4 space-y-2">

@@ -10,8 +10,10 @@ import { ChallengesTab } from "@/components/rewards/ChallengesTab";
 import { RewardsTab } from "@/components/rewards/RewardsTab";
 import { LeaderboardTab } from "@/components/rewards/LeaderboardTab";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 const Rewards = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState("overview");
   const [rewardsData, setRewardsData] = useState<UserRewardsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);

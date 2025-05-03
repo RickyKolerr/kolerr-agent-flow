@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type Language = 'en' | 'vi';
 
@@ -12,48 +13,30 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
+  const { i18n, t: translate } = useTranslation();
+  
   // Get the initial language from localStorage or use English as default
   const [language, setLanguageState] = useState<Language>(
     () => (localStorage.getItem('language') as Language) || 'en'
   );
 
-  // Update localStorage when language changes
+  // Update localStorage and i18n when language changes
   const setLanguage = (newLanguage: Language) => {
     localStorage.setItem('language', newLanguage);
     setLanguageState(newLanguage);
+    i18n.changeLanguage(newLanguage);
     document.documentElement.lang = newLanguage;
   };
 
-  // Set the html lang attribute on initial load
+  // Set the html lang attribute and i18n language on initial load
   useEffect(() => {
     document.documentElement.lang = language;
+    i18n.changeLanguage(language);
   }, []);
 
-  // Translation function that gets the string from the appropriate language file
+  // Translation function
   const t = (key: string): string => {
-    try {
-      const keys = key.split('.');
-      let value: any = translations[language];
-      
-      for (const k of keys) {
-        if (value && typeof value === 'object' && k in value) {
-          value = value[k];
-        } else {
-          console.warn(`Translation key not found: ${key} in language ${language}`);
-          return key;
-        }
-      }
-      
-      if (typeof value === 'string') {
-        return value;
-      } else {
-        console.warn(`Translation value is not a string: ${key} in language ${language}`);
-        return key;
-      }
-    } catch (error) {
-      console.error(`Error translating key: ${key}`, error);
-      return key;
-    }
+    return translate(key);
   };
 
   return (
@@ -70,12 +53,3 @@ export function useLanguage() {
   }
   return context;
 }
-
-// Import translations
-import en from '../translations/en';
-import vi from '../translations/vi';
-
-const translations = {
-  en,
-  vi,
-};

@@ -7,6 +7,7 @@ import { Star } from "lucide-react";
 import { Reward } from "@/types/rewards";
 import { redeemReward } from "@/services/rewardsService";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 type RewardsTabProps = {
   availableRewards: Reward[];
@@ -14,6 +15,8 @@ type RewardsTabProps = {
 };
 
 export const RewardsTab = ({ availableRewards, currentPoints }: RewardsTabProps) => {
+  const { t } = useTranslation();
+  
   const handleRedeemReward = useCallback(async (reward: Reward) => {
     if (currentPoints >= reward.points) {
       try {

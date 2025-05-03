@@ -1,9 +1,9 @@
 
 import { Link } from "react-router-dom";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useTranslation } from 'react-i18next';
 
 export const Footer = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   
   return (
     <footer className="border-t">

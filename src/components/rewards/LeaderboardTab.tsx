@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
 import { LeaderboardEntry } from "@/types/rewards";
+import { useTranslation } from "react-i18next";
 
 type LeaderboardTabProps = {
   leaderboard: LeaderboardEntry[];
@@ -12,6 +13,8 @@ type LeaderboardTabProps = {
 };
 
 export const LeaderboardTab = ({ leaderboard, userRank }: LeaderboardTabProps) => {
+  const { t } = useTranslation();
+  
   return (
     <div>
       <div className="flex items-center justify-between mb-6">

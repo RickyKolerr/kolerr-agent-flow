@@ -1,11 +1,11 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Languages } from "lucide-react";
-import { LanguageToggle } from "../LanguageToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "../LanguageSwitcher";
+import { useTranslation } from 'react-i18next';
 
 export const LanguagePreferences = () => {
-  const { t } = useLanguage();
+  const { t } = useTranslation();
   
   return (
     <Card>
@@ -20,7 +20,7 @@ export const LanguagePreferences = () => {
           <span className="text-sm text-muted-foreground">
             {t('settings.changeLanguage')}
           </span>
-          <LanguageToggle />
+          <LanguageSwitcher />
         </div>
       </CardContent>
     </Card>

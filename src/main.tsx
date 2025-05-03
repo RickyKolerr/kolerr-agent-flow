@@ -2,6 +2,7 @@
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
+import './i18n.ts'; // Import i18n configuration
 
 // Add a patch to catch Select.Item issues
 const originalError = console.error;

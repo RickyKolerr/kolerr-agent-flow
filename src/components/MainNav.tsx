@@ -7,8 +7,8 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useAuth } from "@/contexts/AuthContext";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { LanguageToggle } from "@/components/LanguageToggle";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { useTranslation } from 'react-i18next';
 
 export const MainNav = () => {
   const {
@@ -17,7 +17,7 @@ export const MainNav = () => {
     logout
   } = useAuth();
 
-  const { t, language, setLanguage } = useLanguage();
+  const { t, i18n } = useTranslation();
 
   // Add state for controlling sheet visibility
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +29,13 @@ export const MainNav = () => {
   // Handler for mobile nav items
   const handleMobileNavClick = () => {
     setIsOpen(false);
+  };
+
+  // Handler for language change in mobile view
+  const handleLanguageChange = () => {
+    const newLanguage = i18n.language === 'en' ? 'vi' : 'en';
+    i18n.changeLanguage(newLanguage);
+    handleMobileNavClick();
   };
 
   // Modified routes array to hide specific tabs
@@ -67,9 +74,9 @@ export const MainNav = () => {
             ))}
           </nav>
 
-          {/* Desktop Auth Buttons and Language Toggle */}
+          {/* Desktop Auth Buttons and Language Switcher */}
           <div className="hidden md:flex items-center space-x-4">
-            <LanguageToggle />
+            <LanguageSwitcher />
             {isAuthenticated ? <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
@@ -134,13 +141,10 @@ export const MainNav = () => {
                     variant="ghost" 
                     size="sm" 
                     className="text-lg font-medium hover:text-brand-pink transition-colors"
-                    onClick={() => {
-                      setLanguage(language === 'en' ? 'vi' : 'en');
-                      handleMobileNavClick();
-                    }}
+                    onClick={handleLanguageChange}
                   >
                     <Languages className="h-5 w-5 mr-2" />
-                    {language === 'en' ? 'Tiếng Việt' : 'English'}
+                    {i18n.language === 'en' ? 'Tiếng Việt' : 'English'}
                   </Button>
                 </div>
                 <div className="flex flex-col space-y-4 pt-6 border-t border-gray-800">
