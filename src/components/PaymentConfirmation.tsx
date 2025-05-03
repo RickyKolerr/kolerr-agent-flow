@@ -8,14 +8,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CreditCard, Package } from "lucide-react";
+import { CreditCard } from "lucide-react";
 
 interface PaymentConfirmationProps {
   open: boolean;
   onClose: () => void;
   onConfirm: () => void;
   planName: string;
-  credits: number;
+  credits?: number;
   amount: number;
   isProcessing: boolean;
   isSubscription?: boolean;
@@ -31,17 +31,13 @@ export const PaymentConfirmation = ({
   isProcessing,
   isSubscription = false
 }: PaymentConfirmationProps) => {
-  // Calculate the value per credit
-  const valuePerCredit = amount / credits;
-  const savings = credits >= amount ? Math.round((1 - (valuePerCredit)) * 100) : 0;
-  
   return (
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Confirm Purchase</DialogTitle>
           <DialogDescription>
-            Please review your purchase details before proceeding.
+            Please review your purchase details before proceeding to payment.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -50,14 +46,12 @@ export const PaymentConfirmation = ({
               <span className="text-muted-foreground">Package</span>
               <span className="font-medium">{planName}</span>
             </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Credits</span>
-              <span className="font-medium">{credits}</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Value per credit</span>
-              <span className="font-medium text-green-500">${valuePerCredit.toFixed(2)}{savings > 0 && <span className="text-xs ml-1">({savings}% savings)</span>}</span>
-            </div>
+            {credits && (
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Credits</span>
+                <span className="font-medium">{credits}</span>
+              </div>
+            )}
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="font-medium">Total Amount</span>
               <span className="font-bold">${amount}{isSubscription ? '/month' : ''}</span>
@@ -74,7 +68,7 @@ export const PaymentConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
           >
             <CreditCard className="mr-2 h-4 w-4" />
-            {isProcessing ? "Processing..." : `Pay $${amount}`}
+            {isProcessing ? "Processing..." : `Proceed to Payment`}
           </Button>
         </DialogFooter>
       </DialogContent>

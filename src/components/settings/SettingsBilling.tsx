@@ -3,19 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, ChevronRight, Settings } from "lucide-react";
-import { toast } from "sonner";
+import { CreditCard, ChevronRight } from "lucide-react";
 
 export const SettingsBilling = () => {
   const navigate = useNavigate();
   const { hasPremiumPlan, premiumCredits } = useCredits();
-
-  const handleSubscriptionAction = (action: 'cancel') => {
-    toast.info("Cancelling your subscription...", {
-      description: "Your subscription will remain active until the end of your billing period."
-    });
-    navigate('/dashboard/subscription?action=cancel');
-  };
 
   return (
     <div className="space-y-6">
@@ -44,32 +36,21 @@ export const SettingsBilling = () => {
             </div>
             
             <div className="flex flex-col gap-2">
-              {hasPremiumPlan ? (
-                <>
-                  <Button 
-                    variant="outline"
-                    onClick={() => navigate('/dashboard/subscription')}
-                    className="justify-between"
-                  >
-                    <span>Change Plan</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    onClick={() => handleSubscriptionAction('cancel')}
-                    className="text-red-500 hover:text-red-600 hover:bg-red-50 justify-between"
-                  >
-                    <span>Cancel Subscription</span>
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </>
-              ) : (
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/dashboard/subscription')}
+                className="justify-between"
+              >
+                <span>{hasPremiumPlan ? 'Change Plan' : 'Upgrade to Premium'}</span>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+              {hasPremiumPlan && (
                 <Button 
                   variant="outline"
-                  onClick={() => navigate('/dashboard/subscription')}
-                  className="justify-between"
+                  onClick={() => navigate('/dashboard/subscription?action=cancel')}
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50 justify-between"
                 >
-                  <span>Upgrade to Premium</span>
+                  <span>Cancel Subscription</span>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               )}
@@ -94,30 +75,6 @@ export const SettingsBilling = () => {
           >
             <CreditCard className="h-4 w-4" />
             Manage Payment Methods
-            <ChevronRight className="h-4 w-4 ml-auto" />
-          </Button>
-        </CardContent>
-      </Card>
-
-      {/* Billing Preferences */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Billing Preferences
-          </CardTitle>
-          <CardDescription>
-            Configure your billing notifications and preferences
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Button
-            variant="outline"
-            className="w-full justify-start gap-4"
-            onClick={() => navigate('/dashboard/settings/billing/preferences')}
-          >
-            <Settings className="h-4 w-4" />
-            Manage Billing Preferences
             <ChevronRight className="h-4 w-4 ml-auto" />
           </Button>
         </CardContent>

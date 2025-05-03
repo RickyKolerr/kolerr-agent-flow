@@ -1,5 +1,5 @@
 
-import { Info, ShieldCheck } from "lucide-react";
+import { Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,7 +35,6 @@ export const PlanChangeConfirmation = ({
   const isNewUser = currentPlan === "Free";
   const isUpgrade = newPrice > currentPrice;
   const isDowngrade = newPrice < currentPrice && !isNewUser;
-  const priceDifference = isUpgrade ? newPrice - currentPrice : 0;
   
   // Determine the right action text and messaging
   const planChangeType = isNewUser ? "Subscribe" : isUpgrade ? "Upgrade" : "Downgrade";
@@ -63,35 +62,15 @@ export const PlanChangeConfirmation = ({
             </div>
             <div className="text-right">
               {isNewUser && (
-                <>
-                  <p className="font-medium">New price: ${newPrice} / month</p>
-                  <p className="text-sm text-muted-foreground">Effective immediately</p>
-                </>
+                <p className="font-medium">New price: ${newPrice} / month</p>
               )}
               {isUpgrade && !isNewUser && (
-                <>
-                  <p className="font-medium">Amount due now: ${priceDifference}</p>
-                  <p className="text-sm text-muted-foreground">
-                    New price: ${newPrice} / month (from next cycle)
-                  </p>
-                </>
+                <p className="font-medium">New price: ${newPrice} / month</p>
               )}
               {isDowngrade && (
-                <>
-                  <p className="font-medium">New price: ${newPrice} / month</p>
-                  <p className="text-sm text-muted-foreground">
-                    Change applies at next billing cycle
-                  </p>
-                </>
+                <p className="font-medium">New price: ${newPrice} / month</p>
               )}
             </div>
-          </div>
-          
-          <div className="flex items-center gap-2 p-3 bg-gray-50 border border-gray-200 rounded-md">
-            <ShieldCheck className="h-5 w-5 text-green-600 flex-shrink-0" />
-            <p className="text-sm text-gray-600">
-              Payments are securely processed by Stripe. Your financial information is encrypted and never stored on our servers.
-            </p>
           </div>
         </CardContent>
         <CardFooter className="flex justify-between">
@@ -102,7 +81,7 @@ export const PlanChangeConfirmation = ({
             className="bg-brand-pink hover:bg-brand-pink/90"
             onClick={onConfirm}
           >
-            {isUpgrade && !isNewUser ? `Pay $${priceDifference} now` : actionText}
+            {actionText}
           </Button>
         </CardFooter>
       </Card>
