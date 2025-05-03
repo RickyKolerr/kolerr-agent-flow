@@ -18,7 +18,7 @@ interface BookingModalProps {
   contactName: string;
 }
 
-const BookingModal = ({
+export const BookingModal = ({
   open,
   onClose,
   contactName,
@@ -123,5 +123,3 @@ const BookingModal = ({
     </Dialog>
   );
 };
-
-export default BookingModal;
