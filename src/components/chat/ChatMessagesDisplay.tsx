@@ -19,12 +19,16 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { checkMessageCredit, hasPremiumPlan } = useCredits();
 
-  // Auto-scroll to bottom of messages only when autoScroll is true
+  // Auto-scroll to bottom of messages only when messages change AND autoScroll is true
   useEffect(() => {
+    // Only scroll if explicitly requested via autoScroll prop
     if (autoScroll && messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      // Use requestAnimationFrame to ensure DOM is ready
+      requestAnimationFrame(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+      });
     }
-  }, [messages, autoScroll]);
+  }, [messages.length, autoScroll]); // Only trigger on messages length change, not on every render
 
   if (messages.length === 0) {
     return (
@@ -106,3 +110,4 @@ export const ChatMessagesDisplay: React.FC<ChatMessagesDisplayProps> = ({
     </div>
   );
 };
+

@@ -33,6 +33,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   const recipientName = searchParams.get('name');
   const initialMessage = searchParams.get('message');
   const [isLoading, setIsLoading] = useState(true);
+  const [shouldScrollToBottom, setShouldScrollToBottom] = useState(false);
   
   const getDashboardPath = useCallback(() => {
     return user?.role === 'kol' ? "/dashboard/kol" : "/dashboard";
@@ -65,6 +66,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         (msg) => msg.conversationId === conversationId
       );
       setMessages(conversationMessages || []);
+      // Only set scroll flag when messages are loaded
+      setShouldScrollToBottom(true);
     } else if (conversationId) {
       // If we have an ID but no conversation, redirect somewhere appropriate
       navigate(isDashboardChat ? getDashboardPath() : "/chat");
@@ -73,15 +76,19 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     setIsLoading(false);
   }, [conversationId, recipientId, navigate, location.search, isDashboardChat, getDashboardPath]);
 
-  // Optimized scroll to bottom when messages change
+  // Optimized scroll to bottom only when needed
   useEffect(() => {
-    if (messageContainerRef.current) {
-      const scrollContainer = messageContainerRef.current;
+    if (messageContainerRef.current && shouldScrollToBottom) {
+      // Use requestAnimationFrame to ensure DOM is ready
       requestAnimationFrame(() => {
-        scrollContainer.scrollTop = scrollContainer.scrollHeight;
+        if (messageContainerRef.current) {
+          messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
+        }
       });
+      // Reset flag after scrolling
+      setShouldScrollToBottom(false);
     }
-  }, [messages]);
+  }, [shouldScrollToBottom]);
 
   // Handle sending a new message with debounce
   const handleSendMessage = useCallback((content: string) => {
@@ -97,6 +104,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     };
 
     setMessages(prev => [...prev, newMessage]);
+    // Set flag to scroll to bottom after sending a message
+    setShouldScrollToBottom(true);
     
     // Simulate message delivery after a short delay
     setTimeout(() => {

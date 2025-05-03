@@ -16,7 +16,7 @@ console.error = function(...args) {
   return originalError.apply(console, args);
 };
 
-// PWA installation event handling
+// Store PWA installation event without affecting scroll
 let deferredPrompt: any;
 window.addEventListener('beforeinstallprompt', (e) => {
   // Prevent the default browser install prompt
@@ -24,9 +24,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   // Store the event for later use
   deferredPrompt = e;
   
-  // Optionally show your own install button
-  // You can create a UI element that shows "Add to Home Screen" 
-  // and call deferredPrompt.prompt() when clicked
   console.log('App can be installed! Show install button.');
 });
 
