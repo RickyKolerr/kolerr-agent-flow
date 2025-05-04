@@ -37,7 +37,7 @@ const NewConversation: React.FC<NewConversationProps> = ({ open, onClose }) => {
 
   const filteredCreators = mockCreatorData ? 
     mockCreatorData.filter(creator => 
-      creator.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      creator.fullName.toLowerCase().includes(searchQuery.toLowerCase()) || 
       creator.username.toLowerCase().includes(searchQuery.toLowerCase())
     ) : [];
 
