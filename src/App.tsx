@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -90,6 +91,18 @@ import { Footer } from "@/components/Footer";
 
 // New booking related components
 import BookingSuccess from "@/components/booking/BookingSuccess";
+
+// Helper to redirect based on role
+const RoleBasedRedirect = () => {
+  const location = useLocation();
+  const { user } = AuthProvider.useAuth();
+  
+  if (user?.role === 'kol') {
+    return <Navigate to="/dashboard/kol/campaigns" replace />;
+  } else {
+    return <Navigate to="/dashboard/overview" replace />;
+  }
+};
 
 // Helper component to conditionally render MainNav and Footer
 const Layout = ({ children }) => {
@@ -192,14 +205,30 @@ const App = () => {
                     
                     {/* Protected dashboard routes */}
                     <Route path="/dashboard" element={<DashboardLayout />}>
-                      <Route index element={<Navigate to="/dashboard/kol/campaigns" replace />} />
+                      <Route index element={<RoleBasedRedirect />} />
                       <Route path="overview" element={<Overview />} />
                       
                       {/* Brand-specific routes */}
-                      <Route path="kols" element={<KOLsPage />} />
-                      <Route path="campaigns/create" element={<CreateCampaign />} />
-                      <Route path="campaigns" element={<CampaignsPage />} />
-                      <Route path="bookings" element={<BookingsPage />} />
+                      <Route path="kols" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <KOLsPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="campaigns/create" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <CreateCampaign />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="campaigns" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <CampaignsPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="bookings" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <BookingsPage />
+                        </RoleProtectedRoute>
+                      } />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
                       
@@ -212,14 +241,46 @@ const App = () => {
                       <Route path="contracts/:contractId" element={<ViewContract />} />
                       
                       {/* KOL-specific routes */}
-                      <Route path="kol/campaigns" element={<AvailableCampaigns />} />
-                      <Route path="kol/applications" element={<Applications />} />
-                      <Route path="kol/analytics" element={<Analytics />} />
-                      <Route path="kol/referrals" element={<Referrals />} />
-                      <Route path="kol/rewards" element={<Rewards />} />
-                      <Route path="kol/community" element={<Community />} />
-                      <Route path="kol/contracts" element={<KOLContracts />} />
-                      <Route path="kol/messages" element={<KolMessagesPage />} />
+                      <Route path="kol/campaigns" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <AvailableCampaigns />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/applications" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <Applications />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/analytics" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <Analytics />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/referrals" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <Referrals />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/rewards" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <Rewards />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/community" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <Community />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/contracts" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <KOLContracts />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/messages" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <KolMessagesPage />
+                        </RoleProtectedRoute>
+                      } />
                       
                       {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />

@@ -10,7 +10,7 @@ export const useUserAccess = () => {
   // Integrate the intelligent credits system for more accurate credit management
   const { freeCredits, isKOLSpecificQuery } = useIntelligentCredits(originalCredits, hasPremiumPlan);
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "messages") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "messages" | "available_campaigns") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
@@ -28,21 +28,24 @@ export const useUserAccess = () => {
     
     switch (feature) {
       case "campaigns":
-        // Both brands and KOLs can access campaigns, but with different views
-        return Boolean(userRole);
+        // Only brands can access campaigns management
+        return userRole === "brand" || userRole === "admin";
+      case "available_campaigns":
+        // Only KOLs can access available campaigns
+        return userRole === "kol" || userRole === "admin";
       case "analytics":
         return Boolean(userRole);
       case "contracts":
         return (["brand", "kol", "admin"].includes(userRole || "") && hasPremiumPlan);
       case "referrals":
         // KOL-specific feature
-        return userRole === "kol";
+        return userRole === "kol" || userRole === "admin";
       case "rewards":
         // KOL-specific feature
-        return userRole === "kol";
+        return userRole === "kol" || userRole === "admin";
       case "community":
         // KOL-specific feature
-        return userRole === "kol";
+        return userRole === "kol" || userRole === "admin";
       default:
         return false;
     }
@@ -55,9 +58,11 @@ export const useUserAccess = () => {
       return `/onboarding/${user.role}`;
     }
     
-    // Direct KOLs to their specific dashboard
+    // Direct users to role-specific dashboard
     if (user?.role === "kol") {
       return "/dashboard/kol/campaigns";
+    } else if (user?.role === "brand") {
+      return "/dashboard/overview";
     }
     
     return "/dashboard";
@@ -70,6 +75,6 @@ export const useUserAccess = () => {
     user,
     freeCredits,
     hasPremiumPlan,
-    isKOLSpecificQuery // Export this function to be used across components
+    isKOLSpecificQuery
   };
 };
