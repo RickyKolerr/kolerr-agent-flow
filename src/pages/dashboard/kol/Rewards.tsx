@@ -11,12 +11,20 @@ import { RewardsTab } from "@/components/rewards/RewardsTab";
 import { LeaderboardTab } from "@/components/rewards/LeaderboardTab";
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
+import { useUserAccess } from "@/hooks/useUserAccess";
+import { Navigate } from "react-router-dom";
 
 const Rewards = () => {
   const { t } = useTranslation();
+  const { user } = useUserAccess();
   const [activeTab, setActiveTab] = useState("overview");
   const [rewardsData, setRewardsData] = useState<UserRewardsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Redirect if not a KOL user
+  if (user?.role !== "kol" && user?.role !== "admin") {
+    return <Navigate to="/dashboard" />;
+  }
 
   // Fetch rewards data
   useEffect(() => {

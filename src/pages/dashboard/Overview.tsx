@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import {
   Card,
@@ -13,10 +14,13 @@ import { BarChart, Users, CreditCard, Calendar, ArrowUpRight } from "lucide-reac
 import { useNavigate } from "react-router-dom";
 import { LineChart as RechartsLineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { CreatorEarningsCard } from "@/components/kol/CreatorEarningsCard";
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 const Overview = () => {
   const navigate = useNavigate();
   const [timeframe, setTimeframe] = useState("month");
+  const { user } = useUserAccess();
+  const isKOLUser = user?.role === "kol";
 
   // Mock data
   const mockData = {
@@ -161,8 +165,8 @@ const Overview = () => {
         ))}
       </div>
 
-      {/* Creator Earnings Section */}
-      <CreatorEarningsCard />
+      {/* Creator Earnings Section - Only show for KOL users */}
+      {isKOLUser && <CreatorEarningsCard />}
       
       <div className="grid gap-4 md:grid-cols-2">
         {/* Performance Chart */}
@@ -172,7 +176,7 @@ const Overview = () => {
             <CardDescription>
               Engagement metrics across your active campaigns
             </CardDescription>
-            <Tabs defaultValue="month"> {/* Added proper Tabs wrapper */}
+            <Tabs defaultValue="month">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger
                   value="day"
