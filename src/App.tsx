@@ -8,7 +8,7 @@ import { useState, useEffect } from "react";
 import { useViewportFix } from "@/hooks/useViewportFix";
 
 // Context providers
-import { AuthProvider, ProtectedRoute, RoleProtectedRoute } from "@/contexts/AuthContext";
+import { AuthProvider, ProtectedRoute, RoleProtectedRoute, useAuth } from "@/contexts/AuthContext";
 import { CreditProvider } from "@/contexts/CreditContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 
@@ -95,7 +95,7 @@ import BookingSuccess from "@/components/booking/BookingSuccess";
 // Helper to redirect based on role
 const RoleBasedRedirect = () => {
   const location = useLocation();
-  const { user } = AuthProvider.useAuth();
+  const { user } = useAuth();
   
   if (user?.role === 'kol') {
     return <Navigate to="/dashboard/kol/campaigns" replace />;
