@@ -20,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { mockKOLs } from "@/data/mockCreators";
+import { mockCreatorData } from "@/data/mockCreators";
 import { Search, MessageSquare, Plus } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
@@ -35,10 +35,10 @@ const NewConversation: React.FC<NewConversationProps> = ({ open, onClose }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
 
-  const filteredCreators = mockKOLs ? 
-    mockKOLs.filter(creator => 
+  const filteredCreators = mockCreatorData ? 
+    mockCreatorData.filter(creator => 
       creator.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-      creator.handle.toLowerCase().includes(searchQuery.toLowerCase())
+      creator.username.toLowerCase().includes(searchQuery.toLowerCase())
     ) : [];
 
   const handleStartConversation = () => {
@@ -48,7 +48,7 @@ const NewConversation: React.FC<NewConversationProps> = ({ open, onClose }) => {
     }
 
     // Get the selected creator details
-    const creator = mockKOLs.find(c => c.id === selectedCreator);
+    const creator = mockCreatorData.find(c => c.id === selectedCreator);
     
     if (!creator) {
       toast.error("Creator not found");
@@ -61,13 +61,13 @@ const NewConversation: React.FC<NewConversationProps> = ({ open, onClose }) => {
     // Navigate to the chat with URL parameters
     const params = new URLSearchParams();
     params.append('recipient', creator.id);
-    params.append('name', creator.name);
+    params.append('name', creator.fullName);
     if (message.trim()) {
       params.append('message', message.trim());
     }
     
     navigate(`/chat?${params.toString()}`);
-    toast.success(`Started conversation with ${creator.name}`);
+    toast.success(`Started conversation with ${creator.fullName}`);
   };
 
   return (
@@ -107,10 +107,10 @@ const NewConversation: React.FC<NewConversationProps> = ({ open, onClose }) => {
                   <SelectItem key={creator.id} value={creator.id}>
                     <div className="flex items-center">
                       <Avatar className="h-6 w-6 mr-2">
-                        <AvatarImage src={creator.avatar} alt={creator.name} />
-                        <AvatarFallback>{creator.name.substring(0, 2)}</AvatarFallback>
+                        <AvatarImage src={creator.avatar} alt={creator.fullName} />
+                        <AvatarFallback>{creator.fullName.substring(0, 2)}</AvatarFallback>
                       </Avatar>
-                      {creator.name} ({creator.category})
+                      {creator.fullName} ({creator.niche[0]})
                     </div>
                   </SelectItem>
                 ))}
