@@ -111,6 +111,14 @@ const ScheduleBookingPage = () => {
   const navigate = useNavigate();
   const [step, setStep] = useState<'select_kol' | 'booking_details' | 'review'>('select_kol');
   const [selectedKOL, setSelectedKOL] = useState<typeof mockKOLs[0] | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  // Filter creators based on search query
+  const filteredKOLs = mockKOLs.filter(kol => 
+    kol.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    kol.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    kol.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
   
   // Initialize form
   const form = useForm<BookingFormValues>({
@@ -165,6 +173,12 @@ const ScheduleBookingPage = () => {
     return baseRate * (minutes / 30);
   };
 
+  // Handle direct selection of a KOL
+  const handleKOLSelect = (kolId: string) => {
+    form.setValue("kolId", kolId);
+    onSubmit(form.getValues());
+  };
+
   return (
     <div className="max-w-2xl mx-auto py-6">
       <div className="flex items-center mb-6">
@@ -180,7 +194,7 @@ const ScheduleBookingPage = () => {
         <h1 className="text-2xl font-bold">Schedule Booking</h1>
       </div>
       
-      <Card>
+      <Card className="bg-black/80 border-white/10">
         <CardHeader>
           <CardTitle>
             {step === 'select_kol' ? "Select Creator" : 
@@ -197,36 +211,45 @@ const ScheduleBookingPage = () => {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               {step === 'select_kol' && (
-                <FormField
-                  control={form.control}
-                  name="kolId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Creator</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a creator" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {mockKOLs.map(kol => (
-                            <SelectItem key={kol.id} value={kol.id}>
-                              <div className="flex items-center">
-                                <Avatar className="h-6 w-6 mr-2">
-                                  <AvatarImage src={kol.avatar} alt={kol.name} />
-                                  <AvatarFallback>{kol.name.substring(0, 2)}</AvatarFallback>
-                                </Avatar>
-                                {kol.name} ({kol.category})
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <>
+                  <div>
+                    <div className="mb-4">
+                      <Input 
+                        placeholder="Search creators by name, handle, or category..." 
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="bg-black/50 border-white/20"
+                      />
+                    </div>
+                    <div className="space-y-3">
+                      {filteredKOLs.map(kol => (
+                        <div 
+                          key={kol.id} 
+                          className={`p-3 border border-white/10 rounded-lg cursor-pointer hover:bg-black/30 flex items-center ${
+                            kol.id === watchedKolId ? 'bg-brand-pink/20 border-brand-pink/30' : ''
+                          }`}
+                          onClick={() => handleKOLSelect(kol.id)}
+                        >
+                          <Avatar className="h-12 w-12 mr-3 border border-white/20">
+                            <AvatarImage src={kol.avatar} alt={kol.name} />
+                            <AvatarFallback>{kol.name.substring(0, 2)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col">
+                            <span className="font-medium">{kol.name}</span>
+                            <span className="text-sm text-muted-foreground">{kol.handle}</span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-brand-pink/20 text-brand-pink w-fit mt-1">{kol.category}</span>
+                          </div>
+                        </div>
+                      ))}
+                      
+                      {filteredKOLs.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No creators found matching your search.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
               )}
 
               {step === 'booking_details' && (
@@ -413,13 +436,13 @@ const ScheduleBookingPage = () => {
                 </div>
               )}
               
-              <div className="pt-4 space-x-3 flex justify-between">
+              <div className="pt-4 space-x-3 flex justify-end">
                 {step !== 'select_kol' && (
                   <Button type="button" variant="outline" onClick={handleBack}>
                     Back
                   </Button>
                 )}
-                <Button type="submit" className="ml-auto bg-brand-pink hover:bg-brand-pink/90">
+                <Button type="submit" className="bg-brand-pink hover:bg-brand-pink/90">
                   {step === 'select_kol' ? 'Continue' : 
                    step === 'booking_details' ? 'Review' : 
                    'Confirm & Schedule'}

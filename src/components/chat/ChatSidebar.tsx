@@ -11,6 +11,7 @@ import { OnlineIndicator } from "./OnlineIndicator";
 import { useNavigate, useParams, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
+import NewConversation from "./NewConversation";
 
 interface ChatSidebarProps {
   onConversationSelect?: () => void;
@@ -19,6 +20,7 @@ interface ChatSidebarProps {
 
 export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, isDashboardChat = false }) => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [isNewConversationOpen, setIsNewConversationOpen] = useState(false);
   const { conversationId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -149,11 +151,18 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
           className="w-full h-12 md:h-10" 
           variant="outline"
           style={{ touchAction: "manipulation" }}
+          onClick={() => setIsNewConversationOpen(true)}
         >
           <Plus className="h-4 w-4 mr-2" />
           New Conversation
         </Button>
       </div>
+
+      {/* New Conversation Modal */}
+      <NewConversation 
+        open={isNewConversationOpen} 
+        onClose={() => setIsNewConversationOpen(false)} 
+      />
     </div>
   );
 };

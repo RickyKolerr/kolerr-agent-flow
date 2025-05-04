@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Calendar } from "lucide-react";
+import { Calendar, ChevronLeft } from "lucide-react";
 import { useState } from "react";
 import BookingForm from "./BookingForm";
 import { useNavigate } from "react-router-dom";
@@ -17,12 +17,14 @@ interface BookingModalProps {
   open: boolean;
   onClose: () => void;
   contactName: string;
+  selectedKolId?: string; // Added to support direct booking with a KOL
 }
 
 export const BookingModal = ({
   open,
   onClose,
   contactName,
+  selectedKolId,
 }: BookingModalProps) => {
   const [step, setStep] = useState<'form' | 'payment'>('form');
   const [bookingDetails, setBookingDetails] = useState({
