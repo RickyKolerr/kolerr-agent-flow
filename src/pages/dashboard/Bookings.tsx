@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -21,6 +20,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Search, Plus, Calendar, Clock, VideoIcon } from "lucide-react";
 import { toast } from "sonner";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect } from "react";
 
 // Booking type definition
 interface Booking {
@@ -41,6 +42,20 @@ interface Booking {
 const BookingsPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("upcoming");
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  // Check for success URL parameter
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const status = searchParams.get('status');
+    
+    if (status === 'success') {
+      toast.success("Booking scheduled successfully!");
+      // Clear the URL parameter
+      navigate('/dashboard/bookings', { replace: true });
+    }
+  }, [location, navigate]);
 
   // Mock bookings data with real portrait images
   const mockBookings: Booking[] = [
@@ -130,7 +145,7 @@ const BookingsPage = () => {
     });
 
   const handleScheduleBooking = () => {
-    toast.success("Opening booking scheduler...");
+    navigate('/dashboard/schedule-booking');
   };
 
   const formatDate = (dateString: string) => {

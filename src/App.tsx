@@ -55,6 +55,7 @@ import Overview from "@/pages/dashboard/Overview";
 import KOLsPage from "@/pages/dashboard/KOLs";
 import CampaignsPage from "@/pages/dashboard/Campaigns";
 import BookingsPage from "@/pages/dashboard/Bookings";
+import ScheduleBookingPage from "@/pages/dashboard/ScheduleBooking";
 import CreditsPage from "@/pages/dashboard/Credits";
 import ProfilePage from "@/pages/dashboard/Profile";
 import BillingPage from "@/pages/dashboard/Billing";
@@ -227,6 +228,11 @@ const App = () => {
                       <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <BookingsPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="schedule-booking" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <ScheduleBookingPage />
                         </RoleProtectedRoute>
                       } />
                       <Route path="credits" element={<CreditsPage />} />

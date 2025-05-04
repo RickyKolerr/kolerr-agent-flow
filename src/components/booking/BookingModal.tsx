@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "lucide-react";
 import { useState } from "react";
 import BookingForm from "./BookingForm";
+import { useNavigate } from "react-router-dom";
 
 interface BookingModalProps {
   open: boolean;
@@ -30,6 +31,7 @@ export const BookingModal = ({
     duration: "30",
     description: ""
   });
+  const navigate = useNavigate();
 
   const handleFormSubmit = (formData: {
     date: string;
@@ -49,7 +51,7 @@ export const BookingModal = ({
     // This will be integrated with Stripe later
     onClose();
     // Redirect to success page after Stripe payment
-    window.location.href = '/dashboard/bookings?status=success';
+    navigate('/dashboard/bookings?status=success');
   };
 
   return (

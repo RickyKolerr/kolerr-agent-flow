@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye } from "lucide-react";
+import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye, Save } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { BookingModal } from "@/components/booking/BookingModal";
@@ -45,6 +45,7 @@ interface KOL {
   tags: string[];
   verified: boolean;
   rating: number;
+  saved?: boolean;
 }
 
 const KOLsPage = () => {
@@ -54,6 +55,7 @@ const KOLsPage = () => {
   const navigate = useNavigate();
   const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
+  const [savedKOLs, setSavedKOLs] = useState<string[]>([]);
 
   // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
@@ -182,9 +184,13 @@ const KOLsPage = () => {
     .filter(kol => {
       if (activeView === "all") return true;
       if (activeView === "verified") return kol.verified;
-      if (activeView === "saved") return [1, 2, 5].includes(Number(kol.id.replace("kol", ""))); // Mock saved KOLs
+      if (activeView === "saved") return savedKOLs.includes(kol.id);
       return true;
-    });
+    })
+    .map(kol => ({
+      ...kol,
+      saved: savedKOLs.includes(kol.id)
+    }));
 
   const formatFollowers = (num: number) => {
     if (num >= 1000000) {
@@ -210,6 +216,22 @@ const KOLsPage = () => {
   
   const handleViewProfile = (kolId: string) => {
     navigate(`/creators/${kolId}`);
+  };
+
+  const handleSaveKOL = (kolId: string) => {
+    setSavedKOLs(prev => {
+      if (prev.includes(kolId)) {
+        toast.info("KOL removed from saved list");
+        return prev.filter(id => id !== kolId);
+      } else {
+        toast.success("KOL saved successfully");
+        return [...prev, kolId];
+      }
+    });
+  };
+
+  const handleScheduleBooking = () => {
+    navigate('/dashboard/schedule-booking');
   };
 
   return (
@@ -277,6 +299,7 @@ const KOLsPage = () => {
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
             onViewProfile={handleViewProfile}
+            onSaveKOL={handleSaveKOL}
           />
         </TabsContent>
 
@@ -288,6 +311,7 @@ const KOLsPage = () => {
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
             onViewProfile={handleViewProfile}
+            onSaveKOL={handleSaveKOL}
           />
         </TabsContent>
 
@@ -299,6 +323,7 @@ const KOLsPage = () => {
             onContactKOL={handleContactKOL}
             onBookSlot={handleBookSlot}
             onViewProfile={handleViewProfile}
+            onSaveKOL={handleSaveKOL}
           />
         </TabsContent>
       </Tabs>
@@ -322,9 +347,10 @@ interface KOLsTableProps {
   onContactKOL: (kolId: string) => void;
   onBookSlot: (kol: KOL) => void;
   onViewProfile: (kolId: string) => void;
+  onSaveKOL: (kolId: string) => void;
 }
 
-const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlot, onViewProfile }: KOLsTableProps) => {
+const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlot, onViewProfile, onSaveKOL }: KOLsTableProps) => {
   return (
     <div className="rounded-md border">
       <Table>
@@ -382,12 +408,13 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     </Button>
                     
                     <Button 
-                      variant="ghost" 
+                      variant={kol.saved ? "outline" : "ghost"}
                       size="sm"
-                      onClick={() => onAddToList(kol.id)}
+                      onClick={() => onSaveKOL(kol.id)}
+                      className={kol.saved ? "text-brand-pink border-brand-pink" : ""}
                     >
-                      <Plus className="h-4 w-4 mr-1" />
-                      List
+                      <Save className={`h-4 w-4 mr-1 ${kol.saved ? "fill-brand-pink" : ""}`} />
+                      {kol.saved ? "Saved" : "Save"}
                     </Button>
                     
                     <Button 
