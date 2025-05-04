@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,10 +25,11 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye, Save } from "lucide-react";
+import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye, Save, BookmarkIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { BookingModal } from "@/components/booking/BookingModal";
+import { SavedSearches } from "@/components/search/SavedSearches";
 
 // Define KOL interface
 interface KOL {
@@ -56,6 +56,7 @@ const KOLsPage = () => {
   const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [savedKOLs, setSavedKOLs] = useState<string[]>([]);
+  const [showSavedSearches, setShowSavedSearches] = useState(false);
 
   // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
@@ -234,6 +235,12 @@ const KOLsPage = () => {
     navigate('/dashboard/schedule-booking');
   };
 
+  // Add new function to save the current search
+  const handleSaveSearch = () => {
+    toast.success("Search saved successfully");
+    setShowSavedSearches(true);
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -273,10 +280,33 @@ const KOLsPage = () => {
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
               </Button>
+              <Button
+                variant="outline"
+                className="flex items-center"
+                onClick={handleSaveSearch}
+              >
+                <BookmarkIcon className="h-4 w-4 mr-2" />
+                Save Search
+              </Button>
+              <Button
+                variant={showSavedSearches ? "secondary" : "outline"}
+                className="flex items-center"
+                onClick={() => setShowSavedSearches(!showSavedSearches)}
+              >
+                <Save className="h-4 w-4 mr-2" />
+                Saved Searches
+              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
+
+      {/* Display Saved Searches if toggled on */}
+      {showSavedSearches && (
+        <div className="mb-6">
+          <SavedSearches />
+        </div>
+      )}
 
       {/* Tabs for different views */}
       <Tabs defaultValue="all" value={activeView} onValueChange={setActiveView}>

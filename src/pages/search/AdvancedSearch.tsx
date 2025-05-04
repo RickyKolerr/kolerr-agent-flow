@@ -42,6 +42,8 @@ import {
   Filter,
   Plus,
   X,
+  BookmarkIcon,
+  Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
@@ -59,6 +61,7 @@ const AdvancedSearch = () => {
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [locationFilter, setLocationFilter] = useState("");
   const [searchCost, setSearchCost] = useState(3);
+  const [showSavedSearches, setShowSavedSearches] = useState(false);
   
   const niches = [
     "Fashion", "Beauty", "Fitness", "Gaming", "Technology", "Food", "Travel", 
@@ -161,13 +164,46 @@ const AdvancedSearch = () => {
       { description: `${searchCost} credits used for this search` }
     );
   };
-
+  
+  const handleSaveSearch = () => {
+    toast.success("Search saved successfully", {
+      description: "Your current search criteria has been saved"
+    });
+  };
+  
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 mb-6">
-        <SlidersHorizontal className="h-6 w-6" />
-        <h1 className="text-3xl font-bold tracking-tight">Advanced Search</h1>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="h-6 w-6" />
+          <h1 className="text-3xl font-bold tracking-tight">Advanced Search</h1>
+        </div>
+        <div className="flex space-x-2">
+          <Button
+            variant="outline"
+            className="flex items-center"
+            onClick={handleSaveSearch}
+          >
+            <BookmarkIcon className="h-4 w-4 mr-2" />
+            Save Search
+          </Button>
+          <Button
+            variant={showSavedSearches ? "secondary" : "outline"}
+            className="flex items-center"
+            onClick={() => setShowSavedSearches(!showSavedSearches)}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Saved Searches
+          </Button>
+        </div>
       </div>
+      
+      {/* Display Saved Searches if toggled on */}
+      {showSavedSearches && (
+        <div className="mb-6">
+          <SavedSearches />
+        </div>
+      )}
       
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <div className="lg:col-span-3 space-y-6">

@@ -3,12 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search } from "lucide-react";
+import { Search, BookmarkIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const SearchPreferences = () => {
   const [autoSave, setAutoSave] = useState(true);
   const [defaultSort, setDefaultSort] = useState("relevance");
+  const navigate = useNavigate();
 
   return (
     <Card>
@@ -46,6 +49,26 @@ export const SearchPreferences = () => {
               <SelectItem value="engagement">Engagement Rate</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+        
+        <div className="pt-4 flex flex-col space-y-2">
+          <Button 
+            variant="outline" 
+            className="w-full flex items-center justify-center"
+            onClick={() => navigate("/search/history")}
+          >
+            <BookmarkIcon className="h-4 w-4 mr-2" />
+            View Saved Searches
+          </Button>
+          
+          <Button 
+            variant="outline" 
+            className="w-full"
+            onClick={() => navigate("/search/advanced")}
+          >
+            <Search className="h-4 w-4 mr-2" />
+            Advanced Search
+          </Button>
         </div>
       </CardContent>
     </Card>

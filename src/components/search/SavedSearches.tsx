@@ -12,7 +12,11 @@ interface SavedSearch {
   filters: string[];
 }
 
-export const SavedSearches = () => {
+export interface SavedSearchesProps {
+  onApplySearch?: (query: string, filters: string[]) => void;
+}
+
+export const SavedSearches = ({ onApplySearch }: SavedSearchesProps = {}) => {
   const [searches, setSearches] = useState<SavedSearch[]>([
     {
       id: "1",
@@ -33,8 +37,12 @@ export const SavedSearches = () => {
     toast.success("Search deleted successfully");
   };
 
-  const handleApply = (query: string) => {
-    toast.success("Search applied successfully");
+  const handleApply = (query: string, filters: string[]) => {
+    if (onApplySearch) {
+      onApplySearch(query, filters);
+    } else {
+      toast.success("Search applied successfully");
+    }
   };
 
   return (
@@ -47,38 +55,48 @@ export const SavedSearches = () => {
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
-          {searches.map((search) => (
-            <div 
-              key={search.id}
-              className="flex items-start justify-between p-4 rounded-lg border"
-            >
-              <div className="space-y-1">
-                <p className="font-medium">{search.query}</p>
-                <p className="text-sm text-muted-foreground">
-                  {search.filters.join(" • ")}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Saved on {search.date}
-                </p>
+          {searches.length > 0 ? (
+            searches.map((search) => (
+              <div 
+                key={search.id}
+                className="flex items-start justify-between p-4 rounded-lg border"
+              >
+                <div className="space-y-1">
+                  <p className="font-medium">{search.query}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {search.filters.join(" • ")}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    Saved on {search.date}
+                  </p>
+                </div>
+                <div className="flex space-x-2">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleApply(search.query, search.filters)}
+                  >
+                    Apply
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleDelete(search.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div className="flex space-x-2">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleApply(search.query)}
-                >
-                  Apply
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => handleDelete(search.id)}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <BookmarkIcon className="mx-auto h-8 w-8 text-muted-foreground mb-2" />
+              <p className="text-muted-foreground">No saved searches yet</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                Use the "Save Search" button to save your current search criteria
+              </p>
             </div>
-          ))}
+          )}
         </div>
       </CardContent>
     </Card>
