@@ -1,5 +1,5 @@
 
-import { Check, MessageSquare, UserPlus } from "lucide-react";
+import { Check, MessageSquare, UserPlus, Save } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,6 +34,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
   const [message, setMessage] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedCreator, setSelectedCreator] = useState<Creator | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
   const navigate = useNavigate();
   const { isAuthenticated, canAccessFeature, hasPremiumPlan, getRedirectPath, user } = useUserAccess();
 
@@ -72,6 +73,26 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
     setSelectedCreator(creator);
     setMessage(`Hi ${creator.name}, I'd like to collaborate with you on a project. Would you be interested in discussing further?`);
     setIsDialogOpen(true);
+  };
+  
+  const handleSaveCreator = () => {
+    if (!isAuthenticated) {
+      toast.error("Please log in to save creators", {
+        description: "Create an account or log in to continue"
+      });
+      navigate("/login");
+      return;
+    }
+    
+    setIsSaved(!isSaved);
+    
+    if (!isSaved) {
+      toast.success(`${creator.name} saved to your list`, {
+        description: "You can access your saved creators in your dashboard"
+      });
+    } else {
+      toast.info(`${creator.name} removed from your saved list`);
+    }
   };
 
   const handleSendMessage = () => {
@@ -134,7 +155,7 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
             <Button 
               variant="outline" 
               size="sm"
-              className="text-xs"
+              className="text-xs flex-1 mr-2"
               onClick={handleContactCreator}
             >
               <MessageSquare className="h-3 w-3 mr-1" />
@@ -174,25 +195,37 @@ export const CreatorCard = ({ creator, onConnect }: CreatorCardProps) => {
           </DialogContent>
         </Dialog>
         
-        <Button 
-          variant={creator.connected ? "secondary" : "default"} 
-          size="sm"
-          className="text-xs"
-          disabled={creator.connected}
-          onClick={() => !creator.connected ? handleRequestCollab() : null}
-        >
-          {creator.connected ? (
-            <>
-              <Check className="h-3 w-3 mr-1" />
-              Connected
-            </>
-          ) : (
-            <>
-              <UserPlus className="h-3 w-3 mr-1" />
-              Request Collab
-            </>
-          )}
-        </Button>
+        <div className="flex flex-1 gap-2">
+          <Button
+            variant="save"
+            size="sm"
+            className="text-xs flex-1"
+            onClick={handleSaveCreator}
+          >
+            <Save className="h-3 w-3 mr-1" />
+            {isSaved ? "Saved" : "Save"}
+          </Button>
+          
+          <Button 
+            variant={creator.connected ? "secondary" : "default"} 
+            size="sm"
+            className="text-xs flex-1"
+            disabled={creator.connected}
+            onClick={() => !creator.connected ? handleRequestCollab() : null}
+          >
+            {creator.connected ? (
+              <>
+                <Check className="h-3 w-3 mr-1" />
+                Connected
+              </>
+            ) : (
+              <>
+                <UserPlus className="h-3 w-3 mr-1" />
+                Connect
+              </>
+            )}
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
