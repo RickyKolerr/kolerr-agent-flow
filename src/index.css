@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -34,6 +33,9 @@
     --sidebar-accent-foreground: 0 0% 100%;
     --sidebar-border: 225 73% 28%;
     --sidebar-ring: 329 86% 70%;
+    
+    --navy: 222 47% 30%;
+    --cyan: 199 89% 48%;
     
     /* Add viewport height variable */
     --vh: 1vh;
@@ -170,5 +172,23 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+  }
+
+  /* Navy-Cyan Theme Utilities */
+  .text-navy-gradient {
+    @apply bg-navy-cyan-gradient bg-clip-text text-transparent;
+  }
+  
+  .bg-navy-card {
+    background: linear-gradient(225deg, #0F172A 0%, #164E63 100%);
+    @apply border border-brand-cyan-700/30;
+  }
+  
+  .hover-navy-scale {
+    @apply transition-transform duration-200 hover:scale-105 hover:shadow-lg hover:shadow-brand-cyan-900/20;
+  }
+  
+  .navy-glass-panel {
+    @apply bg-black/40 backdrop-blur-xl border border-brand-cyan-900/20 shadow-lg;
   }
 }

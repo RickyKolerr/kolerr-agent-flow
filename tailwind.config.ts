@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -67,10 +68,35 @@ export default {
           orange: "#F97316",
           navy: "#1E3A8A",
           dark: "#121212",
+          cyan: "#0EA5E9",
+          deepNavy: "#0F172A",
+          teal: "#0D9488",
           gradient: {
             from: "#D946EF",
             via: "#F472B6",
             to: "#F97316"
+          },
+          navy: {
+            100: "#EEF2FF",
+            200: "#C7D2FE",
+            300: "#818CF8",
+            400: "#3B82F6",
+            500: "#1E3A8A",
+            600: "#1E40AF",
+            700: "#1E3A8A",
+            800: "#1E40AF",
+            900: "#0F172A"
+          },
+          cyan: {
+            100: "#ECFEFF",
+            200: "#A5F3FC",
+            300: "#67E8F9",
+            400: "#22D3EE",
+            500: "#0EA5E9",
+            600: "#0891B2",
+            700: "#0E7490",
+            800: "#155E75",
+            900: "#164E63"
           }
         }
       },
@@ -102,7 +128,12 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out'
-      }
+      },
+      backgroundImage: {
+        'navy-cyan-gradient': 'linear-gradient(to right, #0F172A, #0EA5E9)',
+        'navy-teal-gradient': 'linear-gradient(90deg, #0F172A 0%, #0D9488 100%)',
+        'deep-ocean-gradient': 'linear-gradient(225deg, #0F172A 0%, #155E75 100%)',
+      },
     }
   },
   plugins: [require("tailwindcss-animate")],
