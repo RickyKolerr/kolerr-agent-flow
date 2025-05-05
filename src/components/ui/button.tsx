@@ -16,12 +16,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-brand-pink/10 hover:text-brand-pink",
         link: "text-brand-pink underline-offset-4 hover:underline",
         gradient: "bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to text-white hover:opacity-90",
-        save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90",
-        navy: "bg-brand-navy-700 text-white hover:bg-brand-navy-800",
-        cyan: "bg-brand-cyan-500 text-white hover:bg-brand-cyan-600",
-        "navy-cyan": "bg-navy-cyan-gradient text-white hover:opacity-90",
-        "navy-outline": "border border-brand-navy-500 bg-transparent text-brand-navy-500 hover:bg-brand-navy-100",
-        "cyan-outline": "border border-brand-cyan-500 bg-transparent text-brand-cyan-500 hover:bg-brand-cyan-100"
+        save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90"
       },
       size: {
         default: "h-10 px-4 py-2",

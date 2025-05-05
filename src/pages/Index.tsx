@@ -685,15 +685,7 @@ const Index = () => {
         )}
 
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start w-full">
-          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container relative">
-            {/* Add the "No signup required" text as a banner above the chat */}
-            <div className="absolute -top-10 left-0 right-0 flex justify-center">
-              <div className="bg-gradient-to-r from-cyan-500 to-blue-900 text-white px-6 py-2 rounded-full shadow-lg flex items-center gap-2 animate-pulse-slow">
-                <Sparkles className="h-4 w-4" />
-                <span className="font-medium">No signup required, try it now</span>
-              </div>
-            </div>
-            
+          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
             <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
                 <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">

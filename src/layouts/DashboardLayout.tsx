@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useLanguage } from "@/contexts/LanguageContext";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
 import {
   Tooltip,
   TooltipContent,
@@ -28,7 +27,6 @@ const DashboardLayout = () => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
-  const isMobile = useMediaQuery('(max-width: 768px)');
 
   // Auto-hide sidebar on login/initial load
   useEffect(() => {
@@ -186,9 +184,9 @@ const DashboardLayout = () => {
           variant="ghost" 
           size="icon" 
           onClick={toggleSidebar}
-          className="fixed top-4 right-4 z-50 md:hidden h-12 w-12"
+          className="fixed top-4 right-4 z-50 md:hidden"
         >
-          {isSidebarOpen ? <X className="h-7 w-7"/> : <Menu className="h-7 w-7"/>}
+          {isSidebarOpen ? <X className="h-5 w-5"/> : <Menu className="h-5 w-5"/>}
         </Button>
 
         <aside 
@@ -209,7 +207,7 @@ const DashboardLayout = () => {
               <img 
                 src="/lovable-uploads/ff866eaa-8037-4015-a3f1-e8d5c10916b3.png" 
                 alt="Kolerr Logo" 
-                className={`${isMobile ? 'h-12 w-12' : 'h-10 w-10'}`}
+                className="h-10 w-10"
               />
             </button>
             <Button 
@@ -233,14 +231,13 @@ const DashboardLayout = () => {
                         onClick={() => handleNavigation(item.path)}
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
-                          isMobile && "py-3", // Increased padding for mobile
                           location.pathname === item.path
                             ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
-                        <item.icon className={`${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
-                        <span className={`${isMobile ? 'text-base' : 'text-sm'}`}>{item.name}</span>
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.name}</span>
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="ml-2">
@@ -260,14 +257,13 @@ const DashboardLayout = () => {
                         onClick={() => handleNavigation(item.path)}
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
-                          isMobile && "py-3", // Increased padding for mobile
                           location.pathname === item.path
                             ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
-                        <item.icon className={`${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
-                        <span className={`${isMobile ? 'text-base' : 'text-sm'}`}>{item.name}</span>
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.name}</span>
                       </button>
                     </TooltipTrigger>
                     <TooltipContent side="right" className="ml-2">
@@ -277,13 +273,10 @@ const DashboardLayout = () => {
                 ))}
                 <button
                   onClick={() => logout()}
-                  className={cn(
-                    "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3 text-white/70 hover:text-white hover:bg-white/10",
-                    isMobile && "py-3" // Increased padding for mobile
-                  )}
+                  className="flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3 text-white/70 hover:text-white hover:bg-white/10"
                 >
-                  <LogOut className={`${isMobile ? 'h-6 w-6' : 'h-5 w-5'}`} />
-                  <span className={`${isMobile ? 'text-base' : 'text-sm'}`}>{t('mainNav.logout')}</span>
+                  <LogOut className="h-5 w-5" />
+                  <span>{t('mainNav.logout')}</span>
                 </button>
               </div>
             </nav>
@@ -316,12 +309,12 @@ const DashboardLayout = () => {
             variant="ghost" 
             size="icon" 
             onClick={toggleSidebar}
-            className="fixed top-4 left-4 z-30 hidden md:flex h-10 w-10"
+            className="fixed top-4 left-4 z-30 hidden md:flex"
           >
             <Menu className="h-5 w-5" />
           </Button>
           
-          <div className="container mx-auto p-6 pt-20 md:pt-6">
+          <div className="container mx-auto p-6 pt-16 md:pt-6">
             <Outlet />
           </div>
         </main>
