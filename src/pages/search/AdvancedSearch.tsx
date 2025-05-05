@@ -47,6 +47,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useCredits } from "@/contexts/CreditContext";
+import { SavedSearches } from "@/components/search/SavedSearches";
 
 const AdvancedSearch = () => {
   const navigate = useNavigate();
