@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -170,6 +171,7 @@ const AdvancedSearch = () => {
     toast.success("Search saved successfully", {
       description: "Your current search criteria has been saved"
     });
+    setShowSavedSearches(true);
   };
   
   return (
