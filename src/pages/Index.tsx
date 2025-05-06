@@ -1,5 +1,4 @@
-
-import { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent, Eye, Loader2 } from "lucide-react";
@@ -785,4 +784,3 @@ const Index = () => {
 };
 
 export default Index;
-
