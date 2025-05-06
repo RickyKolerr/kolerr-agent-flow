@@ -15,7 +15,8 @@ import {
   TrendingUp,
   Clock,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Contact
 } from "lucide-react";
 import { toast } from "sonner";
 import { CreditBadge } from "@/components/CreditBadge";
@@ -146,6 +147,17 @@ const SearchResults = () => {
   
   const handleViewProfile = (id: string) => {
     navigate(`/creators/${id}`);
+  };
+  
+  const handleContactCreator = (id: string) => {
+    // Show premium upgrade toast
+    toast.info("Premium feature", {
+      description: "Upgrade to premium to contact creators directly",
+      action: {
+        label: "Upgrade",
+        onClick: () => navigate("/pricing")
+      }
+    });
   };
   
   // Get unique niches for filtering
@@ -363,13 +375,24 @@ const SearchResults = () => {
                         </div>
                       </div>
                       
-                      <Button 
-                        onClick={() => handleViewProfile(creator.id)}
-                        className="bg-brand-pink hover:bg-brand-pink/90"
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        View Profile
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          onClick={() => handleContactCreator(creator.id)}
+                          variant="gradient"
+                          className="flex items-center"
+                        >
+                          <Contact className="h-4 w-4 mr-2" />
+                          Contact
+                        </Button>
+                        
+                        <Button 
+                          onClick={() => handleViewProfile(creator.id)}
+                          className="bg-brand-pink hover:bg-brand-pink/90"
+                        >
+                          <User className="h-4 w-4 mr-2" />
+                          View Profile
+                        </Button>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>

@@ -15,7 +15,7 @@ const buttonVariants = cva(
         secondary: "bg-brand-navy text-white hover:bg-brand-navy/80",
         ghost: "hover:bg-brand-pink/10 hover:text-brand-pink",
         link: "text-brand-pink underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to text-white hover:opacity-90",
+        gradient: "bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to text-white hover:opacity-90 shadow-md",
         save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90"
       },
       size: {
