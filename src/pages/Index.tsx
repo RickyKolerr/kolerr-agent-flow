@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -718,3 +719,70 @@ const Index = () => {
                         variant="outline" 
                         className="cursor-pointer bg-black/40 hover:bg-black/60"
                         onClick={() => {
+                          setSearchQuery("beauty");
+                        }}
+                      >
+                        Beauty
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("fashion");
+                        }}
+                      >
+                        Fashion
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("tech");
+                        }}
+                      >
+                        Tech
+                      </Badge>
+                    </div>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      <Badge 
+                        variant="outline"
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("paid campaigns");
+                        }}
+                      >
+                        Paid
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("product review");
+                        }}
+                      >
+                        Product Review
+                      </Badge>
+                      <Badge 
+                        variant="outline"
+                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        onClick={() => {
+                          setSearchQuery("fashion");
+                        }}
+                      >
+                        Fashion
+                      </Badge>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default Index;
+
