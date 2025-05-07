@@ -25,7 +25,7 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, Star, Users, BarChart3, Calendar, Plus, Eye, Save, BookmarkIcon } from "lucide-react";
+import { Search, Filter, Star, Users, BarChart3, Calendar, Save, BookmarkIcon, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { BookingModal } from "@/components/booking/BookingModal";
@@ -231,16 +231,6 @@ const KOLsPage = () => {
     });
   };
 
-  const handleScheduleBooking = () => {
-    navigate('/dashboard/schedule-booking');
-  };
-
-  // Add new function to save the current search
-  const handleSaveSearch = () => {
-    toast.success("Search saved successfully");
-    setShowSavedSearches(true);
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -279,14 +269,6 @@ const KOLsPage = () => {
               </Select>
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="outline"
-                className="flex items-center"
-                onClick={handleSaveSearch}
-              >
-                <BookmarkIcon className="h-4 w-4 mr-2" />
-                Save Search
               </Button>
               <Button
                 variant={showSavedSearches ? "secondary" : "outline"}
@@ -399,14 +381,14 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
           {kols.length > 0 ? (
             kols.map((kol) => (
               <TableRow key={kol.id}>
-                <TableCell>
+                <TableCell onClick={() => onViewProfile(kol.id)} className="cursor-pointer">
                   <div className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarImage src={kol.avatar} alt={kol.name} />
                       <AvatarFallback>{kol.name.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium">{kol.name}</div>
+                      <div className="font-medium hover:text-brand-magenta transition-colors">{kol.name}</div>
                       <div className="text-sm text-muted-foreground flex items-center">
                         {kol.handle}
                         {kol.verified && (
@@ -427,41 +409,33 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                   {kol.rating}
                 </TableCell>
                 <TableCell className="text-right">
-                  <div className="flex justify-end space-x-2">
-                    <Button 
-                      variant="ghost" 
-                      size="sm"
-                      onClick={() => onViewProfile(kol.id)}
-                    >
-                      <Eye className="h-4 w-4 mr-1" />
-                      View
-                    </Button>
-                    
+                  <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
                     <Button 
                       variant={kol.saved ? "outline" : "ghost"}
                       size="sm"
                       onClick={() => onSaveKOL(kol.id)}
                       className={kol.saved ? "text-brand-pink border-brand-pink" : ""}
                     >
-                      <Save className={`h-4 w-4 mr-1 ${kol.saved ? "fill-brand-pink" : ""}`} />
-                      {kol.saved ? "Saved" : "Save"}
+                      <Save className={`h-4 w-4 md:mr-1 ${kol.saved ? "fill-brand-pink" : ""}`} />
+                      <span className="hidden md:inline">{kol.saved ? "Saved" : "Save"}</span>
                     </Button>
                     
                     <Button 
-                      variant="outline" 
+                      variant="ghost"
                       size="sm"
+                      onClick={() => onViewProfile(kol.id)}
+                      className="bg-brand-lavender/5 hover:bg-brand-lavender/10"
+                    >
+                      <Eye className="h-4 w-4 md:mr-1" />
+                      <span className="hidden md:inline">View</span>
+                    </Button>
+                    
+                    <Button 
+                      size="sm"
+                      className="md:ml-2 bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-90"
                       onClick={() => onContactKOL(kol.id)}
                     >
                       Contact
-                    </Button>
-                    
-                    <Button 
-                      size="sm"
-                      className="bg-brand-pink hover:bg-brand-pink/90"
-                      onClick={() => onBookSlot(kol)}
-                    >
-                      <Calendar className="h-4 w-4 mr-1" />
-                      Book
                     </Button>
                   </div>
                 </TableCell>
