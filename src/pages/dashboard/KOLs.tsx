@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,7 +30,6 @@ import { Search, Filter, Star, Users, BarChart3, Calendar, Save, BookmarkIcon, E
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { BookingModal } from "@/components/booking/BookingModal";
-import { SavedSearches } from "@/components/search/SavedSearches";
 
 // Define KOL interface
 interface KOL {
@@ -56,7 +56,6 @@ const KOLsPage = () => {
   const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [savedKOLs, setSavedKOLs] = useState<string[]>([]);
-  const [showSavedSearches, setShowSavedSearches] = useState(false);
 
   // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
@@ -215,6 +214,7 @@ const KOLsPage = () => {
     setIsBookingModalOpen(true);
   };
   
+  // Updated to navigate directly to creator profile instead of search
   const handleViewProfile = (kolId: string) => {
     navigate(`/creators/${kolId}`);
   };
@@ -270,25 +270,10 @@ const KOLsPage = () => {
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
               </Button>
-              <Button
-                variant={showSavedSearches ? "secondary" : "outline"}
-                className="flex items-center"
-                onClick={() => setShowSavedSearches(!showSavedSearches)}
-              >
-                <Save className="h-4 w-4 mr-2" />
-                Saved Searches
-              </Button>
             </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Display Saved Searches if toggled on */}
-      {showSavedSearches && (
-        <div className="mb-6">
-          <SavedSearches />
-        </div>
-      )}
 
       {/* Tabs for different views */}
       <Tabs defaultValue="all" value={activeView} onValueChange={setActiveView}>
@@ -380,8 +365,8 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
         <TableBody>
           {kols.length > 0 ? (
             kols.map((kol) => (
-              <TableRow key={kol.id}>
-                <TableCell onClick={() => onViewProfile(kol.id)} className="cursor-pointer">
+              <TableRow key={kol.id} className="cursor-pointer" onClick={() => onViewProfile(kol.id)}>
+                <TableCell>
                   <div className="flex items-center space-x-3">
                     <Avatar>
                       <AvatarImage src={kol.avatar} alt={kol.name} />
@@ -408,12 +393,15 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                   <Star className="h-3 w-3 text-yellow-500 mr-1" fill="currentColor" />
                   {kol.rating}
                 </TableCell>
-                <TableCell className="text-right">
+                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
                   <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
                     <Button 
                       variant={kol.saved ? "outline" : "ghost"}
                       size="sm"
-                      onClick={() => onSaveKOL(kol.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSaveKOL(kol.id);
+                      }}
                       className={kol.saved ? "text-brand-pink border-brand-pink" : ""}
                     >
                       <Save className={`h-4 w-4 md:mr-1 ${kol.saved ? "fill-brand-pink" : ""}`} />
@@ -423,7 +411,10 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     <Button 
                       variant="ghost"
                       size="sm"
-                      onClick={() => onViewProfile(kol.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewProfile(kol.id);
+                      }}
                       className="bg-brand-lavender/5 hover:bg-brand-lavender/10"
                     >
                       <Eye className="h-4 w-4 md:mr-1" />
@@ -433,9 +424,13 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                     <Button 
                       size="sm"
                       className="md:ml-2 bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-90"
-                      onClick={() => onContactKOL(kol.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onContactKOL(kol.id);
+                      }}
                     >
-                      Contact
+                      <span className="hidden md:inline">Contact</span>
+                      <span className="inline md:hidden">Chat</span>
                     </Button>
                   </div>
                 </TableCell>

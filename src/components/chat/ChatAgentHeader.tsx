@@ -1,5 +1,6 @@
+
 import React from "react";
-import { X, Home } from "lucide-react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface ChatAgentHeaderProps {
@@ -25,7 +26,6 @@ export const ChatAgentHeader: React.FC<ChatAgentHeaderProps> = ({
       </div>
       
       <div className="flex items-center gap-2">
-        {/* Only keep one close button */}
         <Button
           variant="ghost"
           size="icon"
