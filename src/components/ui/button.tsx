@@ -9,14 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-brand-pink text-white hover:bg-brand-pink/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-brand-pink/10 hover:text-brand-pink",
-        secondary: "bg-brand-navy text-white hover:bg-brand-navy/80",
+        default: "bg-brand-pink text-white hover:bg-brand-pink/90 shadow-md",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-md",
+        outline: "border border-input bg-background hover:bg-brand-pink/10 hover:text-brand-pink shadow-sm",
+        secondary: "bg-brand-navy text-white hover:bg-brand-navy/80 shadow-md",
         ghost: "hover:bg-brand-pink/10 hover:text-brand-pink",
         link: "text-brand-pink underline-offset-4 hover:underline",
         gradient: "bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to text-white hover:opacity-90 shadow-md",
-        save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90"
+        save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90 shadow-md",
+        purple: "bg-brand-purple text-white hover:bg-brand-purple/90 shadow-md",
+        teal: "bg-brand-teal text-white hover:bg-brand-teal/90 shadow-md"
       },
       size: {
         default: "h-10 px-4 py-2",

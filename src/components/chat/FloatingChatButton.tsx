@@ -8,6 +8,7 @@ import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import { AgentChat } from "./AgentChat";
 import { useCredits } from "@/contexts/CreditContext";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import taskHandler from "@/utils/taskHandler";
 
 export const FloatingChatButton = () => {
   const location = useLocation();
@@ -17,6 +18,19 @@ export const FloatingChatButton = () => {
   const [isAgentChatOpen, setIsAgentChatOpen] = useState(false);
   const { freeCredits, remainingGeneralQuestions, hasPremiumPlan } = useCredits();
 
+  // Detect task operations in URL or location changes
+  useEffect(() => {
+    // Parse URL parameters for possible tasks
+    const queryParams = new URLSearchParams(location.search);
+    const taskParam = queryParams.get('task');
+    const queryParam = queryParams.get('query');
+    
+    if (taskParam && queryParam) {
+      // Create a task based on URL parameters
+      taskHandler.createTask(taskParam as any, queryParam);
+    }
+  }, [location.search]);
+
   // Check if we should hide the button based on current route
   useEffect(() => {
     // Hide on chat pages, auth pages, and certain dashboard pages
@@ -24,8 +38,8 @@ export const FloatingChatButton = () => {
       location.pathname.startsWith('/chat') || 
       ['/login', '/signup', '/forgot-password'].includes(location.pathname) ||
       location.pathname.startsWith('/onboarding') ||
-      location.pathname === '/' || // Hide on home page
-      location.pathname === '/home'; // Also hide on /home route
+      location.pathname === '/' || 
+      location.pathname === '/home';
     
     setIsVisible(!shouldHide);
   }, [location.pathname]);
@@ -35,14 +49,14 @@ export const FloatingChatButton = () => {
     setIsAgentChatOpen(true);
   };
 
-  // Generate welcome message based on user type
+  // Generate welcome message based on user type with enhanced task capabilities
   const getWelcomeMessage = () => {
     if (!user) {
-      return "👋 Hello there! I'm your Kolerr AI assistant. How can I help you today?";
+      return "👋 Hello there! I'm your Kolerr AI assistant. I can help you search, filter, and connect with influencers. What would you like to do today?";
     } else if (user.role === "kol") {
-      return "👋 Welcome back! Need help finding campaign opportunities or managing your profile?";
+      return "👋 Welcome back! Need help finding campaign opportunities, managing your profile, or connecting with brands?";
     } else {
-      return "👋 Welcome back! Need help finding the right KOLs for your campaigns or managing your brand account?";
+      return "👋 Welcome back! I can help you find the right KOLs for campaigns, filter by metrics, and prepare outreach messages. What would you like to do today?";
     }
   };
 
@@ -57,15 +71,15 @@ export const FloatingChatButton = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="secondary"
+                variant="purple" // Updated to use our new purple variant
                 size="lg"
-                className="h-14 w-14 rounded-full shadow-lg bg-brand-pink hover:bg-brand-pink/90"
+                className="h-14 w-14 rounded-full shadow-lg"
                 onClick={handleChatClick}
               >
                 <MessageCircle className="h-6 w-6 text-white" />
               </Button>
             </TooltipTrigger>
-            <TooltipContent side="top">
+            <TooltipContent side="top" className="bg-black/70 backdrop-blur-sm border border-white/10">
               <p>
                 {hasPremiumPlan 
                   ? "Unlimited AI assistant messages" 
@@ -79,7 +93,7 @@ export const FloatingChatButton = () => {
       {/* Agent Chat Modal/Sheet */}
       <AgentChat
         title="Kolerr AI Assistant"
-        subtitle={user ? `Hi ${user.name || 'there'}! How can I help you today?` : "Ask me anything about Kolerr"}
+        subtitle={user ? `Hi ${user.name || 'there'}! I can help with searches, filtering, or contact preparation` : "Ask me about creator search, filtering, or contact preparation"}
         initialMessage={getWelcomeMessage()}
         isOpen={isAgentChatOpen}
         onOpenChange={setIsAgentChatOpen}

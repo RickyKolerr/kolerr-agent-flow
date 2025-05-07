@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -67,6 +68,8 @@ export default {
           orange: "#F97316",
           navy: "#1E3A8A",
           dark: "#121212",
+          purple: "#8B5CF6", // Added purple for more contrast
+          teal: "#14B8A6", // Added teal for more contrast
           gradient: {
             from: "#D946EF",
             via: "#F472B6",
@@ -102,6 +105,9 @@ export default {
         'accordion-up': 'accordion-up 0.2s ease-out',
         'fade-in': 'fade-in 0.3s ease-out',
         'slide-in-right': 'slide-in-right 0.3s ease-out'
+      },
+      backgroundImage: {
+        'enhanced-gradient': 'radial-gradient(circle at center, rgba(30, 41, 59, 1) 0%, rgba(15, 23, 42, 1) 100%)'
       }
     }
   },
