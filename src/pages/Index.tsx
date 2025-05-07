@@ -200,8 +200,9 @@ const Index = () => {
   const allCreators = useMemo(() => mockCreatorData.slice(0, 10), []);
   
   // Optimize carousel options with useRef to avoid recreation on each render
+  // Fix the 'align' type issue by using a valid enum value
   const carouselOptions = useRef({
-    align: "start",
+    align: "start" as const, // Explicitly type as const to match AlignmentOptionType
     loop: true,
     dragFree: false,
     skipSnaps: false,
