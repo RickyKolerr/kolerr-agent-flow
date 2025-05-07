@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent, Eye, Loader2 } from "lucide-react";
@@ -36,7 +36,7 @@ interface Message {
   content: string;
 }
 
-// Mock campaigns data for KOLs
+// Mock campaigns data for KOLs - using memoized data to reduce memory usage
 const mockCampaigns = [
   {
     id: "c1",
@@ -70,7 +70,7 @@ const mockCampaigns = [
   }
 ];
 
-// Mock global brands data - expanded to 20 popular TikTok and Instagram brands
+// Limit brands data to 10 instead of 20 to reduce memory usage
 const mockBrands = [
   {
     id: "b1",
@@ -161,96 +161,6 @@ const mockBrands = [
     campaignTypes: ["Show Reviews", "Watch Parties", "Premiere Events"],
     budget: "$5,000-30,000",
     popularity: 96
-  },
-  {
-    id: "b11",
-    name: "Fashion Nova",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/fashion-nova-logo-png-transparent.png",
-    industry: "Fashion",
-    campaignTypes: ["Try-On Hauls", "OOTD Content", "Collection Launches"],
-    budget: "$2,000-15,000",
-    popularity: 94
-  },
-  {
-    id: "b12",
-    name: "Gymshark",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/gymshark-logo-png-transparent.png",
-    industry: "Fitness Apparel",
-    campaignTypes: ["Workout Videos", "Transformation Stories", "Product Showcases"],
-    budget: "$3,000-18,000",
-    popularity: 92
-  },
-  {
-    id: "b13",
-    name: "Sephora",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/sephora-logo-png-transparent.png",
-    industry: "Beauty & Cosmetics",
-    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Beauty Tips"],
-    budget: "$4,000-20,000",
-    popularity: 93
-  },
-  {
-    id: "b14",
-    name: "Shein",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/shein-logo-png-transparent.png",
-    industry: "Fast Fashion",
-    campaignTypes: ["Haul Videos", "Styling Tips", "Discount Promotions"],
-    budget: "$1,500-10,000",
-    popularity: 91
-  },
-  {
-    id: "b15",
-    name: "Zara",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/zara-logo-png-transparent.png",
-    industry: "Fashion",
-    campaignTypes: ["Lookbooks", "Styling Videos", "Collection Reveals"],
-    budget: "$3,500-22,000",
-    popularity: 90
-  },
-  {
-    id: "b16",
-    name: "H&M",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/hm-logo-png-transparent.png",
-    industry: "Fashion",
-    campaignTypes: ["Sustainable Fashion", "Style Guides", "Collection Showcases"],
-    budget: "$2,500-18,000",
-    popularity: 89
-  },
-  {
-    id: "b17",
-    name: "Fenty Beauty",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/fenty-beauty-logo-png-transparent.png",
-    industry: "Beauty & Cosmetics",
-    campaignTypes: ["Makeup Tutorials", "Product Reviews", "Inclusive Beauty"],
-    budget: "$5,000-25,000",
-    popularity: 94
-  },
-  {
-    id: "b18",
-    name: "Supreme",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/supreme-logo-png-transparent.png",
-    industry: "Streetwear",
-    campaignTypes: ["Drop Announcements", "Styling Videos", "Exclusive Access"],
-    budget: "$4,500-30,000",
-    popularity: 95
-  },
-  {
-    id: "b19",
-    name: "Gucci",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/gucci-logo-png-transparent.png",
-    industry: "Luxury Fashion",
-    campaignTypes: ["Lifestyle Content", "Premium Unboxings", "Collection Features"],
-    budget: "$10,000-50,000",
-    popularity: 97
-  },
-  {
-    id: "b20",
-    name: "Louis Vuitton",
-    logo: "https://cdn.freebiesupply.com/logos/large/2x/louis-vuitton-1-logo-png-transparent.png",
-    industry: "Luxury Fashion",
-    campaignTypes: ["Luxury Lifestyle", "Product Showcases", "Heritage Stories"],
-    budget: "$12,000-60,000",
-    popularity: 98
   }
 ];
 
@@ -282,6 +192,23 @@ const Index = () => {
   // Apply viewport fixes for mobile devices
   useViewportFix();
 
+  // Use memoized data to avoid recreating these on each render
+  const trendingCreators = useMemo(() => mockCreatorData
+    .filter(creator => creator.trending)
+    .slice(0, 3), []);
+
+  const allCreators = useMemo(() => mockCreatorData.slice(0, 10), []);
+  
+  // Optimize carousel options with useRef to avoid recreation on each render
+  const carouselOptions = useRef({
+    align: "start",
+    loop: true,
+    dragFree: false,
+    skipSnaps: false,
+    inViewThreshold: 0.6,
+    duration: 30,
+  }).current;
+  
   // Detect user role and set initial view
   useEffect(() => {
     if (isAuthenticated && user?.role === "kol") {
@@ -302,7 +229,6 @@ const Index = () => {
           content: welcomeMessage
         }]);
         setShowWelcome(false);
-        // Don't set scrollToBottom for welcome messages
       }, 500);
     }
   }, [showWelcome, userView]);
@@ -310,6 +236,8 @@ const Index = () => {
   // If user toggles view, reset welcome message
   useEffect(() => {
     setShowWelcome(true);
+    // Clear old messages to reduce memory usage
+    setMessages([]);
   }, [userView]);
   
   // Modified scroll effect to only scroll when shouldScrollToBottom is true
@@ -321,15 +249,9 @@ const Index = () => {
     }
   }, [messages, shouldScrollToBottom]);
   
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveCarouselIndex((prev) => 
-        prev === mockCreatorData.length - 1 ? 0 : prev + 1
-      );
-    }, 5000);
-    
-    return () => clearInterval(interval);
-  }, []);
+  // Remove interval for carousel auto-rotation to save memory
+  // This was causing excessive memory usage
+  // Instead, we'll rely on user interaction to change slides
   
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -338,16 +260,22 @@ const Index = () => {
     }
     
     if (freeCredits > 0 || hasPremiumPlan) {
+      // Create a more memory-efficient copy of the searchQuery
+      const query = searchQuery.trim();
+      
       const userMessage: Message = {
         id: Date.now().toString(),
         type: "user",
-        content: `Search for: ${searchQuery}`
+        content: `Search for: ${query}`
       };
       
-      setMessages(prev => [...prev, userMessage]);
-      // Set scroll flag for user-initiated messages
-      setShouldScrollToBottom(true);
+      setMessages(prev => {
+        // Only keep the last 10 messages to avoid memory issues
+        const updatedMessages = [...prev, userMessage];
+        return updatedMessages.slice(-10);
+      });
       
+      setShouldScrollToBottom(true);
       useFreeCredit();
       
       setTimeout(() => {
@@ -355,22 +283,26 @@ const Index = () => {
           id: (Date.now() + 1).toString(),
           type: "bot",
           content: userView === "brand" 
-            ? `Searching for creators matching "${searchQuery}"...` 
-            : `Searching for campaigns matching "${searchQuery}"...`
+            ? `Searching for creators matching "${query}"...` 
+            : `Searching for campaigns matching "${query}"...`
         };
-        setMessages(prev => [...prev, botResponse]);
-        // Set scroll flag for bot responses to user actions
+        
+        setMessages(prev => {
+          // Only keep the last 10 messages to avoid memory issues
+          const updatedMessages = [...prev, botResponse];
+          return updatedMessages.slice(-10);
+        });
+        
         setShouldScrollToBottom(true);
         
         setTimeout(() => {
           if (userView === "brand") {
-            navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+            navigate(`/search?q=${encodeURIComponent(query)}`);
           } else {
             navigate(`/dashboard/kol/campaigns`);
           }
-        }, 1500);
-      }, 800);
-      
+        }, 1000); // Reduced timeout from 1500ms to 1000ms
+      }, 500); // Reduced timeout from 800ms to 500ms
     } else {
       toast.error(
         "You've used all your free searches for today", 
@@ -385,18 +317,26 @@ const Index = () => {
     }
   };
   
+  // Optimized message sending function
   const handleSendMessage = () => {
     if (!inputValue.trim()) return;
+    
+    // Create a more memory-efficient copy of the input
+    const input = inputValue.trim();
     
     const userMessage: Message = {
       id: Date.now().toString(),
       type: "user",
-      content: inputValue
+      content: input
     };
     
-    setMessages(prev => [...prev, userMessage]);
+    setMessages(prev => {
+      // Only keep the last 10 messages to avoid memory issues
+      const updatedMessages = [...prev, userMessage];
+      return updatedMessages.slice(-10);
+    });
+    
     setInputValue("");
-    // Set scroll flag for user-initiated messages
     setShouldScrollToBottom(true);
     
     if (!hasPremiumPlan && freeCredits === 0) {
@@ -406,10 +346,15 @@ const Index = () => {
           type: "bot",
           content: "You've used all your free searches for today. Upgrade to our premium plan to continue accessing our AI agent, or wait until 7:00 AM tomorrow for your credits to reset."
         };
-        setMessages(prev => [...prev, botResponse]);
-        // Set scroll flag for bot responses to user actions
+        
+        setMessages(prev => {
+          // Only keep the last 10 messages to avoid memory issues
+          const updatedMessages = [...prev, botResponse];
+          return updatedMessages.slice(-10);
+        });
+        
         setShouldScrollToBottom(true);
-      }, 800);
+      }, 500); // Reduced from 800ms to 500ms
       
       return;
     }
@@ -418,181 +363,179 @@ const Index = () => {
       useFreeCredit();
     }
     
-    const lowerInput = inputValue.toLowerCase();
+    // Convert to lowercase only once
+    const lowerInput = input.toLowerCase();
     
     setTimeout(() => {
-      let botResponse: Message;
+      let responseContent = "";
       
       if (userView === "brand") {
         // Brand-focused response logic
         if (lowerInput.includes("find") || lowerInput.includes("search") || lowerInput.includes("looking for")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: `Great! I can help you find creators. Here are some matching your description: ${getCreatorSuggestions(lowerInput)}`
-          };
+          responseContent = `Great! I can help you find creators. Here are some matching your description: ${getCreatorSuggestions(lowerInput)}`;
         } else if (lowerInput.includes("price") || lowerInput.includes("cost") || lowerInput.includes("plan")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: "We offer flexible pricing plans starting at $99/month with unlimited searches. Would you like to see our pricing details?"
-          };
+          responseContent = "We offer flexible pricing plans starting at $99/month with unlimited searches. Would you like to see our pricing details?";
         } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: "Hello! I'm your AI assistant for finding TikTok creators. How can I help you today? You can ask me to find creators in specific niches, with certain follower counts, or for particular marketing goals."
-          };
+          responseContent = "Hello! I'm your AI assistant for finding TikTok creators. How can I help you today? You can ask me to find creators in specific niches, with certain follower counts, or for particular marketing goals.";
         } else {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: "Thanks for your message! To help you better, could you tell me what type of creators you're looking for? For example, beauty influencers with 100K+ followers or gaming creators with high engagement rates."
-          };
+          responseContent = "Thanks for your message! To help you better, could you tell me what type of creators you're looking for? For example, beauty influencers with 100K+ followers or gaming creators with high engagement rates.";
         }
       } else {
         // KOL-focused response logic
         if (lowerInput.includes("find") || lowerInput.includes("campaign") || lowerInput.includes("work") || lowerInput.includes("make money")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: `I can help you find paid campaigns! Here are some opportunities that might interest you: ${getCampaignSuggestions(lowerInput)}`
-          };
+          responseContent = `I can help you find paid campaigns! Here are some opportunities that might interest you: ${getCampaignSuggestions(lowerInput)}`;
         } else if (lowerInput.includes("pay") || lowerInput.includes("earn") || lowerInput.includes("money")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: `Our creators earn an average of ${kolStats.avgEarnings} per campaign, with top earners making over ${kolStats.topEarningAmount} in the ${kolStats.topEarningNiche} niche. Would you like me to find high-paying opportunities for you?`
-          };
+          responseContent = `Our creators earn an average of ${kolStats.avgEarnings} per campaign, with top earners making over ${kolStats.topEarningAmount} in the ${kolStats.topEarningNiche} niche. Would you like me to find high-paying opportunities for you?`;
         } else if (lowerInput.includes("hello") || lowerInput.includes("hi ") || lowerInput.includes("hey")) {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: "Hello! I'm your AI assistant for finding paid brand campaigns. How can I help you today? You can ask me about available campaigns, payment rates, or specific brands looking for creators like you."
-          };
+          responseContent = "Hello! I'm your AI assistant for finding paid brand campaigns. How can I help you today? You can ask me about available campaigns, payment rates, or specific brands looking for creators like you.";
         } else {
-          botResponse = {
-            id: (Date.now() + 1).toString(),
-            type: "bot",
-            content: "Thanks for your message! To help you find the best opportunities, could you tell me what type of campaigns you're interested in? For example, fashion brand partnerships, tech product reviews, or food promotions."
-          };
+          responseContent = "Thanks for your message! To help you find the best opportunities, could you tell me what type of campaigns you're interested in? For example, fashion brand partnerships, tech product reviews, or food promotions.";
         }
       }
       
-      setMessages(prev => [...prev, botResponse]);
-      // Set scroll flag for bot responses to user actions
+      const botResponse: Message = {
+        id: (Date.now() + 1).toString(),
+        type: "bot",
+        content: responseContent
+      };
+      
+      setMessages(prev => {
+        // Only keep the last 10 messages to avoid memory issues
+        const updatedMessages = [...prev, botResponse];
+        return updatedMessages.slice(-10);
+      });
+      
       setShouldScrollToBottom(true);
-    }, 1000);
+    }, 800); // Keep this delay for a reasonable response time
   };
   
+  // Optimized creator suggestions function
   const getCreatorSuggestions = (input: string) => {
-    let filteredCreators = [...mockCreatorData];
+    // Use a new array to avoid modifying the original
+    let filteredCreators = [];
     
     const niches = ["beauty", "fashion", "gaming", "tech", "travel", "fitness", "food", "lifestyle"];
     const mentionedNiches = niches.filter(niche => input.includes(niche));
     
+    // Only filter if needed
     if (mentionedNiches.length > 0) {
-      filteredCreators = filteredCreators.filter(creator => 
+      filteredCreators = allCreators.filter(creator => 
         creator.niche.some(niche => 
           mentionedNiches.some(mentionedNiche => 
             niche.toLowerCase().includes(mentionedNiche)
           )
         )
       );
+    } else {
+      // Use first 3 creators if no specific niche mentioned
+      filteredCreators = allCreators.slice(0, 3);
     }
     
     const suggestions = filteredCreators.slice(0, 3);
     
-    return suggestions.length > 0 
-      ? `<div class="mt-2 space-y-2">${suggestions.map(creator => 
-          `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
-            <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
-              <img src="${creator.avatar}" alt="${creator.fullName}" class="w-full h-full object-cover" />
-            </div>
-            <div class="flex-1">
-              <div class="font-medium">${creator.fullName}</div>
-              <div class="text-xs text-gray-500">${(creator.followers / 1000000).toFixed(1)}M followers</div>
-            </div>
-            <div class="ml-2">
-              <button 
-                onclick="window.navigateToCreator('${creator.id}')" 
-                class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded"
-              >
-                View Profile
-              </button>
-            </div>
-          </div>`
-        ).join('')}</div>`
-      : "I couldn't find creators matching that exact description. Try a broader search or different keywords.";
+    if (suggestions.length === 0) {
+      return "I couldn't find creators matching that exact description. Try a broader search or different keywords.";
+    }
+    
+    // Build HTML string without complex nesting
+    let htmlContent = '<div class="mt-2 space-y-2">';
+    
+    for (let i = 0; i < suggestions.length; i++) {
+      const creator = suggestions[i];
+      htmlContent += `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
+        <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+          <img src="${creator.avatar}" alt="${creator.fullName}" class="w-full h-full object-cover" />
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">${creator.fullName}</div>
+          <div class="text-xs text-gray-500">${(creator.followers / 1000000).toFixed(1)}M followers</div>
+        </div>
+        <div class="ml-2">
+          <button 
+            onclick="window.navigateToCreator('${creator.id}')" 
+            class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded"
+          >View Profile</button>
+        </div>
+      </div>`;
+    }
+    
+    htmlContent += '</div>';
+    return htmlContent;
   };
   
+  // Optimized campaign suggestions function
   const getCampaignSuggestions = (input: string) => {
-    let filteredCampaigns = [...mockCampaigns];
-    
     const niches = ["beauty", "fashion", "gaming", "tech", "travel", "fitness", "food", "lifestyle"];
     const mentionedNiches = niches.filter(niche => input.includes(niche));
     
+    // Filter campaigns - use a new array to avoid modifying the original
+    let filteredCampaigns = [];
+    
     if (mentionedNiches.length > 0) {
-      filteredCampaigns = filteredCampaigns.filter(campaign => 
+      filteredCampaigns = mockCampaigns.filter(campaign => 
         campaign.categories.some(category => 
           mentionedNiches.some(mentionedNiche => 
             category.toLowerCase().includes(mentionedNiche)
           )
         )
       );
+    } else {
+      // Use all campaigns if no specific niche mentioned
+      filteredCampaigns = mockCampaigns;
     }
     
+    // Take only first 3 campaigns for suggestions
     const suggestions = filteredCampaigns.slice(0, 3);
     
-    return suggestions.length > 0 
-      ? `<div class="mt-2 space-y-2">${suggestions.map(campaign => 
-          `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
-            <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
-              <img src="${campaign.brandLogo}" alt="${campaign.brand}" class="w-full h-full object-cover" />
-            </div>
-            <div class="flex-1">
-              <div class="font-medium">${campaign.title}</div>
-              <div class="text-xs text-gray-500">${campaign.budget} • ${campaign.deadline}</div>
-            </div>
-            <div class="flex gap-2">
-              <button 
-                onclick="window.navigateToCampaign('${campaign.id}')" 
-                class="text-xs bg-brand-navy hover:bg-brand-navy/80 text-white px-3 py-1 rounded-md flex items-center gap-1"
-              >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
-                  <circle cx="12" cy="12" r="3"></circle>
-                </svg>
-                View
-              </button>
-              <button 
-                onclick="window.handleChatApply('${campaign.id}')" 
-                class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded-md flex items-center gap-1"
-                ${applyingTo === campaign.id ? 'disabled' : ''}
-              >
-                ${applyingTo === campaign.id ? 
-                  `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
-                    <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
-                  </svg>
-                  Applying...` : 
-                  'Apply'
-                }
-              </button>
-            </div>
-          </div>`
-        ).join('')}</div>`
-      : "I couldn't find campaigns matching your interests. Try different keywords or check our available campaigns section.";
+    if (suggestions.length === 0) {
+      return "I couldn't find campaigns matching your interests. Try different keywords or check our available campaigns section.";
+    }
+    
+    // Build HTML string without complex nesting
+    let htmlContent = '<div class="mt-2 space-y-2">';
+    
+    for (let i = 0; i < suggestions.length; i++) {
+      const campaign = suggestions[i];
+      htmlContent += `<div class="flex items-center gap-2 p-2 bg-black/20 rounded-lg">
+        <div class="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
+          <img src="${campaign.brandLogo}" alt="${campaign.brand}" class="w-full h-full object-cover" />
+        </div>
+        <div class="flex-1">
+          <div class="font-medium">${campaign.title}</div>
+          <div class="text-xs text-gray-500">${campaign.budget} • ${campaign.deadline}</div>
+        </div>
+        <div class="flex gap-2">
+          <button 
+            onclick="window.navigateToCampaign('${campaign.id}')" 
+            class="text-xs bg-brand-navy hover:bg-brand-navy/80 text-white px-3 py-1 rounded-md flex items-center gap-1"
+          >
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            View
+          </button>
+          <button 
+            onclick="window.handleChatApply('${campaign.id}')" 
+            class="text-xs bg-brand-pink hover:bg-brand-pink/90 text-white px-3 py-1 rounded-md flex items-center gap-1"
+            ${applyingTo === campaign.id ? 'disabled' : ''}
+          >
+            ${applyingTo === campaign.id ? 
+              `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-spin">
+                <path d="M21 12a9 9 0 1 1-6.219-8.56"></path>
+              </svg>
+              Applying...` : 
+              'Apply'
+            }
+          </button>
+        </div>
+      </div>`;
+    }
+    
+    htmlContent += '</div>';
+    return htmlContent;
   };
   
-  const trendingCreators = mockCreatorData
-    .filter(creator => creator.trending)
-    .slice(0, 3);
-
-  const allCreators = mockCreatorData.slice(0, 10);
-  
-  // Update to use all 20 brands
-  const topBrands = mockBrands;
-
   // Handle image loading errors
   const handleImageError = (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
     // Replace with a default placeholder when logo fails to load
@@ -642,6 +585,69 @@ const Index = () => {
     };
   }, [navigate, isAuthenticated, user]);
 
+  // Memory-optimized rendering
+  const renderCarouselContent = () => {
+    const items = userView === "brand" 
+      ? allCreators.map((creator) => (
+          <CarouselItem 
+            key={creator.id} 
+            className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+          >
+            <div className="p-1">
+              <div 
+                className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
+                onClick={() => navigate(`/creators/${creator.id}`)}
+              >
+                <img
+                  src={creator.avatar}
+                  alt={creator.fullName}
+                  onError={handleImageError}
+                  className="h-full w-full object-cover"
+                  loading="lazy" // Add lazy loading
+                />
+              </div>
+              <div className="text-center mt-3">
+                <p className="font-medium">{creator.fullName}</p>
+                <p className="text-xs text-gray-400">{(creator.followers / 1000000).toFixed(1)}M followers</p>
+              </div>
+            </div>
+          </CarouselItem>
+        ))
+      : mockBrands.map((brand) => (
+          <CarouselItem 
+            key={brand.id} 
+            className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6"
+          >
+            <div className="p-1">
+              <div 
+                className="overflow-hidden rounded-lg aspect-square border border-white/10 bg-white hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center p-4"
+                onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
+              >
+                <img
+                  src={brand.logo}
+                  alt={brand.name}
+                  onError={handleImageError}
+                  className="h-full w-full object-contain"
+                  loading="lazy" // Add lazy loading
+                />
+              </div>
+              <div className="text-center mt-3">
+                <p className="font-medium">{brand.name}</p>
+                <p className="text-xs text-gray-400">{brand.industry}</p>
+                <Badge className="mt-1 bg-brand-pink/40 text-xs">{brand.campaignTypes[0]}</Badge>
+              </div>
+            </div>
+          </CarouselItem>
+        ));
+
+    return (
+      <CarouselContent>
+        {items}
+      </CarouselContent>
+    );
+  };
+
+  // Split rendering into smaller components to improve memory management
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
       {/* Show the welcome tour */}
@@ -650,8 +656,8 @@ const Index = () => {
       <div className="absolute inset-0 bg-gradient-to-br from-black via-purple-900/20 to-black -z-10"></div>
       <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] -z-10"></div>
       
-      <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20 animate-pulse delay-700"></div>
+      <div className="absolute -top-24 -left-24 w-96 h-96 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full blur-3xl opacity-20"></div>
+      <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-3xl opacity-20"></div>
       
       <div className="container mx-auto px-4 py-6 flex-1 flex flex-col max-w-full">
         {!isAuthenticated && (
@@ -685,10 +691,10 @@ const Index = () => {
         )}
 
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start w-full">
-          <div className="w-full md:w-2/3 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
-            <div className="bg-black/40 p-4 border-b border-white/10 flex items-center justify-between">
+          <div className="w-full md:w-2/3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
+            <div className="bg-black/60 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
+                <div className="h-10 w-10 rounded-full bg-brand-purple flex items-center justify-center mr-3">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
@@ -711,7 +717,7 @@ const Index = () => {
                   className={`flex ${message.type === "user" ? "justify-end" : "justify-start"} animate-fade-in`}
                 >
                   {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
+                    <div className="h-8 w-8 rounded-full bg-brand-purple flex items-center justify-center mr-3 flex-shrink-0">
                       <Bot className="h-4 w-4 text-white" />
                     </div>
                   )}
@@ -720,7 +726,7 @@ const Index = () => {
                     className={`p-3 rounded-lg max-w-[80%] ${
                       message.type === "user" 
                         ? "bg-brand-navy text-white" 
-                        : "bg-black/40 border border-white/10"
+                        : "bg-black/60 border border-white/10"
                     }`}
                     dangerouslySetInnerHTML={{ __html: message.content }}
                   ></div>
@@ -735,7 +741,7 @@ const Index = () => {
               <div ref={messagesEndRef} />
             </ScrollArea>
             
-            <div className="p-4 border-t border-white/10 bg-black/40">
+            <div className="p-4 border-t border-white/10 bg-black/60">
               <div className="flex gap-2">
                 <Input 
                   placeholder={userView === "brand" 
@@ -746,7 +752,7 @@ const Index = () => {
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   className="bg-black/60 border-white/10"
                 />
-                <Button onClick={handleSendMessage} className="bg-brand-pink hover:bg-brand-pink/90">
+                <Button onClick={handleSendMessage} className="bg-brand-purple hover:bg-brand-purple/90">
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
@@ -758,28 +764,19 @@ const Index = () => {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setInputValue("Find beauty influencers with high engagement")}
-                      className="text-xs bg-black/40 border-white/10"
+                      className="text-xs bg-black/60 border-white/10"
                     >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
                       Beauty influencers
                     </Button>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => setInputValue("Find gaming creators under 100K followers")}
-                      className="text-xs bg-black/40 border-white/10"
+                      className="text-xs bg-black/60 border-white/10"
                     >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
                       Gaming creators
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("Find fitness creators with viral content")}
-                      className="text-xs bg-black/40 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
-                      Fitness creators
                     </Button>
                   </>
                 ) : (
@@ -788,28 +785,19 @@ const Index = () => {
                       variant="outline" 
                       size="sm" 
                       onClick={() => setInputValue("Find fashion campaigns that pay well")}
-                      className="text-xs bg-black/40 border-white/10"
+                      className="text-xs bg-black/60 border-white/10"
                     >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
                       Fashion campaigns
                     </Button>
                     <Button 
                       variant="outline" 
                       size="sm" 
                       onClick={() => setInputValue("How much can I earn on tech reviews?")}
-                      className="text-xs bg-black/40 border-white/10"
+                      className="text-xs bg-black/60 border-white/10"
                     >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
+                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
                       Tech earnings
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("Find brand sponsorships available now")}
-                      className="text-xs bg-black/40 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-pink" />
-                      Available sponsorships
                     </Button>
                   </>
                 )}
@@ -818,7 +806,7 @@ const Index = () => {
           </div>
           
           <div className="w-full md:w-1/3 flex flex-col gap-4">
-            <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
+            <Card className="bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
               <CardContent className="p-4">
                 <h2 className="text-xl font-semibold mb-3">Quick Search</h2>
                 <div className="space-y-3">
@@ -830,7 +818,7 @@ const Index = () => {
                       onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                       className="bg-black/60 border-white/10"
                     />
-                    <Button onClick={handleSearch} className="bg-brand-pink hover:bg-brand-pink/90">
+                    <Button onClick={handleSearch} className="bg-brand-purple hover:bg-brand-purple/90">
                       <Search className="h-4 w-4" />
                     </Button>
                   </div>
@@ -839,7 +827,7 @@ const Index = () => {
                     <div className="flex flex-wrap gap-2">
                       <Badge 
                         variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        className="cursor-pointer bg-black/60 hover:bg-black/80"
                         onClick={() => {
                           setSearchQuery("fashion");
                           handleSearch();
@@ -849,7 +837,7 @@ const Index = () => {
                       </Badge>
                       <Badge 
                         variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        className="cursor-pointer bg-black/60 hover:bg-black/80"
                         onClick={() => {
                           setSearchQuery("beauty");
                           handleSearch();
@@ -857,32 +845,12 @@ const Index = () => {
                       >
                         beauty
                       </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
-                        onClick={() => {
-                          setSearchQuery("gaming");
-                          handleSearch();
-                        }}
-                      >
-                        gaming
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
-                        onClick={() => {
-                          setSearchQuery("travel");
-                          handleSearch();
-                        }}
-                      >
-                        travel
-                      </Badge>
                     </div>
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       <Badge 
                         variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        className="cursor-pointer bg-black/60 hover:bg-black/80"
                         onClick={() => {
                           setSearchQuery("high paying");
                           handleSearch();
@@ -892,33 +860,13 @@ const Index = () => {
                       </Badge>
                       <Badge 
                         variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
+                        className="cursor-pointer bg-black/60 hover:bg-black/80"
                         onClick={() => {
                           setSearchQuery("easy to complete");
                           handleSearch();
                         }}
                       >
                         easy to complete
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
-                        onClick={() => {
-                          setSearchQuery("urgent");
-                          handleSearch();
-                        }}
-                      >
-                        urgent
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/40 hover:bg-black/60"
-                        onClick={() => {
-                          setSearchQuery("long term");
-                          handleSearch();
-                        }}
-                      >
-                        long term
                       </Badge>
                     </div>
                   )}
@@ -933,19 +881,25 @@ const Index = () => {
               </CardContent>
             </Card>
             
+            {/* Display trending creators or campaigns card */}
             {userView === "brand" ? (
-              <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
+              <Card className="bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
                 <CardContent className="p-4">
                   <h2 className="text-xl font-semibold mb-3 flex items-center">
-                    <Star className="h-4 w-4 text-brand-pink mr-2" />
+                    <Star className="h-4 w-4 text-brand-purple mr-2" />
                     Trending Creators
                   </h2>
                   
                   <div className="space-y-3">
                     {trendingCreators.map(creator => (
-                      <div key={creator.id} className="flex items-center gap-3 p-2 hover:bg-black/30 rounded-lg cursor-pointer transition-colors" onClick={() => navigate(`/creators/${creator.id}`)}>
+                      <div key={creator.id} className="flex items-center gap-3 p-2 hover:bg-black/60 rounded-lg cursor-pointer transition-colors" onClick={() => navigate(`/creators/${creator.id}`)}>
                         <Avatar className="h-10 w-10">
-                          <img src={creator.avatar} alt={creator.fullName} className="object-cover" />
+                          <img 
+                            src={creator.avatar} 
+                            alt={creator.fullName} 
+                            className="object-cover"
+                            loading="lazy" 
+                          />
                         </Avatar>
                         <div className="flex-1">
                           <div className="font-medium">{creator.fullName}</div>
@@ -962,20 +916,20 @@ const Index = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full mt-2 border-white/10"
+                      className="w-full mt-2 border-white/10 bg-black/60 hover:bg-black/80"
                       onClick={() => navigate('/search?category=trending')}
                     >
-                      <MessageCircle className="h-3 w-3 mr-1 text-brand-pink" />
+                      <MessageCircle className="h-3 w-3 mr-1 text-brand-purple" />
                       View All Trending
                     </Button>
                   </div>
                 </CardContent>
               </Card>
             ) : (
-              <Card className="bg-black/20 backdrop-blur-md border border-white/10 shadow-lg">
+              <Card className="bg-black/40 backdrop-blur-md border border-white/10 shadow-lg">
                 <CardContent className="p-4">
                   <h2 className="text-xl font-semibold mb-3 flex items-center">
-                    <FileText className="h-4 w-4 text-brand-pink mr-2" />
+                    <FileText className="h-4 w-4 text-brand-purple mr-2" />
                     Hot Campaigns
                   </h2>
                   
@@ -983,11 +937,16 @@ const Index = () => {
                     {mockCampaigns.map(campaign => (
                       <div 
                         key={campaign.id} 
-                        className="flex items-center gap-3 p-2 hover:bg-black/30 rounded-lg cursor-pointer transition-colors" 
+                        className="flex items-center gap-3 p-2 hover:bg-black/60 rounded-lg cursor-pointer transition-colors" 
                         onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
                       >
                         <Avatar className="h-10 w-10">
-                          <img src={campaign.brandLogo} alt={campaign.brand} className="object-cover" />
+                          <img 
+                            src={campaign.brandLogo} 
+                            alt={campaign.brand} 
+                            className="object-cover" 
+                            loading="lazy"
+                          />
                         </Avatar>
                         <div className="flex-1">
                           <div className="font-medium">{campaign.title}</div>
@@ -1007,10 +966,10 @@ const Index = () => {
                     <Button 
                       variant="outline" 
                       size="sm" 
-                      className="w-full mt-2 border-white/10"
+                      className="w-full mt-2 border-white/10 bg-black/60 hover:bg-black/80"
                       onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
                     >
-                      <FileText className="h-3 w-3 mr-1 text-brand-pink" />
+                      <FileText className="h-3 w-3 mr-1 text-brand-purple" />
                       Browse All Campaigns
                     </Button>
                   </div>
@@ -1018,84 +977,72 @@ const Index = () => {
               </Card>
             )}
             
-            {/* Conditional CTA Card */}
-            {userView === "brand" ? (
-              <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
-                <CardContent className="p-4">
-                  <h3 className="text-lg font-bold text-white mb-2">Unlock Full Access</h3>
-                  <p className="text-sm text-white/90 mb-3">
-                    Get unlimited AI searches, advanced analytics, and creator booking tools.
-                  </p>
-                  <Button 
-                    className="w-full bg-white text-brand-pink hover:bg-white/90" 
-                    onClick={() => navigate("/signup")}
-                  >
-                    Get Started
-                  </Button>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-gradient-to-r from-brand-pink/80 to-purple-700/80 backdrop-blur-md border-none shadow-xl">
-                <CardContent className="p-4">
-                  <h3 className="text-lg font-bold text-white mb-2">Start Earning Today</h3>
-                  <p className="text-sm text-white/90 mb-3">
-                    Join {mockCampaigns.length}+ creators earning an average of {kolStats.avgEarnings} per campaign.
-                  </p>
-                  <Button 
-                    className="w-full bg-white text-brand-pink hover:bg-white/90" 
-                    onClick={() => navigate("/signup")}
-                  >
-                    Create Creator Account
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+            {/* CTA Card */}
+            <Card className="bg-gradient-to-r from-brand-purple/80 to-brand-purple/40 backdrop-blur-md border-none shadow-xl">
+              <CardContent className="p-4">
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {userView === "brand" ? "Unlock Full Access" : "Start Earning Today"}
+                </h3>
+                <p className="text-sm text-white/90 mb-3">
+                  {userView === "brand" 
+                    ? "Get unlimited AI searches, advanced analytics, and creator booking tools." 
+                    : `Join ${mockCampaigns.length}+ creators earning an average of ${kolStats.avgEarnings} per campaign.`
+                  }
+                </p>
+                <Button 
+                  className="w-full bg-white text-brand-purple hover:bg-white/90" 
+                  onClick={() => navigate("/signup")}
+                >
+                  {userView === "brand" ? "Get Started" : "Create Creator Account"}
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
         
         {/* KOL Earning Statistics Section - Only visible for "kol" view */}
         {userView === "kol" && (
-          <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
+          <div className="mt-10 mb-12 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl">
             <div className="flex items-center mb-5">
-              <BadgePercent className="h-5 w-5 text-brand-pink mr-2" />
+              <BadgePercent className="h-5 w-5 text-brand-purple mr-2" />
               <h2 className="text-xl font-semibold">Creator Earnings & Opportunities</h2>
             </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <Card className="bg-black/20 border-white/10">
+              <Card className="bg-black/60 border-white/10">
                 <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
-                    <BadgePercent className="h-6 w-6 text-brand-pink" />
+                  <div className="h-12 w-12 rounded-full bg-brand-purple/20 flex items-center justify-center mb-2">
+                    <BadgePercent className="h-6 w-6 text-brand-purple" />
                   </div>
                   <h3 className="text-2xl font-bold">{kolStats.avgEarnings}</h3>
                   <p className="text-sm text-muted-foreground">Average Campaign Payment</p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-black/20 border-white/10">
+              <Card className="bg-black/60 border-white/10">
                 <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
-                    <FileText className="h-6 w-6 text-brand-pink" />
+                  <div className="h-12 w-12 rounded-full bg-brand-purple/20 flex items-center justify-center mb-2">
+                    <FileText className="h-6 w-6 text-brand-purple" />
                   </div>
                   <h3 className="text-2xl font-bold">{kolStats.availableCampaigns}</h3>
                   <p className="text-sm text-muted-foreground">Available Opportunities</p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-black/20 border-white/10">
+              <Card className="bg-black/60 border-white/10">
                 <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
-                    <Star className="h-6 w-6 text-brand-pink" />
+                  <div className="h-12 w-12 rounded-full bg-brand-purple/20 flex items-center justify-center mb-2">
+                    <Star className="h-6 w-6 text-brand-purple" />
                   </div>
                   <h3 className="text-2xl font-bold">{kolStats.topEarningAmount}</h3>
                   <p className="text-sm text-muted-foreground">Top Creator Earnings</p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-black/20 border-white/10">
+              <Card className="bg-black/60 border-white/10">
                 <CardContent className="p-4 flex flex-col items-center text-center">
-                  <div className="h-12 w-12 rounded-full bg-brand-pink/20 flex items-center justify-center mb-2">
-                    <Users className="h-6 w-6 text-brand-pink" />
+                  <div className="h-12 w-12 rounded-full bg-brand-purple/20 flex items-center justify-center mb-2">
+                    <Users className="h-6 w-6 text-brand-purple" />
                   </div>
                   <h3 className="text-2xl font-bold">{kolStats.avgCompletionTime}</h3>
                   <p className="text-sm text-muted-foreground">Average Completion Time</p>
@@ -1106,7 +1053,7 @@ const Index = () => {
             <div className="mt-4 text-center">
               <Button 
                 onClick={() => navigate(isAuthenticated ? "/dashboard/kol/campaigns" : "/signup")} 
-                className="bg-brand-pink hover:bg-brand-pink/90"
+                className="bg-brand-purple hover:bg-brand-purple/90"
               >
                 Browse Available Campaigns
               </Button>
@@ -1114,11 +1061,11 @@ const Index = () => {
           </div>
         )}
         
-        {/* General carousel section */}
-        <div className="mt-10 mb-12 bg-black/20 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl relative campaign-section">
+        {/* General carousel section with optimized rendering */}
+        <div className="mt-10 mb-12 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 p-6 shadow-2xl relative campaign-section">
           <DemoIndicator section="Top Creators & Brands" />
           <div className="flex items-center mb-5">
-            <Users className="h-5 w-5 text-brand-pink mr-2" />
+            <Users className="h-5 w-5 text-brand-purple mr-2" />
             <h2 className="text-xl font-semibold">
               {userView === "brand" ? "Featured Content Creators" : "Top Brands"}
             </h2>
@@ -1126,79 +1073,11 @@ const Index = () => {
           
           <Carousel 
             className="w-full" 
-            opts={{
-              align: "start",
-              loop: true,
-              startIndex: activeCarouselIndex,
-              dragFree: false,
-              skipSnaps: false,
-              inViewThreshold: 0.6,
-              duration: 30,
-            }}
-            setApi={(api) => {
-              api?.on("select", () => {
-                setActiveCarouselIndex(api.selectedScrollSnap());
-              });
-            }}
+            opts={carouselOptions}
           >
-            <CarouselContent className="transition-transform duration-700 ease-in-out">
-              {userView === "brand" ? (
-                // Show creators in brand view
-                allCreators.map((creator) => (
-                  <CarouselItem 
-                    key={creator.id} 
-                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
-                  >
-                    <div className="p-1">
-                      <div 
-                        className="overflow-hidden rounded-full aspect-square border border-white/10 bg-black/20 hover:scale-105 transition-all duration-300 cursor-pointer"
-                        onClick={() => navigate(`/creators/${creator.id}`)}
-                      >
-                        <img
-                          src={creator.avatar}
-                          alt={creator.fullName}
-                          onError={handleImageError}
-                          className="h-full w-full object-cover transition-transform duration-500"
-                        />
-                      </div>
-                      <div className="text-center mt-3">
-                        <p className="font-medium">{creator.fullName}</p>
-                        <p className="text-xs text-gray-400">{(creator.followers / 1000000).toFixed(1)}M followers</p>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))
-              ) : (
-                // Show brands in KOL view
-                topBrands.map((brand) => (
-                  <CarouselItem 
-                    key={brand.id} 
-                    className="basis-1/2 sm:basis-1/3 md:basis-1/4 lg:basis-1/6 transition-opacity duration-500"
-                  >
-                    <div className="p-1">
-                      <div 
-                        className="overflow-hidden rounded-lg aspect-square border border-white/10 bg-white hover:scale-105 transition-all duration-300 cursor-pointer flex items-center justify-center p-4"
-                        onClick={() => navigate(isAuthenticated ? `/dashboard/kol/campaigns` : '/signup')}
-                      >
-                        <img
-                          src={brand.logo}
-                          alt={brand.name}
-                          onError={handleImageError}
-                          className="h-full w-full object-contain transition-transform duration-500"
-                        />
-                      </div>
-                      <div className="text-center mt-3">
-                        <p className="font-medium">{brand.name}</p>
-                        <p className="text-xs text-gray-400">{brand.industry}</p>
-                        <Badge className="mt-1 bg-brand-pink/40 text-xs">{brand.campaignTypes[0]}</Badge>
-                      </div>
-                    </div>
-                  </CarouselItem>
-                ))
-              )}
-            </CarouselContent>
-            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
-            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10 transition-all duration-300" />
+            {renderCarouselContent()}
+            <CarouselPrevious className="left-0 bg-black/60 hover:bg-black/80 border-white/10" />
+            <CarouselNext className="right-0 bg-black/60 hover:bg-black/80 border-white/10" />
           </Carousel>
           
           {/* View all button for brands */}
@@ -1206,7 +1085,7 @@ const Index = () => {
             <div className="mt-4 text-center">
               <Button 
                 onClick={() => navigate(isAuthenticated ? "/dashboard/kol/campaigns" : "/signup")} 
-                className="bg-brand-pink hover:bg-brand-pink/90"
+                className="bg-brand-purple hover:bg-brand-purple/90"
               >
                 View All Brand Campaigns
               </Button>

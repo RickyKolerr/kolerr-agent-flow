@@ -71,7 +71,7 @@ export const FloatingChatButton = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="purple" // Updated to use our new purple variant
+                variant="purple"
                 size="lg"
                 className="h-14 w-14 rounded-full shadow-lg"
                 onClick={handleChatClick}
@@ -90,14 +90,16 @@ export const FloatingChatButton = () => {
         </TooltipProvider>
       </div>
 
-      {/* Agent Chat Modal/Sheet */}
-      <AgentChat
-        title="Kolerr AI Assistant"
-        subtitle={user ? `Hi ${user.name || 'there'}! I can help with searches, filtering, or contact preparation` : "Ask me about creator search, filtering, or contact preparation"}
-        initialMessage={getWelcomeMessage()}
-        isOpen={isAgentChatOpen}
-        onOpenChange={setIsAgentChatOpen}
-      />
+      {/* Only render AgentChat when it's open to save memory */}
+      {isAgentChatOpen && (
+        <AgentChat
+          title="Kolerr AI Assistant"
+          subtitle={user ? `Hi ${user.name || 'there'}! I can help with searches, filtering, or contact preparation` : "Ask me about creator search, filtering, or contact preparation"}
+          initialMessage={getWelcomeMessage()}
+          isOpen={isAgentChatOpen}
+          onOpenChange={setIsAgentChatOpen}
+        />
+      )}
     </>
   );
 };

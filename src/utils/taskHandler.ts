@@ -46,10 +46,21 @@ export class TaskHandler {
   private maxConcurrentTasks: number = 3;
   private runningTasks: number = 0;
   private taskQueue: Task[] = [];
+  private taskCache: Map<string, Task> = new Map(); // Cache to avoid memory leaks
 
   // Create a new task
   createTask(type: TaskType, input: string, priority: number = 1): string {
     const taskId = uuidv4();
+    
+    // Clear old completed tasks if we have too many
+    if (this.tasks.length > 50) {
+      this.tasks = this.tasks.filter(t => 
+        t.status === 'pending' || 
+        t.status === 'processing' || 
+        (t.status === 'completed' && Date.now() - new Date(t.timestamp).getTime() < 3600000)
+      );
+    }
+    
     const task: Task = {
       id: taskId,
       type,
@@ -108,6 +119,18 @@ export class TaskHandler {
 
       this.updateTaskResult(task.id, result);
       this.updateTaskStatus(task.id, 'completed');
+      
+      // Cache the result if needed
+      if (task.type === 'search' || task.type === 'filter') {
+        const cacheKey = `${task.type}:${task.input}`;
+        this.taskCache.set(cacheKey, {...task, result});
+        
+        // Limit cache size
+        if (this.taskCache.size > 20) {
+          const oldestKey = this.taskCache.keys().next().value;
+          this.taskCache.delete(oldestKey);
+        }
+      }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       this.updateTaskError(task.id, errorMessage);
@@ -149,11 +172,18 @@ export class TaskHandler {
 
   // Get all tasks
   getAllTasks(): Task[] {
-    return [...this.tasks];
+    // Return a limited subset to avoid memory issues
+    return this.tasks.slice(-20);
   }
 
-  // Search task handler
+  // Search task handler with caching
   private async handleSearchTask(input: string): Promise<any> {
+    // Check cache first
+    const cacheKey = `search:${input}`;
+    if (this.taskCache.has(cacheKey)) {
+      return this.taskCache.get(cacheKey)?.result;
+    }
+    
     // Parse input as JSON if it's a string
     const params: SearchParams = typeof input === 'string' ? 
       this.parseInputAsSearchParams(input) : 
@@ -177,8 +207,14 @@ export class TaskHandler {
     });
   }
 
-  // Filter task handler
+  // Filter task handler with caching
   private async handleFilterTask(input: string): Promise<any> {
+    // Check cache first
+    const cacheKey = `filter:${input}`;
+    if (this.taskCache.has(cacheKey)) {
+      return this.taskCache.get(cacheKey)?.result;
+    }
+    
     // Parse input as FilterParams
     const filterParams: FilterParams = typeof input === 'string' ? 
       JSON.parse(input) : 
