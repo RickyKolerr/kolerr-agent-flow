@@ -15,7 +15,7 @@ export const ChatAgentHeader: React.FC<ChatAgentHeaderProps> = ({
   onClose,
 }) => {
   return (
-    <div className="sticky top-0 z-10 flex justify-between items-center border-b border-white/10 bg-black/50 backdrop-blur-lg p-4">
+    <div className="sticky top-0 z-10 flex justify-between items-center border-b border-white/10 bg-gradient-to-r from-brand-magenta/60 to-brand-purple/60 backdrop-blur-lg p-4">
       <div>
         <div className="flex items-center gap-2">
           <h2 className="text-lg font-medium text-white">{title}</h2>

@@ -586,6 +586,42 @@ const Index = () => {
     };
   }, [navigate, isAuthenticated, user]);
 
+  // Updated search categories for brands
+  const brandSearchCategories = [
+    { label: "fashion", onClick: () => { setSearchQuery("fashion"); handleSearch(); } },
+    { label: "beauty", onClick: () => { setSearchQuery("beauty"); handleSearch(); } },
+    { label: "tech", onClick: () => { setSearchQuery("tech"); handleSearch(); } },
+    { label: "lifestyle", onClick: () => { setSearchQuery("lifestyle"); handleSearch(); } },
+    { label: "gaming", onClick: () => { setSearchQuery("gaming"); handleSearch(); } },
+    { label: "fitness", onClick: () => { setSearchQuery("fitness"); handleSearch(); } }
+  ];
+
+  // Updated search categories for KOLs
+  const kolSearchCategories = [
+    { label: "high paying", onClick: () => { setSearchQuery("high paying"); handleSearch(); } },
+    { label: "easy to complete", onClick: () => { setSearchQuery("easy to complete"); handleSearch(); } },
+    { label: "urgent", onClick: () => { setSearchQuery("urgent"); handleSearch(); } },
+    { label: "long term", onClick: () => { setSearchQuery("long term"); handleSearch(); } },
+    { label: "product reviews", onClick: () => { setSearchQuery("product reviews"); handleSearch(); } },
+    { label: "sponsored posts", onClick: () => { setSearchQuery("sponsored posts"); handleSearch(); } }
+  ];
+
+  // Updated chatbot suggestions for brands
+  const brandChatSuggestions = [
+    { label: "Beauty influencers", query: "Find beauty influencers with high engagement" },
+    { label: "Gaming creators", query: "Find gaming creators under 100K followers" },
+    { label: "Tech reviewers", query: "Find tech reviewers with good conversion rates" },
+    { label: "Fashion KOLs", query: "Find fashion KOLs in Asia region" }
+  ];
+
+  // Updated chatbot suggestions for KOLs
+  const kolChatSuggestions = [
+    { label: "Fashion campaigns", query: "Find fashion campaigns that pay well" },
+    { label: "Tech earnings", query: "How much can I earn on tech reviews?" },
+    { label: "Quick gigs", query: "Find quick campaign opportunities this month" },
+    { label: "Brand partnerships", query: "How to get more long-term brand partnerships?" }
+  ];
+
   // Memory-optimized rendering
   const renderCarouselContent = () => {
     const items = userView === "brand" 
@@ -693,16 +729,16 @@ const Index = () => {
 
         <div className="flex-1 flex flex-col md:flex-row gap-6 items-start w-full">
           <div className="w-full md:w-2/3 bg-black/40 backdrop-blur-md rounded-xl border border-white/10 shadow-2xl flex flex-col overflow-hidden h-[65vh] max-h-[700px] ai-chat-container">
-            <div className="bg-black/60 p-4 border-b border-white/10 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-brand-magenta/80 to-brand-purple/80 p-4 border-b border-white/10 flex items-center justify-between">
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-brand-purple flex items-center justify-center mr-3">
+                <div className="h-10 w-10 rounded-full bg-brand-magenta flex items-center justify-center mr-3">
                   <Bot className="h-5 w-5 text-white" />
                 </div>
                 <div>
                   <h1 className="font-semibold text-lg">
                     {userView === "brand" ? "Influencer AI Agent" : "Campaign Finder AI"}
                   </h1>
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-200">
                     {hasPremiumPlan 
                       ? "Premium plan active" 
                       : `${freeCredits} free searches remaining today`}
@@ -753,53 +789,41 @@ const Index = () => {
                   onKeyPress={(e) => e.key === "Enter" && handleSendMessage()}
                   className="bg-black/60 border-white/10"
                 />
-                <Button onClick={handleSendMessage} className="bg-brand-purple hover:bg-brand-purple/90">
+                <Button onClick={handleSendMessage} className="bg-brand-magenta hover:bg-brand-magenta/90">
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>
               
-              <div className="mt-3 flex flex-wrap gap-2">
+              <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-2">
                 {userView === "brand" ? (
                   <>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("Find beauty influencers with high engagement")}
-                      className="text-xs bg-black/60 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
-                      Beauty influencers
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("Find gaming creators under 100K followers")}
-                      className="text-xs bg-black/60 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
-                      Gaming creators
-                    </Button>
+                    {brandChatSuggestions.map((suggestion, index) => (
+                      <Button 
+                        key={index}
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setInputValue(suggestion.query)}
+                        className="text-xs bg-black/60 border-white/10 truncate"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1 text-brand-magenta" />
+                        {suggestion.label}
+                      </Button>
+                    ))}
                   </>
                 ) : (
                   <>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("Find fashion campaigns that pay well")}
-                      className="text-xs bg-black/60 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
-                      Fashion campaigns
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => setInputValue("How much can I earn on tech reviews?")}
-                      className="text-xs bg-black/60 border-white/10"
-                    >
-                      <Sparkles className="h-3 w-3 mr-1 text-brand-purple" />
-                      Tech earnings
-                    </Button>
+                    {kolChatSuggestions.map((suggestion, index) => (
+                      <Button 
+                        key={index}
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => setInputValue(suggestion.query)}
+                        className="text-xs bg-black/60 border-white/10 truncate"
+                      >
+                        <Sparkles className="h-3 w-3 mr-1 text-brand-magenta" />
+                        {suggestion.label}
+                      </Button>
+                    ))}
                   </>
                 )}
               </div>
@@ -819,58 +843,40 @@ const Index = () => {
                       onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                       className="bg-black/60 border-white/10"
                     />
-                    <Button onClick={handleSearch} className="bg-brand-purple hover:bg-brand-purple/90">
+                    <Button onClick={handleSearch} className="bg-brand-magenta hover:bg-brand-magenta/90">
                       <Search className="h-4 w-4" />
                     </Button>
                   </div>
                   
-                  {userView === "brand" ? (
-                    <div className="flex flex-wrap gap-2">
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/60 hover:bg-black/80"
-                        onClick={() => {
-                          setSearchQuery("fashion");
-                          handleSearch();
-                        }}
-                      >
-                        fashion
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/60 hover:bg-black/80"
-                        onClick={() => {
-                          setSearchQuery("beauty");
-                          handleSearch();
-                        }}
-                      >
-                        beauty
-                      </Badge>
-                    </div>
-                  ) : (
-                    <div className="flex flex-wrap gap-2">
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/60 hover:bg-black/80"
-                        onClick={() => {
-                          setSearchQuery("high paying");
-                          handleSearch();
-                        }}
-                      >
-                        high paying
-                      </Badge>
-                      <Badge 
-                        variant="outline" 
-                        className="cursor-pointer bg-black/60 hover:bg-black/80"
-                        onClick={() => {
-                          setSearchQuery("easy to complete");
-                          handleSearch();
-                        }}
-                      >
-                        easy to complete
-                      </Badge>
-                    </div>
-                  )}
+                  <div className="flex flex-wrap gap-2 max-h-24 overflow-y-auto scrollbar-none">
+                    {userView === "brand" ? (
+                      <>
+                        {brandSearchCategories.map((category, index) => (
+                          <Badge 
+                            key={index}
+                            variant="outline" 
+                            className="cursor-pointer bg-black/60 hover:bg-black/80"
+                            onClick={category.onClick}
+                          >
+                            {category.label}
+                          </Badge>
+                        ))}
+                      </>
+                    ) : (
+                      <>
+                        {kolSearchCategories.map((category, index) => (
+                          <Badge 
+                            key={index}
+                            variant="outline" 
+                            className="cursor-pointer bg-black/60 hover:bg-black/80"
+                            onClick={category.onClick}
+                          >
+                            {category.label}
+                          </Badge>
+                        ))}
+                      </>
+                    )}
+                  </div>
                   
                   <div className="text-xs text-muted-foreground">
                     {hasPremiumPlan ? 

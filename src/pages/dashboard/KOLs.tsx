@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,7 @@ import {
 } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Search, Filter, Star, Users, BarChart3, Calendar, Save, BookmarkIcon, Eye } from "lucide-react";
+import { Search, Filter, Star, Users, BarChart3, Calendar, Save, Eye } from "lucide-react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { BookingModal } from "@/components/booking/BookingModal";
@@ -350,104 +349,104 @@ interface KOLsTableProps {
 const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlot, onViewProfile, onSaveKOL }: KOLsTableProps) => {
   return (
     <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[250px]">Influencer</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead><Users className="h-4 w-4" /></TableHead>
-            <TableHead><BarChart3 className="h-4 w-4" /></TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Rating</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {kols.length > 0 ? (
-            kols.map((kol) => (
-              <TableRow key={kol.id} className="cursor-pointer" onClick={() => onViewProfile(kol.id)}>
-                <TableCell>
-                  <div className="flex items-center space-x-3">
-                    <Avatar>
-                      <AvatarImage src={kol.avatar} alt={kol.name} />
-                      <AvatarFallback>{kol.name.substring(0, 2)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <div className="font-medium hover:text-brand-magenta transition-colors">{kol.name}</div>
-                      <div className="text-sm text-muted-foreground flex items-center">
-                        {kol.handle}
-                        {kol.verified && (
-                          <Badge variant="outline" className="ml-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20">
-                            Verified
-                          </Badge>
-                        )}
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[250px]">Influencer</TableHead>
+              <TableHead className="hidden sm:table-cell">Category</TableHead>
+              <TableHead className="hidden sm:table-cell"><Users className="h-4 w-4" /></TableHead>
+              <TableHead className="hidden md:table-cell"><BarChart3 className="h-4 w-4" /></TableHead>
+              <TableHead className="hidden lg:table-cell">Location</TableHead>
+              <TableHead className="hidden sm:table-cell">Rating</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {kols.length > 0 ? (
+              kols.map((kol) => (
+                <TableRow key={kol.id}>
+                  <TableCell>
+                    <div className="flex items-center space-x-3">
+                      <Avatar className="cursor-pointer" onClick={() => onViewProfile(kol.id)}>
+                        <AvatarImage src={kol.avatar} alt={kol.name} />
+                        <AvatarFallback>{kol.name.substring(0, 2)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <div 
+                          className="font-medium hover:text-brand-magenta transition-colors cursor-pointer"
+                          onClick={() => onViewProfile(kol.id)}
+                        >
+                          {kol.name}
+                        </div>
+                        <div className="text-sm text-muted-foreground flex items-center">
+                          {kol.handle}
+                          {kol.verified && (
+                            <Badge variant="outline" className="ml-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/20">
+                              Verified
+                            </Badge>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>{kol.category}</TableCell>
-                <TableCell>{formatFollowers(kol.followers)}</TableCell>
-                <TableCell>{kol.engagement}%</TableCell>
-                <TableCell>{kol.location}</TableCell>
-                <TableCell className="flex items-center">
-                  <Star className="h-3 w-3 text-yellow-500 mr-1" fill="currentColor" />
-                  {kol.rating}
-                </TableCell>
-                <TableCell className="text-right" onClick={(e) => e.stopPropagation()}>
-                  <div className="flex flex-col md:flex-row justify-end space-y-2 md:space-y-0 md:space-x-2">
-                    <Button 
-                      variant={kol.saved ? "outline" : "ghost"}
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSaveKOL(kol.id);
-                      }}
-                      className={kol.saved ? "text-brand-pink border-brand-pink" : ""}
-                    >
-                      <Save className={`h-4 w-4 md:mr-1 ${kol.saved ? "fill-brand-pink" : ""}`} />
-                      <span className="hidden md:inline">{kol.saved ? "Saved" : "Save"}</span>
-                    </Button>
-                    
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onViewProfile(kol.id);
-                      }}
-                      className="bg-brand-lavender/5 hover:bg-brand-lavender/10"
-                    >
-                      <Eye className="h-4 w-4 md:mr-1" />
-                      <span className="hidden md:inline">View</span>
-                    </Button>
-                    
-                    <Button 
-                      size="sm"
-                      className="md:ml-2 bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-90"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onContactKOL(kol.id);
-                      }}
-                    >
-                      <span className="hidden md:inline">Contact</span>
-                      <span className="inline md:hidden">Chat</span>
-                    </Button>
+                  </TableCell>
+                  <TableCell className="hidden sm:table-cell">{kol.category}</TableCell>
+                  <TableCell className="hidden sm:table-cell">{formatFollowers(kol.followers)}</TableCell>
+                  <TableCell className="hidden md:table-cell">{kol.engagement}%</TableCell>
+                  <TableCell className="hidden lg:table-cell">{kol.location}</TableCell>
+                  <TableCell className="hidden sm:table-cell">
+                    <div className="flex items-center">
+                      <Star className="h-3 w-3 text-yellow-500 mr-1" fill="currentColor" />
+                      {kol.rating}
+                    </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex flex-row justify-end space-x-2">
+                      <Button 
+                        variant={kol.saved ? "outline" : "ghost"}
+                        size="sm"
+                        onClick={() => onSaveKOL(kol.id)}
+                        className={kol.saved ? "text-brand-pink border-brand-pink" : "hidden sm:flex"}
+                      >
+                        <Save className={`h-4 w-4 ${kol.saved ? "fill-brand-pink" : ""} ${kol.saved ? "" : "sm:mr-1"}`} />
+                        <span className="hidden md:inline">{kol.saved ? "Saved" : "Save"}</span>
+                      </Button>
+                      
+                      <Button 
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onViewProfile(kol.id)}
+                        className="hidden sm:flex bg-brand-lavender/5 hover:bg-brand-lavender/10"
+                      >
+                        <Eye className="h-4 w-4 md:mr-1" />
+                        <span className="hidden md:inline">View</span>
+                      </Button>
+                      
+                      <Button 
+                        size="sm"
+                        className="bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-90"
+                        onClick={() => onContactKOL(kol.id)}
+                      >
+                        <span className="hidden md:inline">Contact</span>
+                        <span className="inline md:hidden">Chat</span>
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center py-8">
+                  <div className="flex flex-col items-center">
+                    <Search className="h-10 w-10 text-muted-foreground mb-2" />
+                    <p className="text-muted-foreground">No KOLs found matching your search criteria</p>
                   </div>
                 </TableCell>
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={7} className="text-center py-8">
-                <div className="flex flex-col items-center">
-                  <Search className="h-10 w-10 text-muted-foreground mb-2" />
-                  <p className="text-muted-foreground">No KOLs found matching your search criteria</p>
-                </div>
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };
