@@ -68,8 +68,13 @@ export default {
           orange: "#F97316",
           navy: "#1E3A8A",
           dark: "#121212",
-          purple: "#8B5CF6", // Added purple for more contrast
-          teal: "#14B8A6", // Added teal for more contrast
+          // Brightened and more vibrant purple with pink undertones
+          purple: "#9B87F5",
+          // Additional purple-pink blend options
+          magenta: "#D946EF",
+          lavender: "#A78BFA", 
+          fuchsia: "#E879F9",
+          teal: "#14B8A6",
           gradient: {
             from: "#D946EF",
             via: "#F472B6",

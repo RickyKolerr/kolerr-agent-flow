@@ -71,9 +71,9 @@ export const FloatingChatButton = () => {
           <Tooltip>
             <TooltipTrigger asChild>
               <Button
-                variant="purple"
+                variant="magenta" 
                 size="lg"
-                className="h-14 w-14 rounded-full shadow-lg"
+                className="h-14 w-14 rounded-full shadow-lg bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-95"
                 onClick={handleChatClick}
               >
                 <MessageCircle className="h-6 w-6 text-white" />

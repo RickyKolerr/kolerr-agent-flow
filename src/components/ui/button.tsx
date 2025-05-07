@@ -18,6 +18,9 @@ const buttonVariants = cva(
         gradient: "bg-gradient-to-r from-brand-gradient-from via-brand-gradient-via to-brand-gradient-to text-white hover:opacity-90 shadow-md",
         save: "bg-brand-navy border border-brand-pink text-white hover:bg-brand-navy/90 shadow-md",
         purple: "bg-brand-purple text-white hover:bg-brand-purple/90 shadow-md",
+        magenta: "bg-brand-magenta text-white hover:bg-brand-magenta/90 shadow-md",
+        lavender: "bg-brand-lavender text-white hover:bg-brand-lavender/90 shadow-md",
+        fuchsia: "bg-brand-fuchsia text-white hover:bg-brand-fuchsia/90 shadow-md",
         teal: "bg-brand-teal text-white hover:bg-brand-teal/90 shadow-md"
       },
       size: {
