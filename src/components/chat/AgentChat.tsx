@@ -156,7 +156,7 @@ export const AgentChat: React.FC<AgentChatProps> = ({
       <div className="flex-1 overflow-hidden relative" style={{ minHeight: "350px" }}>
         <ChatMessagesDisplay 
           messages={messages} 
-          autoScroll={true} // Enable auto-scrolling for better UX
+          autoScroll={false} // Disable auto-scrolling
         />
       </div>
       

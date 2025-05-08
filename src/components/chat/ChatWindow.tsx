@@ -114,25 +114,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           msg.id === newMessage.id ? { ...msg, status: 'delivered' } : msg
         )
       );
-      
-      // Simulate response from the other party after a delay
-      if (Math.random() > 0.3) {
-        setTimeout(() => {
-          const responseMessage: ChatMessage = {
-            id: `msg-${Date.now()}-response`,
-            conversationId: conversationId,
-            senderId: conversation?.participants.find((p: any) => p.id !== "current-user")?.id || "other-user",
-            content: `Thanks for your message! This is an automated response to "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`,
-            timestamp: new Date().toISOString(),
-            status: 'delivered'
-          };
-          
-          setMessages(prev => [...prev, responseMessage]);
-          setShouldScrollToBottom(true);
-        }, 1500 + Math.random() * 1000);
-      }
     }, 500);
-  }, [conversationId, conversation]);
+  }, [conversationId]);
 
   // Handle initial message from URL params with memoization
   useEffect(() => {

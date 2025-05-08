@@ -64,8 +64,7 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false 
       <div 
         className={`
           ${isSmallScreen ? (showSidebar ? 'block w-full' : 'hidden') : 'block w-80 min-w-80'} 
-          h-full transition-all duration-300 ease-in-out will-change-transform
-          border-r border-white/10
+          h-full transition-all duration-300 will-change-transform
         `}
         style={{ 
           transform: showSidebar || !isSmallScreen ? 'translateX(0)' : 'translateX(-100%)',
