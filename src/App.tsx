@@ -67,8 +67,6 @@ import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
 import CreatorHub from "@/pages/dashboard/CreatorHub";
-import ApplicationManagement from "@/pages/dashboard/ApplicationManagement";
-import TeamManagement from "@/pages/dashboard/TeamManagement";
 
 // KOL dashboard pages
 import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
@@ -229,16 +227,6 @@ const App = () => {
                       <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <BookingsPage />
-                        </RoleProtectedRoute>
-                      } />
-                      <Route path="applications" element={
-                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <ApplicationManagement />
-                        </RoleProtectedRoute>
-                      } />
-                      <Route path="team" element={
-                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <TeamManagement />
                         </RoleProtectedRoute>
                       } />
                       <Route path="schedule-booking" element={
