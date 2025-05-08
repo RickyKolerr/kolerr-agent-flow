@@ -1,7 +1,8 @@
+
 import { createBrowserRouter, Navigate } from "react-router-dom";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import Overview from "@/pages/dashboard/Overview";
-import Kols from "@/pages/dashboard/Kols";
+import KOLs from "@/pages/dashboard/KOLs"; // Fixed casing to match the actual file
 import Bookings from "@/pages/dashboard/Bookings";
 import Credits from "@/pages/dashboard/Credits";
 import Settings from "@/pages/dashboard/Settings";

@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 
 const Register = () => {
   const navigate = useNavigate();
-  const { register } = useAuth();
+  const { signup } = useAuth(); // Changed 'register' to 'signup'
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +29,7 @@ const Register = () => {
     setIsLoading(true);
     
     try {
-      await register(name, email, password, role);
+      await signup(name, email, password, role);
       navigate(`/onboarding/${role}`);
     } catch (error) {
       console.error("Registration failed:", error);

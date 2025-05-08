@@ -20,7 +20,8 @@ const Login = () => {
     setIsLoading(true);
     
     try {
-      await login(email, password, rememberMe);
+      // Removed the third argument (rememberMe) as login only expects 2 args
+      await login(email, password);
       navigate("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);

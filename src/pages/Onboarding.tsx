@@ -14,7 +14,7 @@ import { Check, ChevronRight } from "lucide-react";
 const Onboarding = () => {
   const { role } = useParams<{ role: string }>();
   const navigate = useNavigate();
-  const { user, updateUserProfile } = useAuth();
+  const { user, completeOnboarding } = useAuth(); // Using completeOnboarding instead of updateUserProfile
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -46,8 +46,8 @@ const Onboarding = () => {
     setIsSubmitting(true);
     
     try {
-      // This would normally call an API endpoint
-      // await updateUserProfile({ onboardingStatus: "complete", ...formData });
+      // Use completeOnboarding instead
+      completeOnboarding();
       
       // For demo purposes, simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
