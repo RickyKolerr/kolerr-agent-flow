@@ -4,7 +4,7 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, LogOut, Menu, X, Languages,
-  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText
+  Star, FileSearch, FileText, MessageCircle, TrendingUp, Award
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -123,22 +123,10 @@ const DashboardLayout = () => {
       description: "Manage your contracts"
     },
     { 
-      icon: Link, 
-      name: "Referrals", 
-      path: "/dashboard/kol/referrals",
-      description: "Refer other creators"
-    },
-    { 
-      icon: BadgePercent, 
-      name: "Rewards", 
-      path: "/dashboard/kol/rewards",
-      description: "Your reward points and benefits"
-    },
-    { 
-      icon: MessageCircle, 
-      name: "Community", 
-      path: "/dashboard/kol/community",
-      description: "Connect with other creators"
+      icon: Award, 
+      name: "Creator Hub", 
+      path: "/dashboard/kol/creator-hub",
+      description: "Referrals, rewards and community in one place"
     },
   ];
   
@@ -231,8 +219,12 @@ const DashboardLayout = () => {
                         onClick={() => handleNavigation(item.path)}
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
-                          location.pathname === item.path
-                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
+                          location.pathname === item.path || 
+                          (item.path === "/dashboard/kol/creator-hub" && 
+                           (location.pathname === "/dashboard/kol/referrals" || 
+                            location.pathname === "/dashboard/kol/rewards" ||
+                            location.pathname === "/dashboard/kol/community"))
+                            ? "bg-gradient-to-r from-brand-magenta to-brand-purple text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
@@ -258,7 +250,7 @@ const DashboardLayout = () => {
                         className={cn(
                           "flex items-center w-full px-3 py-2.5 text-sm rounded-lg transition-colors gap-3",
                           location.pathname === item.path
-                            ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white font-medium"
+                            ? "bg-gradient-to-r from-brand-magenta to-brand-purple text-white font-medium"
                             : "text-white/70 hover:text-white hover:bg-white/10"
                         )}
                       >
