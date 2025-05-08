@@ -4,7 +4,8 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, LogOut, Menu, X, Languages,
-  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText
+  Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText,
+  UsersIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -89,6 +90,12 @@ const DashboardLayout = () => {
       path: "/dashboard/contracts",
       description: t('dashboard.contracts')
     },
+    { 
+      icon: UsersIcon, 
+      name: "Creator Hub", 
+      path: "/dashboard/creator-hub",
+      description: "Collaborate with creators"
+    },
   ];
 
   const getKolMenuItems = () => [
@@ -123,22 +130,10 @@ const DashboardLayout = () => {
       description: "Manage your contracts"
     },
     { 
-      icon: Link, 
-      name: "Referrals", 
-      path: "/dashboard/kol/referrals",
-      description: "Refer other creators"
-    },
-    { 
-      icon: BadgePercent, 
-      name: "Rewards", 
-      path: "/dashboard/kol/rewards",
-      description: "Your reward points and benefits"
-    },
-    { 
-      icon: MessageCircle, 
-      name: "Community", 
-      path: "/dashboard/kol/community",
-      description: "Connect with other creators"
+      icon: UsersIcon, 
+      name: "Creator Hub", 
+      path: "/dashboard/kol/creator-hub",
+      description: "Collaborate with brands and other creators"
     },
   ];
   
