@@ -66,15 +66,14 @@ import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
+import CreatorHub from "@/pages/dashboard/CreatorHub";
 
 // KOL dashboard pages
 import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
 import Applications from "@/pages/dashboard/kol/Applications";
 import Analytics from "@/pages/dashboard/kol/Analytics";
-import Referrals from "@/pages/dashboard/kol/Referrals";
-import Rewards from "@/pages/dashboard/kol/Rewards";
-import Community from "@/pages/dashboard/kol/Community";
 import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
+import KolCreatorHub from "@/pages/dashboard/kol/CreatorHub";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -237,6 +236,7 @@ const App = () => {
                       } />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
+                      <Route path="creator-hub" element={<CreatorHub />} />
                       
                       {/* Booking routes */}
                       <Route path="booking-success" element={<BookingSuccess />} />
@@ -262,21 +262,6 @@ const App = () => {
                           <Analytics />
                         </RoleProtectedRoute>
                       } />
-                      <Route path="kol/referrals" element={
-                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
-                          <Referrals />
-                        </RoleProtectedRoute>
-                      } />
-                      <Route path="kol/rewards" element={
-                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
-                          <Rewards />
-                        </RoleProtectedRoute>
-                      } />
-                      <Route path="kol/community" element={
-                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
-                          <Community />
-                        </RoleProtectedRoute>
-                      } />
                       <Route path="kol/contracts" element={
                         <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
                           <KOLContracts />
@@ -285,6 +270,11 @@ const App = () => {
                       <Route path="kol/messages" element={
                         <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
                           <KolMessagesPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="kol/creator-hub" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <KolCreatorHub />
                         </RoleProtectedRoute>
                       } />
                       
