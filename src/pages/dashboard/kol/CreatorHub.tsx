@@ -17,6 +17,7 @@ const KolCreatorHub: React.FC = () => {
     return <Navigate to="/dashboard/creator-hub" replace />;
   }
 
+  // Use the same CreatorHub component for KOL users
   return <CreatorHubComponent />;
 };
 
