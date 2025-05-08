@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -194,7 +195,6 @@ export const navigationRoutes = (role: string = 'brand') => {
       icon: Stamp,
       path: role === 'kol' ? "/dashboard/kol/contracts" : "/dashboard/contracts",
       roles: ["brand", "kol", "admin"],
-      feature: "contracts",
     },
     {
       title: "Profile",
