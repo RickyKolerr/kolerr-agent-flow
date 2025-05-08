@@ -14,7 +14,7 @@ const Register = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("brand");
+  const [role, setRole] = useState<"brand" | "kol">("brand"); // Explicitly define the type to match UserRole
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 

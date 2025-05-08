@@ -57,7 +57,7 @@ const router = createBrowserRouter([
       },
       {
         path: "kols",
-        element: <Kols />,
+        element: <KOLs />,
       },
       {
         path: "bookings",
