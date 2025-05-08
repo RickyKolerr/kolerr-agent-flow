@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { UsersIcon, UserPlus, Search, Briefcase, MessageSquare, Star, Plus } from "lucide-react";
+import { UsersIcon, UserPlus, Search, Briefcase, MessageSquare, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -15,16 +15,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { mockContacts } from "@/data/mockContacts";
-import { CreatorProfileDialog } from "@/components/community/CreatorProfileDialog";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
 
 // Mock collaboration projects
 const collaborationProjects = [
@@ -77,9 +71,7 @@ const featuredCreators = [
     niche: ["fashion", "lifestyle"],
     status: "online",
     compatibility: 92,
-    connected: false,
-    platforms: ["instagram", "tiktok", "youtube"],
-    bio: "Fashion and lifestyle content creator based in NYC. Working with sustainable brands to promote ethical fashion choices and mindful living."
+    connected: false
   },
   {
     id: "c2",
@@ -90,9 +82,7 @@ const featuredCreators = [
     niche: ["beauty", "skincare"],
     status: "offline",
     compatibility: 85,
-    connected: true,
-    platforms: ["instagram", "youtube"],
-    bio: "Beauty expert and skincare enthusiast. I create in-depth product reviews and skin care routines for all skin types."
+    connected: true
   },
   {
     id: "c3",
@@ -103,76 +93,32 @@ const featuredCreators = [
     niche: ["gaming", "tech"],
     status: "offline",
     compatibility: 75,
-    connected: false,
-    platforms: ["twitch", "youtube", "tiktok"],
-    bio: "Gaming and tech content creator. I stream gameplay and create tech reviews focusing on performance and user experience."
+    connected: false
   }
-];
-
-// Project form initial state
-const initialProjectState = {
-  title: "",
-  description: "",
-  type: "",
-  dueDate: "",
-  maxParticipants: "5"
-};
-
-// Project types for dropdown
-const projectTypes = [
-  "Fashion", "Beauty", "Travel", "Fitness", "Food", "Gaming", 
-  "Tech", "Lifestyle", "Education", "Music", "Art", "Other"
 ];
 
 const CreatorHub = () => {
   const { user } = useAuth();
   const { canAccessFeature } = useUserAccess();
-  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("discover");
   const [searchQuery, setSearchQuery] = useState("");
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [projectForm, setProjectForm] = useState(initialProjectState);
-  const [selectedCreator, setSelectedCreator] = useState(null);
-  const [isProfileDialogOpen, setIsProfileDialogOpen] = useState(false);
   
-  const handleCreateProject = () => {
-    setIsCreateDialogOpen(true);
-  };
-  
-  const handleConnectCreator = (creator) => {
+  const handleConnectCreator = (creator: any) => {
     toast.success(`Connection request sent to ${creator.name}`, {
       description: "You'll be notified when they respond."
     });
   };
   
-  const handleJoinProject = (project) => {
+  const handleJoinProject = (project: any) => {
     toast.success(`Request to join "${project.title}" sent`, {
       description: `You'll be notified when ${project.creator} responds.`
     });
   };
   
-  const handleSubmitProject = (e) => {
-    e.preventDefault();
-    
-    // Validate form
-    if (!projectForm.title || !projectForm.description || !projectForm.type) {
-      toast.error("Please fill in all required fields");
-      return;
-    }
-    
-    // Create new project (would normally be an API call)
-    toast.success("Project created successfully!", {
-      description: "Your new collaboration project is now available for others to join."
+  const handleCreateProject = () => {
+    toast.success("Create a new collaboration project", {
+      description: "This functionality will be implemented soon."
     });
-    
-    // Reset form and close dialog
-    setProjectForm(initialProjectState);
-    setIsCreateDialogOpen(false);
-  };
-  
-  const handleViewProfile = (creator) => {
-    setSelectedCreator(creator);
-    setIsProfileDialogOpen(true);
   };
 
   // Filter creators based on search query
@@ -203,7 +149,6 @@ const CreatorHub = () => {
         <h1 className="text-2xl font-bold tracking-tight">Creator Hub</h1>
       </div>
       
-      {/* Search and Create Project Row */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -214,13 +159,12 @@ const CreatorHub = () => {
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button onClick={handleCreateProject} className="flex items-center gap-2 whitespace-nowrap bg-brand-pink hover:bg-brand-pink/90">
-          <Plus className="h-4 w-4" />
+        <Button onClick={handleCreateProject} className="flex items-center gap-2 whitespace-nowrap">
+          <Briefcase className="h-4 w-4" />
           <span>Create Project</span>
         </Button>
       </div>
       
-      {/* Main Tabs */}
       <Tabs defaultValue="discover" className="w-full" onValueChange={setActiveTab}>
         <TabsList className="grid grid-cols-3">
           <TabsTrigger value="discover">Discover</TabsTrigger>
@@ -270,18 +214,11 @@ const CreatorHub = () => {
                       </span>
                     </div>
                   </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Button 
-                      onClick={() => handleViewProfile(creator)} 
-                      variant="outline"
-                      className="flex-1"
-                    >
-                      View Profile
-                    </Button>
+                  <CardFooter>
                     <Button 
                       onClick={() => handleConnectCreator(creator)} 
                       variant={creator.connected ? "outline" : "default"}
-                      className="flex-1"
+                      className="w-full"
                       disabled={creator.connected}
                     >
                       {creator.connected ? (
@@ -442,20 +379,7 @@ const CreatorHub = () => {
                         <MessageSquare className="h-4 w-4" />
                         <span className="sr-only">Message</span>
                       </Button>
-                      <Button 
-                        variant="default" 
-                        size="sm" 
-                        onClick={() => handleViewProfile({
-                          id: contact.id,
-                          name: contact.name,
-                          username: `@${contact.name.toLowerCase().replace(/\s/g, '')}`,
-                          avatar: contact.avatar,
-                          followers: Math.floor(Math.random() * 200000) + 50000,
-                          niche: [contact.role.toLowerCase()],
-                          platforms: ["instagram", "youtube"],
-                          bio: `${contact.role} at ${contact.company}. Professional content creator and industry expert.`
-                        })}
-                      >
+                      <Button variant="default" size="sm">
                         View Profile
                       </Button>
                     </div>
@@ -466,106 +390,6 @@ const CreatorHub = () => {
           </div>
         </TabsContent>
       </Tabs>
-      
-      {/* Create Project Dialog */}
-      <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Create New Collaboration Project</DialogTitle>
-            <DialogDescription>
-              Create a project to collaborate with other creators. Fill in the details below to get started.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <form onSubmit={handleSubmitProject} className="space-y-6 py-4">
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Project Title <span className="text-red-500">*</span></Label>
-                <Input 
-                  id="title"
-                  placeholder="Enter a catchy title for your project"
-                  value={projectForm.title}
-                  onChange={(e) => setProjectForm({...projectForm, title: e.target.value})}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Description <span className="text-red-500">*</span></Label>
-                <Textarea 
-                  id="description"
-                  placeholder="Describe what your project is about and what you're looking for"
-                  className="min-h-[100px]"
-                  value={projectForm.description}
-                  onChange={(e) => setProjectForm({...projectForm, description: e.target.value})}
-                />
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="type">Project Type <span className="text-red-500">*</span></Label>
-                  <Select 
-                    value={projectForm.type}
-                    onValueChange={(value) => setProjectForm({...projectForm, type: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a project type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {projectTypes.map((type) => (
-                        <SelectItem key={type} value={type}>{type}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="dueDate">Due Date</Label>
-                  <Input 
-                    id="dueDate"
-                    type="date"
-                    value={projectForm.dueDate}
-                    onChange={(e) => setProjectForm({...projectForm, dueDate: e.target.value})}
-                  />
-                </div>
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="maxParticipants">Maximum Participants</Label>
-                <Select 
-                  value={projectForm.maxParticipants} 
-                  onValueChange={(value) => setProjectForm({...projectForm, maxParticipants: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select maximum participants" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[2, 3, 5, 8, 10, 15, 20].map((num) => (
-                      <SelectItem key={num} value={num.toString()}>
-                        {num} participants
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Create Project</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-      
-      {/* Creator Profile Dialog */}
-      <CreatorProfileDialog 
-        creator={selectedCreator}
-        isOpen={isProfileDialogOpen}
-        onClose={() => setIsProfileDialogOpen(false)}
-        onConnect={handleConnectCreator}
-      />
     </div>
   );
 };
