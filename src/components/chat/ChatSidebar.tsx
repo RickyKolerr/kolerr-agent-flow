@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -54,7 +55,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
   }, [user?.role]);
 
   return (
-    <div className="w-full md:w-80 border-r border-white/10 flex flex-col h-full">
+    <div className="w-full md:w-80 flex flex-col h-full">
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold">Messages</h2>
@@ -66,7 +67,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
               className="flex items-center gap-1 text-brand-pink hover:bg-brand-pink/10"
             >
               <LayoutDashboard className="h-4 w-4" />
-              <span className="text-sm font-medium">Dashboard</span>
+              <span className="text-sm font-medium hidden sm:inline">Dashboard</span>
             </Button>
             <Button 
               variant="ghost" 
@@ -75,7 +76,7 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
               className="flex items-center gap-1 text-brand-pink hover:bg-brand-pink/10"
             >
               <Home className="h-4 w-4" />
-              <span className="text-sm font-medium">Home</span>
+              <span className="text-sm font-medium hidden sm:inline">Home</span>
             </Button>
           </div>
         </div>
@@ -92,56 +93,62 @@ export const ChatSidebar: React.FC<ChatSidebarProps> = ({ onConversationSelect, 
       
       <ScrollArea className="flex-1">
         <div className="p-2 space-y-1">
-          {filteredConversations.map((conversation) => {
-            const otherParticipant = conversation.participants.find(p => p.id !== "current-user");
-            const isActive = conversation.id === conversationId;
-            
-            return (
-              <div
-                key={conversation.id}
-                className={`p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors touch-manipulation ${
-                  isActive ? "bg-brand-pink/20" : "hover:bg-black/20"
-                }`}
-                onClick={() => handleConversationClick(conversation.id)}
-                style={{ touchAction: "manipulation" }}
-                role="button"
-                aria-pressed={isActive}
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    handleConversationClick(conversation.id);
-                  }
-                }}
-              >
-                <div className="relative">
-                  <Avatar className="h-10 w-10 border border-white/10">
-                    <img 
-                      src={otherParticipant?.avatar} 
-                      alt={otherParticipant?.name} 
-                      loading="lazy"
-                    />
-                  </Avatar>
-                  <OnlineIndicator status={otherParticipant?.status || "offline"} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center">
-                    <p className="font-medium truncate">{otherParticipant?.name}</p>
-                    <span className="text-xs text-gray-400 flex-shrink-0">
-                      {conversation.lastMessage?.timestamp 
-                        ? new Date(conversation.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-                        : ''}
-                    </span>
+          {filteredConversations.length > 0 ? (
+            filteredConversations.map((conversation) => {
+              const otherParticipant = conversation.participants.find(p => p.id !== "current-user");
+              const isActive = conversation.id === conversationId;
+              
+              return (
+                <div
+                  key={conversation.id}
+                  className={`p-3 rounded-md cursor-pointer flex items-center gap-3 transition-colors ${
+                    isActive ? "bg-brand-pink/20" : "hover:bg-black/20"
+                  } ${hasTouch ? 'active:bg-brand-pink/10' : ''}`}
+                  onClick={() => handleConversationClick(conversation.id)}
+                  style={{ touchAction: "manipulation" }}
+                  role="button"
+                  aria-pressed={isActive}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      handleConversationClick(conversation.id);
+                    }
+                  }}
+                >
+                  <div className="relative">
+                    <Avatar className="h-10 w-10 border border-white/10">
+                      <img 
+                        src={otherParticipant?.avatar} 
+                        alt={otherParticipant?.name} 
+                        loading="lazy"
+                      />
+                    </Avatar>
+                    <OnlineIndicator status={otherParticipant?.status || "offline"} />
                   </div>
-                  <p className="text-sm text-gray-400 truncate">
-                    {conversation.lastMessage?.content || "No messages yet"}
-                  </p>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-center">
+                      <p className="font-medium truncate">{otherParticipant?.name}</p>
+                      <span className="text-xs text-gray-400 flex-shrink-0">
+                        {conversation.lastMessage?.timestamp 
+                          ? new Date(conversation.lastMessage.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                          : ''}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-400 truncate">
+                      {conversation.lastMessage?.content || "No messages yet"}
+                    </p>
+                  </div>
+                  {conversation.unreadCount > 0 && (
+                    <Badge className="bg-brand-pink text-white flex-shrink-0">{conversation.unreadCount}</Badge>
+                  )}
                 </div>
-                {conversation.unreadCount > 0 && (
-                  <Badge className="bg-brand-pink text-white flex-shrink-0">{conversation.unreadCount}</Badge>
-                )}
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div className="p-4 text-center text-muted-foreground">
+              <p>No conversations found</p>
+            </div>
+          )}
         </div>
       </ScrollArea>
       

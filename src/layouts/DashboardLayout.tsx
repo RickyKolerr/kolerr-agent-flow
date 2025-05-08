@@ -68,10 +68,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = () => {
             <a
               key={index}
               href={route.path}
-              className="group flex items-center space-x-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white"
+              className={cn(
+                "group flex items-center space-x-3 rounded-md px-3 py-2 text-sm font-medium hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-gray-800 dark:hover:text-white",
+                {
+                  "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-white": 
+                    window.location.pathname === route.path || 
+                    (window.location.pathname.includes(route.path) && route.path !== "/dashboard" && route.path !== "/dashboard/kol")
+                }
+              )}
             >
               <route.icon className="h-4 w-4 text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white" />
               <span>{route.title}</span>
+              {route.highlight && (
+                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-brand-pink text-xs font-medium text-white">
+                  {route.highlight}
+                </span>
+              )}
             </a>
           ))}
         </nav>
@@ -83,15 +95,34 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = () => {
       })}>
         <header className="fixed top-0 left-0 z-40 w-full bg-white p-4 shadow-md dark:bg-neutral-900">
           <div className="container mx-auto flex items-center justify-between">
-            <div className="text-xl font-semibold">
-              {/* You can add a header title or breadcrumbs here */}
+            <div className="flex items-center gap-2">
+              {isMobileDevice && (
+                <button
+                  onClick={toggleSidebar}
+                  className="rounded-md p-2 text-gray-500 hover:bg-gray-100"
+                >
+                  {isSidebarOpen ? "Close" : "Menu"}
+                </button>
+              )}
+              <div className="text-xl font-semibold">
+                {/* You can add a header title or breadcrumbs here */}
+              </div>
             </div>
-            {/* Add user info or additional header elements here */}
+            <div className="flex items-center gap-2">
+              {/* Message icon for quick access on mobile */}
+              <a 
+                href={user?.role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages"}
+                className="p-2 rounded-md hover:bg-gray-100"
+              >
+                <MessageSquare className="h-5 w-5" />
+              </a>
+              {/* Add user info or additional header elements here */}
+            </div>
           </div>
         </header>
         
         <div className={cn("px-4 md:px-8 pb-8", {
-          "mt-16": isMobileDevice,
+          "mt-16": true,
         })}>
           <Outlet />
         </div>
@@ -113,6 +144,7 @@ export const navigationRoutes = (role: string = 'brand') => {
       icon: MessageSquare,
       path: role === 'kol' ? "/dashboard/kol/messages" : "/dashboard/messages",
       roles: ["brand", "kol", "admin"],
+      highlight: "3",  // Show unread message count
     },
   ];
 
