@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -227,6 +226,16 @@ const App = () => {
                       <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <BookingsPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="applications" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <ApplicationManagement />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="team" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <TeamManagement />
                         </RoleProtectedRoute>
                       } />
                       <Route path="schedule-booking" element={
