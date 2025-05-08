@@ -10,7 +10,7 @@ export const useUserAccess = () => {
   // Integrate the intelligent credits system for more accurate credit management
   const { freeCredits, isKOLSpecificQuery } = useIntelligentCredits(originalCredits, hasPremiumPlan);
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "creator_hub" | "messages" | "available_campaigns") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "referrals" | "rewards" | "community" | "messages" | "available_campaigns") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
@@ -37,9 +37,12 @@ export const useUserAccess = () => {
         return Boolean(userRole);
       case "contracts":
         return (["brand", "kol", "admin"].includes(userRole || "") && hasPremiumPlan);
-      case "creator_hub":
       case "referrals":
+        // KOL-specific feature
+        return userRole === "kol" || userRole === "admin";
       case "rewards":
+        // KOL-specific feature
+        return userRole === "kol" || userRole === "admin";
       case "community":
         // KOL-specific feature
         return userRole === "kol" || userRole === "admin";

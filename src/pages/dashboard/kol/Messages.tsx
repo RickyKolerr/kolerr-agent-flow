@@ -12,8 +12,8 @@ const KolMessagesPage: React.FC = () => {
     return <Navigate to="/login" replace />;
   }
 
-  // If user is not KOL, redirect to brand messages page
-  if (user?.role !== 'kol') {
+  // If user is brand, redirect to brand messages page
+  if (user?.role === 'brand') {
     return <Navigate to="/dashboard/messages" replace />;
   }
 
@@ -23,7 +23,7 @@ const KolMessagesPage: React.FC = () => {
         <div className="px-4 py-3 border-b border-white/10">
           <h1 className="text-xl font-semibold">Creator Messages</h1>
           <p className="text-sm text-muted-foreground">
-            Chat with brands and partners
+            Chat with brands and other creators
           </p>
         </div>
         <div className="flex-1 overflow-hidden">
