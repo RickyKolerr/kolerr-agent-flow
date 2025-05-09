@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Package, CreditCard } from "lucide-react";
+import { Package, CreditCard, Timer } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 import { PaymentConfirmation } from "@/components/PaymentConfirmation";
@@ -99,6 +99,17 @@ export function CreditPackages() {
     creditPackages.find(pkg => pkg.id === selectedPackage) : 
     null;
 
+  // Calculate expiration date (60 days from now)
+  const getExpirationDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate() + 60);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  };
+
   return (
     <>
       <Card className="border-none shadow-none">
@@ -159,9 +170,9 @@ export function CreditPackages() {
                         <CreditCard className="h-4 w-4" />
                         <span>${pkg.valuePerCredit?.toFixed(2)}/credit</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <CreditCard className="h-4 w-4" />
-                        <span>Credits never expire</span>
+                      <div className="flex items-center gap-2 text-yellow-600">
+                        <Timer className="h-4 w-4" />
+                        <span>Credits expire in 60 days</span>
                       </div>
                     </div>
                   </CardContent>
@@ -193,6 +204,7 @@ export function CreditPackages() {
           credits={selectedPackageDetails.credits}
           amount={selectedPackageDetails.price}
           isProcessing={isProcessing}
+          expirationDate={getExpirationDate()}
         />
       )}
     </>

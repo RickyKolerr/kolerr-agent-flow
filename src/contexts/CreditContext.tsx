@@ -6,6 +6,14 @@ import { useIntelligentCredits } from "@/hooks/useIntelligentCredits";
 import { toast } from "sonner";
 import { RESET_HOUR } from "@/hooks/useSearchCredits";
 
+interface CreditPackage {
+  id: string;
+  purchaseDate: string;
+  expirationDate: string;
+  creditsTotal: number;
+  creditsRemaining: number;
+}
+
 interface CreditContextType {
   freeCredits: number;
   premiumCredits: number;
@@ -32,6 +40,7 @@ interface CreditContextType {
     confidenceScore: number;
     estimatedCost: number;
   };
+  creditPackages: CreditPackage[];
 }
 
 const CreditContext = createContext<CreditContextType | undefined>(undefined);
@@ -40,6 +49,7 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
   const { creditsLeft, useCredit, getTimeUntilReset } = useSearchCredits();
   const [premiumCredits, setPremiumCredits] = useState<number>(0);
   const { user, isAuthenticated } = useAuth();
+  const [creditPackages, setCreditPackages] = useState<CreditPackage[]>([]);
   
   // Detect if user has premium plan
   const hasPremiumPlan = isAuthenticated && user?.subscription?.plan !== "free";
@@ -84,9 +94,10 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [getSearchHistory]);
   
-  // Load premium credits from localStorage or set default
+  // Load premium credits and purchased packages from localStorage or set default
   useEffect(() => {
     if (isAuthenticated) {
+      // Load premium credits
       const storedPremiumCredits = localStorage.getItem('premium_credits');
       if (storedPremiumCredits) {
         setPremiumCredits(parseInt(storedPremiumCredits));
@@ -100,6 +111,12 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
           setPremiumCredits(2000);
         }
       }
+
+      // Load purchased credit packages
+      const storedPackages = localStorage.getItem('credit_packages');
+      if (storedPackages) {
+        setCreditPackages(JSON.parse(storedPackages));
+      }
     }
   }, [isAuthenticated, user?.subscription?.plan]);
   
@@ -109,6 +126,41 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       localStorage.setItem('premium_credits', premiumCredits.toString());
     }
   }, [premiumCredits, isAuthenticated]);
+
+  // Save credit packages to localStorage when they change
+  useEffect(() => {
+    if (isAuthenticated && creditPackages.length > 0) {
+      localStorage.setItem('credit_packages', JSON.stringify(creditPackages));
+    }
+  }, [creditPackages, isAuthenticated]);
+  
+  // Check for expired credit packages daily
+  useEffect(() => {
+    const checkExpiredPackages = () => {
+      const now = new Date();
+      const expiredPackages = creditPackages.filter(pkg => new Date(pkg.expirationDate) < now);
+      
+      if (expiredPackages.length > 0) {
+        // Remove expired packages and notify user
+        const remainingPackages = creditPackages.filter(pkg => new Date(pkg.expirationDate) >= now);
+        setCreditPackages(remainingPackages);
+
+        expiredPackages.forEach(pkg => {
+          toast.warning("Credit package expired", {
+            description: `Your ${pkg.creditsTotal} credit package has expired. Unused credits (${pkg.creditsRemaining}) have been removed.`,
+            duration: 10000,
+          });
+        });
+      }
+    };
+
+    // Check on initial load
+    checkExpiredPackages();
+
+    // Set up daily check
+    const intervalId = setInterval(checkExpiredPackages, 86400000); // 24 hours
+    return () => clearInterval(intervalId);
+  }, [creditPackages]);
   
   // Check if user has low credits and should be notified
   useEffect(() => {
@@ -126,7 +178,26 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
         }
       });
     }
-  }, [freeCredits, hasPremiumPlan, creditsLeft]);
+
+    // Check if any credit packages will expire in the next 7 days
+    const now = new Date();
+    const sevenDaysFromNow = new Date();
+    sevenDaysFromNow.setDate(now.getDate() + 7);
+    
+    const soonToExpirePackages = creditPackages.filter(pkg => {
+      const expirationDate = new Date(pkg.expirationDate);
+      return expirationDate > now && expirationDate <= sevenDaysFromNow && pkg.creditsRemaining > 0;
+    });
+
+    if (soonToExpirePackages.length > 0) {
+      soonToExpirePackages.forEach(pkg => {
+        toast.warning("Credits expiring soon", {
+          description: `You have ${pkg.creditsRemaining} credits expiring on ${new Date(pkg.expirationDate).toLocaleDateString()}. Use them before they expire.`,
+          duration: 10000,
+        });
+      });
+    }
+  }, [freeCredits, hasPremiumPlan, creditsLeft, creditPackages]);
   
   // New useFreeCredit that uses the intelligent system
   const useFreeCredit = () => {
@@ -173,7 +244,8 @@ export const CreditProvider = ({ children }: { children: ReactNode }) => {
       remainingGeneralQuestions,
       creditUsageAnalytics,
       getCreditHistory,
-      checkMessageCredit
+      checkMessageCredit,
+      creditPackages
     }}>
       {children}
     </CreditContext.Provider>

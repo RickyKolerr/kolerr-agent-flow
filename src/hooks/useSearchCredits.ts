@@ -4,6 +4,7 @@ import { toast } from "sonner";
 
 export const DAILY_CREDITS = 5;
 export const RESET_HOUR = 7; // 7 AM
+export const CREDIT_PACKAGE_EXPIRY_DAYS = 60;
 
 export const getTimeUntilReset = (): string => {
   const now = new Date();
@@ -21,6 +22,14 @@ export const getTimeUntilReset = (): string => {
   const minutesLeft = Math.floor(((tomorrow.getTime() - now.getTime()) % (1000 * 60 * 60)) / (1000 * 60));
   
   return `${hoursLeft}h ${minutesLeft}m`;
+};
+
+// Calculate expiration date for credit packages
+export const getExpirationDate = (purchaseDate?: Date): Date => {
+  const startDate = purchaseDate || new Date();
+  const expirationDate = new Date(startDate);
+  expirationDate.setDate(expirationDate.getDate() + CREDIT_PACKAGE_EXPIRY_DAYS);
+  return expirationDate;
 };
 
 export const useSearchCredits = () => {
@@ -59,10 +68,10 @@ export const useSearchCredits = () => {
     toast.error(
       "You've used all your free searches for today", 
       { 
-        description: `Get more searches with a premium plan or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
+        description: `Get more searches with credit packages or wait until tomorrow at ${RESET_HOUR}:00 AM for your credits to reset (${getTimeUntilReset()} remaining).`,
         action: {
-          label: "Upgrade",
-          onClick: () => window.location.href = "/pricing"
+          label: "Get Credits",
+          onClick: () => window.location.href = "/pricing#credit-packages-section"
         }
       }
     );

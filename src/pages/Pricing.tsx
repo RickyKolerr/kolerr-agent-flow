@@ -10,8 +10,11 @@ import { CreditPackages } from "@/components/credits/CreditPackages";
 
 const PricingPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const { freeCredits, hasPremiumPlan } = useCredits();
+  
+  // Check if user is a KOL
+  const isKOL = user?.role === 'kol';
   
   const plans = [
     {
@@ -118,6 +121,18 @@ const PricingPage = () => {
       return;
     }
 
+    if (isKOL) {
+      toast.info("Credit packages only", {
+        description: "As a creator, you can only purchase credit packages.",
+      });
+      // Scroll to credit packages section
+      const creditPackagesSection = document.getElementById('credit-packages-section');
+      if (creditPackagesSection) {
+        creditPackagesSection.scrollIntoView({ behavior: 'smooth' });
+      }
+      return;
+    }
+
     if (isEnterprise) {
       navigate("/contact");
     } else {
@@ -139,60 +154,71 @@ const PricingPage = () => {
             <span>You have {freeCredits} free searches remaining today</span>
           </div>
         )}
+
+        {isAuthenticated && isKOL && (
+          <div className="mt-4 p-4 rounded-lg bg-yellow-500/10 text-yellow-700 inline-flex items-center gap-2">
+            <Info className="h-5 w-5" />
+            <span>As a creator, you can only purchase credit packages</span>
+          </div>
+        )}
       </div>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
-        {plans.map((plan, index) => (
-          <Card 
-            key={index} 
-            className={`relative ${plan.highlight ? 'border-brand-pink shadow-lg' : ''}`}
-          >
-            {plan.highlight && (
-              <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                <div className="bg-brand-pink text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Most Popular
+      {/* Only show subscription plans section for brands or non-authenticated users */}
+      {(!isAuthenticated || !isKOL) && (
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8 max-w-7xl mx-auto">
+          {plans.map((plan, index) => (
+            <Card 
+              key={index} 
+              className={`relative ${plan.highlight ? 'border-brand-pink shadow-lg' : ''}`}
+            >
+              {plan.highlight && (
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                  <div className="bg-brand-pink text-white px-4 py-1 rounded-full text-sm font-medium">
+                    Most Popular
+                  </div>
                 </div>
-              </div>
-            )}
-            <CardHeader>
-              <CardTitle className="text-2xl">{plan.name}</CardTitle>
-              <div className="mt-4">
-                <span className="text-4xl font-bold">{plan.price}</span>
-                <span className="text-muted-foreground ml-2">{plan.period}</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-2">
-                {plan.description}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-3 mb-6">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2">
-                    <Check className="h-4 w-4 text-brand-pink" />
-                    <span className="text-sm">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <CardFooter>
-                <Button
-                  className={`w-full ${plan.highlight ? 'bg-brand-pink hover:bg-brand-pink/90' : ''}`}
-                  variant={plan.highlight ? 'default' : 'outline'}
-                  onClick={() => handlePlanSelection(plan.name, plan.isEnterprise)}
-                >
-                  {hasPremiumPlan ? 'Change Plan' : 'Get Started'}
-                </Button>
-              </CardFooter>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              )}
+              <CardHeader>
+                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <div className="mt-4">
+                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span className="text-muted-foreground ml-2">{plan.period}</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {plan.description}
+                </p>
+              </CardHeader>
+              <CardContent>
+                <ul className="space-y-3 mb-6">
+                  {plan.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-2">
+                      <Check className="h-4 w-4 text-brand-pink" />
+                      <span className="text-sm">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+                <CardFooter>
+                  <Button
+                    className={`w-full ${plan.highlight ? 'bg-brand-pink hover:bg-brand-pink/90' : ''}`}
+                    variant={plan.highlight ? 'default' : 'outline'}
+                    onClick={() => handlePlanSelection(plan.name, plan.isEnterprise)}
+                    disabled={isKOL && !plan.isFreeTier}
+                  >
+                    {hasPremiumPlan ? 'Change Plan' : 'Get Started'}
+                  </Button>
+                </CardFooter>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
-      <div className="mt-24 mb-16">
+      <div id="credit-packages-section" className="mt-24 mb-16">
         <div className="max-w-3xl mx-auto text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">One-Time Credit Packages</h2>
           <p className="text-lg text-muted-foreground">
             Need more flexibility? Purchase search credits without committing to a subscription.
-            Credits never expire and can be used anytime.
+            Credits expire in 60 days from purchase date.
           </p>
         </div>
         <CreditPackages />
@@ -210,12 +236,12 @@ const PricingPage = () => {
             <p className="text-muted-foreground">Premium credits are included with paid plans and can be used for advanced features like campaign management and detailed analytics.</p>
           </div>
           <div className="p-6 border rounded-lg">
-            <h3 className="font-bold mb-2">Do unused credits expire?</h3>
-            <p className="text-muted-foreground">Free daily credits reset each day at 7:00 AM. Premium credits roll over month to month, up to 50% of your monthly allocation.</p>
+            <h3 className="font-bold mb-2">Do credits expire?</h3>
+            <p className="text-muted-foreground">Free daily credits reset each day at 7:00 AM. One-time credit packages expire after 60 days from purchase. Subscription credits roll over month to month, up to 50% of your monthly allocation.</p>
           </div>
           <div className="p-6 border rounded-lg">
-            <h3 className="font-bold mb-2">Can I combine subscriptions and credit packs?</h3>
-            <p className="text-muted-foreground">Yes! You can purchase one-time credit packages alongside your subscription for additional flexibility during high-usage periods.</p>
+            <h3 className="font-bold mb-2">Can KOLs subscribe to monthly plans?</h3>
+            <p className="text-muted-foreground">No, KOL accounts can only purchase one-time credit packages to supplement their free daily credits.</p>
           </div>
         </div>
       </div>

@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { useCredits } from "@/contexts/CreditContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { CreditCard, ChevronRight } from "lucide-react";
+import { CreditCard, ChevronRight, Package } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const SettingsBilling = () => {
   const navigate = useNavigate();
   const { hasPremiumPlan, premiumCredits } = useCredits();
+  const { user } = useAuth();
+  const isKOL = user?.role === 'kol';
 
   return (
     <div className="space-y-6">
@@ -36,15 +39,27 @@ export const SettingsBilling = () => {
             </div>
             
             <div className="flex flex-col gap-2">
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/dashboard/subscription')}
-                className="justify-between"
-              >
-                <span>{hasPremiumPlan ? 'Change Plan' : 'Upgrade to Premium'}</span>
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-              {hasPremiumPlan && (
+              {isKOL ? (
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/pricing#credit-packages-section')}
+                  className="justify-between"
+                >
+                  <span>Get More Credits</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline"
+                  onClick={() => navigate('/dashboard/subscription')}
+                  className="justify-between"
+                >
+                  <span>{hasPremiumPlan ? 'Change Plan' : 'Upgrade to Premium'}</span>
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              )}
+              
+              {hasPremiumPlan && !isKOL && (
                 <Button 
                   variant="outline"
                   onClick={() => navigate('/dashboard/subscription?action=cancel')}
@@ -56,6 +71,30 @@ export const SettingsBilling = () => {
               )}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      {/* Credit Packages - Always available for all users */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Package className="h-5 w-5" />
+            Credit Packages
+          </CardTitle>
+          <CardDescription>
+            Purchase additional search credits that expire in 60 days
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button
+            variant="outline"
+            className="w-full justify-start gap-4"
+            onClick={() => navigate('/pricing#credit-packages-section')}
+          >
+            <Package className="h-4 w-4" />
+            Browse Credit Packages
+            <ChevronRight className="h-4 w-4 ml-auto" />
+          </Button>
         </CardContent>
       </Card>
 

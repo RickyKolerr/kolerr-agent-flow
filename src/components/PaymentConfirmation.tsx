@@ -8,7 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CreditCard } from "lucide-react";
+import { CreditCard, Timer } from "lucide-react";
 
 interface PaymentConfirmationProps {
   open: boolean;
@@ -19,6 +19,7 @@ interface PaymentConfirmationProps {
   amount: number;
   isProcessing: boolean;
   isSubscription?: boolean;
+  expirationDate?: string;
 }
 
 export const PaymentConfirmation = ({
@@ -29,7 +30,8 @@ export const PaymentConfirmation = ({
   credits,
   amount,
   isProcessing,
-  isSubscription = false
+  isSubscription = false,
+  expirationDate
 }: PaymentConfirmationProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -50,6 +52,15 @@ export const PaymentConfirmation = ({
               <div className="flex justify-between items-center">
                 <span className="text-muted-foreground">Credits</span>
                 <span className="font-medium">{credits}</span>
+              </div>
+            )}
+            {expirationDate && !isSubscription && (
+              <div className="flex justify-between items-center text-yellow-600">
+                <span className="flex items-center">
+                  <Timer className="h-4 w-4 mr-1" />
+                  Expires on
+                </span>
+                <span className="font-medium">{expirationDate}</span>
               </div>
             )}
             <div className="flex justify-between items-center pt-2 border-t">
