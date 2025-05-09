@@ -25,6 +25,7 @@ interface Plan {
   }[];
   popular?: boolean;
   credits: number;
+  valuePerCredit: number;
 }
 
 const SubscriptionPage = () => {
@@ -73,7 +74,8 @@ const SubscriptionPage = () => {
         { text: "Contract templates", included: false },
         { text: "Campaign management", included: false },
       ],
-      credits: 5
+      credits: 5,
+      valuePerCredit: 1.00
     },
     {
       id: "starter",
@@ -93,7 +95,8 @@ const SubscriptionPage = () => {
         { text: "Campaign reporting", included: false },
         { text: "Team collaboration", included: false },
       ],
-      credits: 100
+      credits: 100,
+      valuePerCredit: 1.00
     },
     {
       id: "growth",
@@ -104,7 +107,7 @@ const SubscriptionPage = () => {
         yearly: 160
       },
       features: [
-        { text: "200 Premium credits per month", included: true },
+        { text: "250 Premium credits per month", included: true },
         { text: "Up to 10 active campaigns", included: true },
         { text: "Advanced contract templates", included: true },
         { text: "Priority email support", included: true },
@@ -114,7 +117,8 @@ const SubscriptionPage = () => {
         { text: "Team collaboration", included: false },
       ],
       popular: true,
-      credits: 200
+      credits: 250,
+      valuePerCredit: 0.80
     },
     {
       id: "pro",
@@ -125,7 +129,7 @@ const SubscriptionPage = () => {
         yearly: 320
       },
       features: [
-        { text: "750 Premium credits per month", included: true },
+        { text: "600 Premium credits per month", included: true },
         { text: "Unlimited active campaigns", included: true },
         { text: "Custom contract builder", included: true },
         { text: "24/7 priority support", included: true },
@@ -134,7 +138,8 @@ const SubscriptionPage = () => {
         { text: "Custom reporting", included: true },
         { text: "API access", included: true },
       ],
-      credits: 750
+      credits: 600,
+      valuePerCredit: 0.67
     }
   ];
 
@@ -202,6 +207,12 @@ const SubscriptionPage = () => {
               </div>
             </CardHeader>
             <CardContent>
+              {plan.id !== 'free' && (
+                <div className="mb-4 p-2 bg-green-50 border border-green-100 rounded-md text-sm text-green-700 flex items-center justify-between">
+                  <span>Value:</span>
+                  <span className="font-medium">${plan.valuePerCredit.toFixed(2)} per credit</span>
+                </div>
+              )}
               <PlanFeatures 
                 features={plan.features}
                 credits={plan.credits}

@@ -14,6 +14,22 @@ export const SettingsBilling = () => {
   const { user } = useAuth();
   const isKOL = user?.role === 'kol';
 
+  const getCurrentMaxCredits = () => {
+    if (!hasPremiumPlan) return '5 free searches per day';
+    
+    if (premiumCredits <= 100) return '100 credits';
+    if (premiumCredits <= 250) return '250 credits';
+    return '600 credits';
+  };
+  
+  const getValuePerCredit = () => {
+    if (!hasPremiumPlan) return '$1.00';
+    
+    if (premiumCredits <= 100) return '$1.00';
+    if (premiumCredits <= 250) return '$0.80';
+    return '$0.67';
+  };
+
   return (
     <div className="space-y-6">
       {/* Current Plan Summary */}
@@ -39,6 +55,19 @@ export const SettingsBilling = () => {
                   : '5 free searches per day'}
               </p>
             </div>
+            
+            {hasPremiumPlan && (
+              <div className="p-3 bg-green-50 border border-green-100 rounded-lg">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-green-700">Monthly allocation:</span>
+                  <span className="text-sm font-medium text-green-700">{getCurrentMaxCredits()}</span>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  <span className="text-sm text-green-700">Value per credit:</span>
+                  <span className="text-sm font-medium text-green-700">{getValuePerCredit()}</span>
+                </div>
+              </div>
+            )}
             
             <div className="flex flex-col gap-2">
               {isKOL ? (

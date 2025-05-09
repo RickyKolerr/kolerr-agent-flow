@@ -56,7 +56,7 @@ const creditPackages: CreditPackage[] = [
 
 export function CreditPackages() {
   const navigate = useNavigate();
-  const { premiumCredits } = useCredits();
+  const { premiumCredits, hasPremiumPlan } = useCredits();
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -103,6 +103,19 @@ export function CreditPackages() {
 
   return (
     <>
+      <div className="mb-4">
+        {hasPremiumPlan && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <h3 className="font-medium text-green-700 flex items-center">
+              <Package className="h-5 w-5 mr-2" />
+              Subscription Savings
+            </h3>
+            <p className="text-sm text-green-600 mt-1">
+              As a subscriber, you already get the best per-credit value. One-time packages are great for extra needs beyond your monthly allocation.
+            </p>
+          </div>
+        )}
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {creditPackages.map((pkg) => {
           const isSelected = selectedPackage === pkg.id;

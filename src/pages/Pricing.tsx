@@ -32,7 +32,8 @@ const PricingPage = () => {
       highlight: false,
       isEnterprise: false,
       isPremium: false,
-      isFreeTier: true
+      isFreeTier: true,
+      creditValue: "$1.00 per credit"
     },
     {
       name: "Starter",
@@ -49,7 +50,8 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      creditValue: "$1.00 per credit"
     },
     {
       name: "Growth",
@@ -57,7 +59,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "200 Premium credits per month",
+        "250 Premium credits per month",
         "Up to 10 active campaigns",
         "Advanced contract templates",
         "Priority email support",
@@ -67,7 +69,8 @@ const PricingPage = () => {
       ],
       highlight: true,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      creditValue: "$0.80 per credit"
     },
     {
       name: "Pro",
@@ -75,7 +78,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "750 Premium credits per month",
+        "600 Premium credits per month",
         "Unlimited active campaigns",
         "Custom contract builder",
         "24/7 priority support",
@@ -86,7 +89,8 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: false,
-      isPremium: true
+      isPremium: true,
+      creditValue: "$0.67 per credit"
     },
     {
       name: "Enterprise",
@@ -105,7 +109,8 @@ const PricingPage = () => {
       ],
       highlight: false,
       isEnterprise: true,
-      isPremium: true
+      isPremium: true,
+      creditValue: "$0.50 per credit"
     }
   ];
 
@@ -189,6 +194,12 @@ const PricingPage = () => {
                 </p>
               </CardHeader>
               <CardContent>
+                {plan.isPremium && (
+                  <div className="mb-4 p-2 bg-green-50 border border-green-100 rounded-md text-sm text-green-700 flex items-center justify-between">
+                    <span>Value:</span>
+                    <span className="font-medium">{plan.creditValue}</span>
+                  </div>
+                )}
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-center gap-2">

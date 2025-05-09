@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,7 +36,8 @@ const Billing = () => {
         "Community support",
         "Basic search filters"
       ],
-      current: !hasPremiumPlan
+      current: !hasPremiumPlan,
+      valuePerCredit: "$1.00"
     },
     {
       id: "starter",
@@ -53,7 +53,8 @@ const Billing = () => {
         "Basic analytics dashboard",
         "Advanced search filters"
       ],
-      current: hasPremiumPlan && premiumCredits <= 100
+      current: hasPremiumPlan && premiumCredits <= 100,
+      valuePerCredit: "$1.00"
     },
     {
       id: "growth",
@@ -62,7 +63,7 @@ const Billing = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "500 Premium credits per month",
+        "250 Premium credits per month",
         "Up to 10 active campaigns",
         "Advanced contract templates",
         "Priority email support",
@@ -70,8 +71,9 @@ const Billing = () => {
         "Automated outreach tools",
         "ROI analytics"
       ],
-      current: hasPremiumPlan && premiumCredits > 100 && premiumCredits <= 500,
-      popular: true
+      current: hasPremiumPlan && premiumCredits > 100 && premiumCredits <= 250,
+      popular: true,
+      valuePerCredit: "$0.80"
     },
     {
       id: "pro",
@@ -80,7 +82,7 @@ const Billing = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "2000 Premium credits per month",
+        "600 Premium credits per month",
         "Unlimited active campaigns",
         "Custom contract builder",
         "24/7 priority support",
@@ -89,7 +91,8 @@ const Billing = () => {
         "Custom reporting",
         "API access"
       ],
-      current: hasPremiumPlan && premiumCredits > 500
+      current: hasPremiumPlan && premiumCredits > 250,
+      valuePerCredit: "$0.67"
     }
   ];
 
@@ -203,12 +206,12 @@ const Billing = () => {
                 <div className="space-y-2">
                   <div className="flex justify-between">
                     <span className="text-muted-foreground">AI Search Credits</span>
-                    <span>{hasPremiumPlan ? `${500 - premiumCredits} / 500 used` : `5 daily searches`}</span>
+                    <span>{hasPremiumPlan ? `${250 - premiumCredits} / 250 used` : `5 daily searches`}</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
                     <div 
                       className="h-2 bg-brand-pink rounded-full" 
-                      style={{ width: hasPremiumPlan ? `${((500 - premiumCredits) / 500) * 100}%` : "0%" }}
+                      style={{ width: hasPremiumPlan ? `${((250 - premiumCredits) / 250) * 100}%` : "0%" }}
                     ></div>
                   </div>
                 </div>
@@ -283,6 +286,14 @@ const Billing = () => {
                     <span className="text-3xl font-bold">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
+
+                  {plan.id !== 'free' && (
+                    <div className="p-2 bg-green-50 border border-green-100 rounded-md text-sm text-green-700 flex items-center justify-between">
+                      <span>Value:</span>
+                      <span className="font-medium">{plan.valuePerCredit} per credit</span>
+                    </div>
+                  )}
+
                   <ul className="space-y-2">
                     {plan.features.map((feature, i) => (
                       <li key={i} className="flex items-center gap-2">
