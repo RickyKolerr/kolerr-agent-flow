@@ -12,19 +12,37 @@ const CampaignsPage = () => {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  
+  // Add state for filters
+  const [searchQuery, setSearchQuery] = useState("");
+  const [sortBy, setSortBy] = useState("date-desc");
 
-  // Example campaigns data
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+  };
+
+  const handleSortChange = (value: string) => {
+    setSortBy(value);
+  };
+
+  // Example campaigns data - enhanced with the required properties for CampaignCard
   const campaigns = [
     {
       id: "camp1",
       title: "Summer Collection Launch",
+      brand: "FashionBrand",
+      brandLogo: "https://ui-avatars.com/api/?name=FB&background=0D8ABC&color=fff",
       status: "active",
       budget: "$5,000",
+      compatibility: 85,
+      deadline: "2023-06-30",
       applications: 14,
       kols: 3,
       startDate: "2023-06-01",
       endDate: "2023-06-30",
       platforms: ["TikTok", "Instagram"],
+      categories: ["Fashion", "Summer"],
+      requirements: ["2+ min video", "Product showcase"],
       goals: ["Brand Awareness", "Product Launch"],
       progress: 65,
       description: "Launch our new summer collection with a focus on sustainable materials and ethical production processes."
@@ -32,13 +50,19 @@ const CampaignsPage = () => {
     {
       id: "camp2",
       title: "Back to School Campaign",
+      brand: "EduSupplies",
+      brandLogo: "https://ui-avatars.com/api/?name=ES&background=4CAF50&color=fff",
       status: "draft",
       budget: "$3,500",
+      compatibility: 70,
+      deadline: "2023-08-15",
       applications: 0,
       kols: 0,
       startDate: "2023-07-15",
       endDate: "2023-08-15",
       platforms: ["TikTok"],
+      categories: ["Education", "Back to School"],
+      requirements: ["Review products", "Show usage"],
       goals: ["Sales", "Engagement"],
       progress: 0,
       description: "Target students and parents with our back to school essentials. Focus on affordability and style."
@@ -46,13 +70,19 @@ const CampaignsPage = () => {
     {
       id: "camp3",
       title: "Holiday Special",
+      brand: "GiftWonders",
+      brandLogo: "https://ui-avatars.com/api/?name=GW&background=FF5722&color=fff",
       status: "scheduled",
       budget: "$10,000",
+      compatibility: 90,
+      deadline: "2023-12-31",
       applications: 5,
       kols: 0,
       startDate: "2023-11-15",
       endDate: "2023-12-31",
       platforms: ["TikTok", "Instagram", "YouTube"],
+      categories: ["Holiday", "Gifts"],
+      requirements: ["Gift showcase", "Holiday themes"],
       goals: ["Sales", "Brand Awareness"],
       progress: 20,
       description: "Holiday-themed campaign to drive Q4 sales. Looking for creators who can showcase products in festive settings."
@@ -60,13 +90,19 @@ const CampaignsPage = () => {
     {
       id: "camp4",
       title: "Fitness Challenge",
+      brand: "FitLife",
+      brandLogo: "https://ui-avatars.com/api/?name=FL&background=9C27B0&color=fff",
       status: "completed",
       budget: "$7,500",
+      compatibility: 95,
+      deadline: "2023-02-15",
       applications: 22,
       kols: 5,
       startDate: "2023-01-15",
       endDate: "2023-02-15",
       platforms: ["TikTok", "Instagram"],
+      categories: ["Fitness", "Health"],
+      requirements: ["Workout demos", "Progress tracking"],
       goals: ["Engagement", "User Generated Content"],
       progress: 100,
       description: "30-day fitness challenge with our new line of workout gear. Target fitness influencers with engaged audiences."
@@ -119,7 +155,14 @@ const CampaignsPage = () => {
         </div>
       </div>
 
-      {showFilters && <CampaignFilters />}
+      {showFilters && 
+        <CampaignFilters 
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+          sortBy={sortBy}
+          onSortChange={handleSortChange}
+        />
+      }
 
       {/* KOL Applications Section */}
       <ApplicationManagement />
@@ -130,7 +173,7 @@ const CampaignsPage = () => {
           <CampaignCard 
             key={campaign.id} 
             campaign={campaign} 
-            onClick={() => navigate(`/campaigns/${campaign.id}`)} 
+            onApply={() => {}} 
           />
         ))}
       </div>
