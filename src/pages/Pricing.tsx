@@ -57,7 +57,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "500 Premium credits per month",
+        "200 Premium credits per month",
         "Up to 10 active campaigns",
         "Advanced contract templates",
         "Priority email support",
@@ -75,7 +75,7 @@ const PricingPage = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "2000 Premium credits per month",
+        "750 Premium credits per month",
         "Unlimited active campaigns",
         "Custom contract builder",
         "24/7 priority support",

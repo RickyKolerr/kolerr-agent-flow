@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CreditCard, ChevronRight, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { CreditPackages } from "@/components/credits/CreditPackages";
 
 export const SettingsBilling = () => {
   const navigate = useNavigate();
@@ -88,13 +89,18 @@ export const SettingsBilling = () => {
         <CardContent>
           <Button
             variant="outline"
-            className="w-full justify-start gap-4"
+            className="w-full justify-start gap-4 mb-4"
             onClick={() => navigate('/pricing#credit-packages-section')}
           >
             <Package className="h-4 w-4" />
             Browse Credit Packages
             <ChevronRight className="h-4 w-4 ml-auto" />
           </Button>
+          
+          {/* Direct access to credit packages for all users */}
+          <div className="mt-6">
+            <CreditPackages />
+          </div>
         </CardContent>
       </Card>
 

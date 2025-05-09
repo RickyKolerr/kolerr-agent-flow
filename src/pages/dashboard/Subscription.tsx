@@ -104,7 +104,7 @@ const SubscriptionPage = () => {
         yearly: 160
       },
       features: [
-        { text: "500 Premium credits per month", included: true },
+        { text: "200 Premium credits per month", included: true },
         { text: "Up to 10 active campaigns", included: true },
         { text: "Advanced contract templates", included: true },
         { text: "Priority email support", included: true },
@@ -114,7 +114,7 @@ const SubscriptionPage = () => {
         { text: "Team collaboration", included: false },
       ],
       popular: true,
-      credits: 500
+      credits: 200
     },
     {
       id: "pro",
@@ -125,7 +125,7 @@ const SubscriptionPage = () => {
         yearly: 320
       },
       features: [
-        { text: "2000 Premium credits per month", included: true },
+        { text: "750 Premium credits per month", included: true },
         { text: "Unlimited active campaigns", included: true },
         { text: "Custom contract builder", included: true },
         { text: "24/7 priority support", included: true },
@@ -134,7 +134,7 @@ const SubscriptionPage = () => {
         { text: "Custom reporting", included: true },
         { text: "API access", included: true },
       ],
-      credits: 2000
+      credits: 750
     }
   ];
 
@@ -144,7 +144,7 @@ const SubscriptionPage = () => {
       toast.success(`You've ${action} the ${plans.find(p => p.id === selectedPlan)?.name} plan!`, {
         description: "You'll be redirected to complete the payment process.",
       });
-      navigate(`/dashboard/payment?plan=${selectedPlan}&currentPrice=${currentPlan.price}`);
+      navigate(`/dashboard/payment?plan=${selectedPlan}&billingPeriod=${billingPeriod}&currentPrice=${currentPlan.price}`);
     }
   };
 

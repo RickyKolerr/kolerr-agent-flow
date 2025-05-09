@@ -32,6 +32,22 @@ export const getExpirationDate = (purchaseDate?: Date): Date => {
   return expirationDate;
 };
 
+// Format date for display
+export const formatExpirationDate = (date: Date): string => {
+  return date.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+};
+
+// Calculate days until expiration
+export const getDaysUntilExpiration = (expirationDate: Date): number => {
+  const now = new Date();
+  const diffTime = expirationDate.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
 export const useSearchCredits = () => {
   const [creditsLeft, setCreditsLeft] = useState<number>(() => {
     const stored = localStorage.getItem('search_credits');

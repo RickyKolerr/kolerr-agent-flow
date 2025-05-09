@@ -20,6 +20,7 @@ interface PaymentConfirmationProps {
   isProcessing: boolean;
   isSubscription?: boolean;
   expirationDate?: string;
+  billingPeriod?: 'monthly' | 'yearly';
 }
 
 export const PaymentConfirmation = ({
@@ -31,7 +32,8 @@ export const PaymentConfirmation = ({
   amount,
   isProcessing,
   isSubscription = false,
-  expirationDate
+  expirationDate,
+  billingPeriod = 'monthly'
 }: PaymentConfirmationProps) => {
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -54,6 +56,12 @@ export const PaymentConfirmation = ({
                 <span className="font-medium">{credits}</span>
               </div>
             )}
+            {isSubscription && billingPeriod && (
+              <div className="flex justify-between items-center">
+                <span className="text-muted-foreground">Billing Period</span>
+                <span className="font-medium capitalize">{billingPeriod}</span>
+              </div>
+            )}
             {expirationDate && !isSubscription && (
               <div className="flex justify-between items-center text-yellow-600">
                 <span className="flex items-center">
@@ -65,7 +73,7 @@ export const PaymentConfirmation = ({
             )}
             <div className="flex justify-between items-center pt-2 border-t">
               <span className="font-medium">Total Amount</span>
-              <span className="font-bold">${amount}{isSubscription ? '/month' : ''}</span>
+              <span className="font-bold">${amount}{isSubscription ? `/${billingPeriod === 'yearly' ? 'year' : 'month'}` : ''}</span>
             </div>
           </div>
         </div>
