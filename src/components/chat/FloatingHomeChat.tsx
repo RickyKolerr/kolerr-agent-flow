@@ -1,15 +1,10 @@
 
-import React from "react";
-import { CreditCard, MessageCircle, MessageSquare, Paperclip, Search, User } from "lucide-react";
+import React, { useRef } from "react";
+import { MessageCircle } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCredits } from "@/contexts/CreditContext";
-import { CreditBadge } from "@/components/CreditBadge";
-import { useNavigate } from "react-router-dom";
-import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { useTypingEffect } from "@/hooks/useTypingEffect";
 
 interface Message {
   id: string;
@@ -38,152 +33,79 @@ export const FloatingHomeChat: React.FC<FloatingHomeChatProps> = ({
   messagesEndRef,
   isKOLSpecificQuery,
   generalQuestionCounter,
-  generalQuestionsPerCredit
+  generalQuestionsPerCredit,
 }) => {
-  const navigate = useNavigate();
-  const { freeCredits, hasPremiumPlan } = useCredits();
-  const isMobile = useMediaQuery('(max-width: 768px)');
-
-  // Fixed heights for better stability
-  const chatContainerHeight = "500px";
-  const messageAreaHeight = "350px";
-
-  // Prevent auto scrolling by providing a custom scroll handler
-  const handleManualScroll = () => {
-    // This empty function prevents automatic scrolling
-    // We're intentionally not calling messagesEndRef.current.scrollIntoView()
+  const inputRef = useRef<HTMLInputElement>(null);
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && inputValue.trim() !== "") {
+      handleSendMessage();
+    }
   };
-
+  
   return (
-    <div className={`fixed bottom-0 right-0 z-50 md:max-w-[550px] w-full rounded-t-2xl overflow-hidden shadow-2xl`}>
-      <div className="glass-panel shadow-2xl flex flex-col h-auto">
-        <div className="bg-black/70 p-4 border-b border-white/10 flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="h-10 w-10 rounded-full bg-brand-pink flex items-center justify-center mr-3">
-              <MessageCircle className="h-5 w-5 text-white" />
-            </div>
-            <div>
-              <h2 className="font-bold text-lg">AI KOL Discovery Agent</h2>
-              <p className="text-sm text-muted-foreground">
-                {hasPremiumPlan ? "Premium plan activated" : `${freeCredits} free ${freeCredits === 1 ? 'search' : 'searches'} remaining`}
-              </p>
-            </div>
-          </div>
-          {!hasPremiumPlan && (
-            <CreditBadge variant="compact" />
-          )}
+    <div className="fixed bottom-0 left-0 w-full md:w-2/3 lg:w-1/2 max-w-3xl mx-auto px-4">
+      <div className="bg-black/70 backdrop-blur-lg rounded-t-2xl shadow-2xl border border-white/10 overflow-hidden">
+        {/* New tagline header */}
+        <div className="bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to p-3 border-b border-white/10">
+          <h2 className="text-center font-bold text-white">Kolerr IM Agent- Less navigation, more interaction.</h2>
         </div>
-
-        <div className="bg-black/40 p-3 border-b border-white/10">
-          <div className="rounded-md bg-brand-pink/10 p-2 border border-brand-pink/20">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <CreditCard className="h-3 w-3 text-brand-pink mr-2" />
-                <span className="font-medium text-xs">Credit Usage</span>
-              </div>
-            </div>
-            <div className="mt-1 text-xs grid grid-cols-2 gap-1">
-              <div className="flex items-center">
-                <Badge variant="outline" className="flex items-center mr-1 bg-brand-pink/5 border-brand-pink/20 h-5">
-                  <Search className="h-2 w-2 mr-1 text-brand-pink" />
-                </Badge>
-                <span className="text-xs">KOL specific: 1 credit</span>
-              </div>
-              <div className="flex items-center">
-                <Badge variant="outline" className="flex items-center mr-1 bg-brand-pink/5 border-brand-pink/20 h-5">
-                  <MessageSquare className="h-2 w-2 mr-1 text-brand-pink" />
-                </Badge>
-                <span className="text-xs">General: {generalQuestionsPerCredit} questions = 1 credit</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <ScrollArea className="flex-1 p-4 bg-black/20" style={{ height: messageAreaHeight }}>
-          <div className="pb-2">
-            {messages.map(message => {
-              // Add typing effect for bot messages
-              const { displayedText, isComplete } = message.type === "bot" ? 
-                useTypingEffect({
-                  text: message.content,
-                  typingSpeed: 30, // Faster typing speed
-                  startDelay: 300,
-                  humanizedTyping: true,
-                }) : { displayedText: message.content, isComplete: true };
-
-              return (
-                <div key={message.id} className={`mb-4 flex ${message.type === "user" ? "justify-end" : "justify-start"}`}>
-                  {message.type === "bot" && (
-                    <div className="h-8 w-8 rounded-full bg-brand-pink flex items-center justify-center mr-3 flex-shrink-0">
-                      <MessageCircle className="h-4 w-4 text-white" />
-                    </div>
-                  )}
-                  <div className={`p-3 rounded-lg max-w-[80%] ${message.type === "user" ? "bg-brand-navy text-white" : "bg-secondary"}`}>
-                    {message.type === "bot" ? (
-                      <span className={`${!isComplete ? 'typing-cursor typing-active' : 'typing-complete'}`}>
-                        {displayedText}
-                      </span>
-                    ) : message.content}
-                    
-                    {message.isTyping && (
-                      <span className="inline-block ml-1 animate-pulse">▌</span>
-                    )}
-                    {message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">Uses 1 credit</span>
-                    )}
-                    {!message.isKOLSpecific && !hasPremiumPlan && message.type === "user" && (
-                      <span className="block text-xs italic mt-1 opacity-70">General question ({generalQuestionsPerCredit} = 1 credit)</span>
-                    )}
-                  </div>
-                  {message.type === "user" && (
-                    <div className="h-8 w-8 rounded-full bg-muted flex items-center justify-center ml-3 flex-shrink-0">
-                      <User className="h-4 w-4" />
-                    </div>
+        
+        <ScrollArea className="h-80 lg:h-96">
+          <div className="p-4 space-y-4">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex ${
+                  message.type === "user" ? "justify-end" : "justify-start"
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] px-4 py-2 rounded-xl ${
+                    message.type === "user"
+                      ? "bg-gradient-to-r from-brand-gradient-from to-brand-gradient-to text-white"
+                      : "bg-white/10 backdrop-blur-sm"
+                  }`}
+                >
+                  {message.content}
+                  {message.isTyping && (
+                    <span className="inline-block ml-1 animate-pulse">...</span>
                   )}
                 </div>
-              );
-            })}
-            <div ref={messagesEndRef} onClick={handleManualScroll} />
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
-
-        <div className="p-3 border-t border-white/10 bg-black/40">
-          <div className="flex gap-2">
-            <Input 
-              placeholder={isMobile ? "Ask about creators..." : "Ask about specific creator types, niches, or requirements..."} 
-              value={inputValue} 
-              onChange={e => setInputValue(e.target.value)} 
-              onKeyPress={e => e.key === "Enter" && handleSendMessage()} 
-              className="bg-black/60" 
-            />
-            <Button onClick={handleSendMessage} className={isMobile ? "px-3" : ""}>
-              Send
-            </Button>
-          </div>
-          <div className="flex items-center justify-between mt-2 px-1">
-            <Button variant="ghost" size="sm" className="text-muted-foreground p-1 h-7">
-              <Paperclip className="h-3 w-3 mr-1" />
-              Attach
-            </Button>
-            
-            {!hasPremiumPlan && (
-              <div className="text-xs text-muted-foreground flex items-center gap-2">
-                <span>
-                  {isKOLSpecificQuery(inputValue) 
-                    ? "KOL question: Uses 1 credit" 
-                    : `General question: ${generalQuestionCounter}/${generalQuestionsPerCredit}`}
-                </span>
-                <Button 
-                  variant="link" 
-                  size="sm" 
-                  className="text-brand-pink p-0 h-auto text-xs" 
-                  onClick={() => navigate("/pricing")}
-                >
-                  Upgrade
-                </Button>
-              </div>
-            )}
-          </div>
+        
+        <div className="p-3 bg-black/50 border-t border-white/10 flex items-center gap-2">
+          {isKOLSpecificQuery(inputValue) && inputValue.length > 0 && (
+            <Badge className="bg-brand-pink/90">
+              Uses 1 search credit
+            </Badge>
+          )}
+          
+          {!isKOLSpecificQuery(inputValue) && inputValue.length > 0 && (
+            <Badge variant="outline" className="border-white/20">
+              {generalQuestionCounter}/{generalQuestionsPerCredit} to 1 credit
+            </Badge>
+          )}
+          
+          <Input
+            ref={inputRef}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Ask about KOLs, campaigns, or TikTok marketing..."
+            className="flex-1 bg-black/40 border-white/10 placeholder-white/50"
+          />
+          <Button
+            onClick={handleSendMessage}
+            disabled={inputValue.trim() === ""}
+            className="bg-brand-pink hover:bg-brand-pink/90"
+          >
+            <MessageCircle className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </div>

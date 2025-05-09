@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CreditCard, ChevronRight, Package } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { CreditPackages } from "@/components/credits/CreditPackages";
+import { TeamManagement } from "@/components/settings/TeamManagement";
 
 export const SettingsBilling = () => {
   const navigate = useNavigate();
@@ -103,6 +104,11 @@ export const SettingsBilling = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* Team Management - Only for brands */}
+      {!isKOL && (
+        <TeamManagement />
+      )}
 
       {/* Payment Methods */}
       <Card>
