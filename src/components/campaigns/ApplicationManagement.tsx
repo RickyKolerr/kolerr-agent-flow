@@ -7,7 +7,8 @@ import {
   Search, 
   Filter, 
   ChevronDown,
-  MessageCircle
+  MessageCircle,
+  Eye
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -45,8 +46,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCreatorData } from "@/data/mockCreators";
-
-type ApplicationStatus = "pending" | "approved" | "rejected";
+import { ApplicationStatus } from "@/types/campaign";
 
 interface Application {
   id: string;
@@ -56,16 +56,6 @@ interface Application {
   status: ApplicationStatus;
   dateApplied: string;
   message: string;
-}
-
-interface Creator {
-  id: string;
-  fullName: string;
-  username: string;
-  avatar: string;
-  followers: number;
-  engagementRate: number;
-  niche: string[];
 }
 
 export const ApplicationManagement = () => {
@@ -219,7 +209,7 @@ export const ApplicationManagement = () => {
       <CardHeader>
         <CardTitle>Campaign Applications</CardTitle>
         <CardDescription>
-          Manage applications from creators for your campaigns
+          Review and manage applications from creators for your campaigns
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -327,7 +317,7 @@ export const ApplicationManagement = () => {
                                     setViewDialogOpen(true);
                                   }}
                                 >
-                                  View Details
+                                  <Eye className="h-4 w-4 mr-2" /> View Details
                                 </Button>
                                 {application.status === "pending" && (
                                   <DropdownMenu>

@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import { useNavigate } from "react-router-dom";
 import { useUserAccess } from "@/hooks/useUserAccess";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Mock campaigns
 const mockCampaigns = [
@@ -100,6 +101,8 @@ const AvailableCampaigns = () => {
   const [platformFilter, setPlatformFilter] = useState("all");
   const navigate = useNavigate();
   const { isAuthenticated } = useUserAccess();
+  const { user } = useAuth();
+  const isKOL = user?.role === "kol";
   
   const filteredCampaigns = mockCampaigns.filter(campaign => {
     // Apply search filter
@@ -141,17 +144,18 @@ const AvailableCampaigns = () => {
       return;
     }
     
+    if (!isKOL) {
+      toast.error("Only creators can apply to campaigns", {
+        description: "This feature is only available for KOLs and creators",
+      });
+      return;
+    }
+    
     // This function could later be replaced with a backend call
     toast.success(`Applied to "${campaign.title}"`, {
       description: "Your application has been submitted successfully.",
       duration: 5000,
     });
-    
-    // Future backend integration:
-    // 1. Make API call to backend to submit application
-    // 2. Update local state to reflect application status
-    // 3. Handle success/failure responses
-    // 4. Redirect to application details or show follow-up actions
   };
   
   return (
@@ -216,6 +220,14 @@ const AvailableCampaigns = () => {
         </Select>
       </div>
 
+      {!isKOL && (
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p className="text-yellow-800 text-sm">
+            Note: Only creators can apply to campaigns. As a brand, you can create campaigns and manage applications from creators.
+          </p>
+        </div>
+      )}
+
       {/* Campaign Cards */}
       <div className="grid gap-6 mt-6">
         {filteredCampaigns.length > 0 ? (
@@ -224,6 +236,7 @@ const AvailableCampaigns = () => {
               key={campaign.id}
               campaign={campaign}
               onApply={handleApplyCampaign}
+              disableApply={!isKOL}
             />
           ))
         ) : (

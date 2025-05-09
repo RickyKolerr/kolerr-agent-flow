@@ -7,11 +7,14 @@ import { CampaignFilters } from "@/components/campaigns/CampaignFilters";
 import { PlusCircle, Filter } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ApplicationManagement } from "@/components/campaigns/ApplicationManagement";
+import { useAuth } from "@/contexts/AuthContext";
 
 const CampaignsPage = () => {
   const navigate = useNavigate();
   const [showFilters, setShowFilters] = useState(false);
   const isMobile = useMediaQuery("(max-width: 768px)");
+  const { user } = useAuth();
+  const isBrand = user?.role === "brand";
   
   // Add state for filters
   const [searchQuery, setSearchQuery] = useState("");
@@ -164,8 +167,8 @@ const CampaignsPage = () => {
         />
       }
 
-      {/* KOL Applications Section */}
-      <ApplicationManagement />
+      {/* KOL Applications Section - Only visible to brands */}
+      {isBrand && <ApplicationManagement />}
 
       {/* Campaigns Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -174,6 +177,7 @@ const CampaignsPage = () => {
             key={campaign.id} 
             campaign={campaign} 
             onApply={() => {}} 
+            disableApply={isBrand} // Disable apply button for brands
           />
         ))}
       </div>

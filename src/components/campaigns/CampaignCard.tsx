@@ -1,180 +1,166 @@
 
-import { BadgeDollarSign, Calendar, FileText, Check, Loader2, Eye } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Calendar, Clock, Users, ChevronRight, DollarSign } from "lucide-react";
 
-interface CampaignCardProps {
-  campaign: {
-    id: string;
-    title: string;
-    brand: string;
-    brandLogo: string;
-    description: string;
-    budget: string;
-    compatibility: number;
-    deadline: string;
-    platforms: string[];
-    categories: string[];
-    requirements: string[];
-    status: string;
-  };
-  onApply: (campaign: any) => void;
+interface CampaignProps {
+  id: string;
+  title: string;
+  brand: string;
+  brandLogo: string;
+  description: string;
+  budget: string;
+  compatibility: number;
+  deadline: string;
+  platforms: string[];
+  categories: string[];
+  requirements: string[];
+  status: string;
+  applications?: number;
+  kols?: number;
+  startDate?: string;
+  endDate?: string;
+  goals?: string[];
+  progress?: number;
 }
 
-export function CampaignCard({ campaign, onApply }: CampaignCardProps) {
-  const [isApplying, setIsApplying] = useState(false);
-  const navigate = useNavigate();
+interface CampaignCardProps {
+  campaign: CampaignProps;
+  onApply: (campaign: CampaignProps) => void;
+  disableApply?: boolean;
+}
+
+export const CampaignCard = ({ campaign, onApply, disableApply = false }: CampaignCardProps) => {
+  const {
+    title,
+    brand,
+    brandLogo,
+    description,
+    budget,
+    compatibility,
+    deadline,
+    platforms,
+    categories,
+    requirements,
+    status,
+    applications,
+    kols,
+    progress
+  } = campaign;
   
-  const handleApply = async (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent navigation when clicking apply button
-    setIsApplying(true);
+  // Truncate description if it's too long
+  const truncatedDescription = description.length > 100 
+    ? `${description.substring(0, 100)}...` 
+    : description;
     
-    // Simulate API call delay to show loading state
-    setTimeout(() => {
-      onApply(campaign);
-      setIsApplying(false);
-    }, 800);
-    
-    // When implementing real backend:
-    // try {
-    //   await applyToCampaign(campaign.id);
-    //   onApply(campaign);
-    // } catch (error) {
-    //   console.error("Failed to apply:", error);
-    //   // Handle error with toast notification
-    // } finally {
-    //   setIsApplying(false);
-    // }
+  // Format the compatibility score color
+  const getCompatibilityColor = () => {
+    if (compatibility >= 90) return "text-green-500";
+    if (compatibility >= 70) return "text-amber-500";
+    return "text-red-500";
   };
-  
-  const handleViewCampaign = () => {
-    navigate(`/campaigns/${campaign.id}`);
-  };
-  
+
   return (
-    <Card className="overflow-hidden hover-scale cursor-pointer" onClick={handleViewCampaign}>
+    <Card className="overflow-hidden">
       <CardContent className="p-0">
-        <div className="flex flex-col md:flex-row">
-          <div className="w-full md:w-2/3 p-6">
-            <div className="flex items-center space-x-3 mb-3">
-              <img 
-                src={campaign.brandLogo} 
-                alt={campaign.brand} 
-                className="h-10 w-10 rounded-full"
-              />
-              <div>
-                <h3 className="text-xl font-bold">{campaign.title}</h3>
-                <p className="text-sm text-muted-foreground">{campaign.brand}</p>
-              </div>
-            </div>
-            
-            <p className="text-muted-foreground mb-4">{campaign.description}</p>
-            
-            <div className="flex flex-wrap gap-2 mb-4">
-              {campaign.categories.map(category => (
-                <Badge key={category} variant="outline" className="capitalize">
-                  {category}
-                </Badge>
-              ))}
-              {campaign.platforms.map(platform => (
-                <Badge key={platform} className="bg-brand-pink text-white capitalize">
-                  {platform}
-                </Badge>
-              ))}
-            </div>
-            
-            <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2 text-sm">
-              <div className="flex items-center">
-                <BadgeDollarSign className="h-4 w-4 mr-1 text-brand-pink" />
-                <span>${campaign.budget}</span>
-              </div>
-              <div className="flex items-center">
-                <Calendar className="h-4 w-4 mr-1 text-brand-pink" />
-                <span>Due {new Date(campaign.deadline).toLocaleDateString()}</span>
-              </div>
+        <div className="p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <img 
+              src={brandLogo} 
+              alt={brand} 
+              className="h-10 w-10 rounded-full object-cover"
+            />
+            <div>
+              <h3 className="font-bold text-lg">{title}</h3>
+              <p className="text-sm text-muted-foreground">{brand}</p>
             </div>
           </div>
           
-          <div className="w-full md:w-1/3 bg-black/10 p-6 flex flex-col justify-between">
-            <div>
-              <div className="mb-4">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div className="flex items-center mb-2">
-                        <FileText className="h-5 w-5 text-brand-pink mr-2" />
-                        <span className="font-semibold">Compatibility Score</span>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>How well this campaign matches your profile and audience</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mb-1">
-                  <div 
-                    className="bg-brand-pink h-2.5 rounded-full" 
-                    style={{ width: `${campaign.compatibility}%` }}
-                  />
-                </div>
-                <p className="text-sm text-right">{campaign.compatibility}%</p>
-              </div>
-              
-              <div className="space-y-2">
-                <h4 className="font-medium">Requirements:</h4>
-                <ul className="space-y-1">
-                  {campaign.requirements.map((req, index) => (
-                    <li key={index} className="flex items-center text-sm">
-                      <Check className="h-4 w-4 mr-2 text-green-400" />
-                      {req}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          <p className="text-sm text-muted-foreground mb-4">{truncatedDescription}</p>
+          
+          <div className="grid grid-cols-2 gap-3 mb-4">
+            <div className="flex items-center text-sm">
+              <DollarSign className="h-4 w-4 mr-1 text-green-600" />
+              <span>{budget}</span>
+            </div>
+            <div className="flex items-center text-sm">
+              <Clock className="h-4 w-4 mr-1 text-amber-500" />
+              <span>Due {new Date(deadline).toLocaleDateString()}</span>
             </div>
             
-            <div className="mt-6 space-y-2">
-              <Button 
-                className="w-full bg-brand-pink hover:bg-brand-pink/90 text-white font-medium py-2 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2"
-                onClick={handleApply}
-                disabled={isApplying}
-              >
-                {isApplying ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Applying...
-                  </>
-                ) : (
-                  "Apply Now"
-                )}
-              </Button>
-              
-              <Button 
-                variant="outline"
-                className="w-full flex items-center justify-center gap-2"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleViewCampaign();
-                }}
-              >
-                <Eye className="h-4 w-4" />
-                View Details
-              </Button>
+            {(applications !== undefined && kols !== undefined) && (
+              <>
+                <div className="flex items-center text-sm">
+                  <Users className="h-4 w-4 mr-1 text-blue-500" />
+                  <span>{applications} Applications</span>
+                </div>
+                <div className="flex items-center text-sm">
+                  <Users className="h-4 w-4 mr-1 text-purple-500" />
+                  <span>{kols} KOLs Selected</span>
+                </div>
+              </>
+            )}
+          </div>
+          
+          <div className="flex flex-wrap gap-1 mb-4">
+            {platforms.map((platform) => (
+              <Badge key={platform} variant="outline" className="bg-blue-500/10 text-blue-500 border-blue-500/20">
+                {platform}
+              </Badge>
+            ))}
+            {categories.slice(0, 2).map((category) => (
+              <Badge key={category} variant="outline" className="capitalize">
+                {category}
+              </Badge>
+            ))}
+          </div>
+          
+          {progress !== undefined && (
+            <div className="mb-4">
+              <div className="flex justify-between text-sm mb-1">
+                <span>Campaign Progress</span>
+                <span>{progress}%</span>
+              </div>
+              <Progress value={progress} className="h-2" />
             </div>
+          )}
+          
+          <div className="flex justify-between mt-6">
+            {!disableApply ? (
+              <>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="flex-1 mr-2"
+                  onClick={() => window.location.href = `/campaigns/${campaign.id}`}
+                >
+                  Details
+                </Button>
+                <Button 
+                  size="sm" 
+                  className="flex-1 bg-brand-pink hover:bg-brand-pink/90"
+                  onClick={() => onApply(campaign)}
+                >
+                  Apply Now
+                </Button>
+              </>
+            ) : (
+              // For brands - only show view details
+              <Button 
+                variant="default" 
+                size="sm" 
+                className="w-full"
+                onClick={() => window.location.href = `/campaigns/${campaign.id}`}
+              >
+                View Details
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
     </Card>
   );
-}
+};

@@ -10,7 +10,7 @@ export const useUserAccess = () => {
   // Integrate the intelligent credits system for more accurate credit management
   const { freeCredits, isKOLSpecificQuery } = useIntelligentCredits(originalCredits, hasPremiumPlan);
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "creator_hub" | "messages" | "available_campaigns") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "creator_hub" | "messages" | "available_campaigns" | "apply_campaigns") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
@@ -31,8 +31,11 @@ export const useUserAccess = () => {
         // Only brands can access campaigns management
         return userRole === "brand" || userRole === "admin";
       case "available_campaigns":
-        // Only KOLs can access available campaigns
-        return userRole === "kol" || userRole === "admin";
+        // Anyone can view available campaigns, but only KOLs can apply
+        return Boolean(userRole);
+      case "apply_campaigns":
+        // Only KOLs can apply to campaigns
+        return userRole === "kol" || userRole === "admin";  
       case "analytics":
         return Boolean(userRole);
       case "contracts":

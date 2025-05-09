@@ -1,5 +1,6 @@
 
 export type CampaignStatus = "draft" | "active" | "paused" | "completed";
+export type ApplicationStatus = "pending" | "approved" | "rejected";
 
 export interface CampaignMetrics {
   views: number;
@@ -31,4 +32,14 @@ export interface Campaign {
   assignedKols: AssignedKOL[];
   createdAt: string;
   updatedAt: string;
+}
+
+export interface Application {
+  id: string;
+  kolId: string;
+  campaignId: string;
+  campaignName: string;
+  status: ApplicationStatus;
+  dateApplied: string;
+  message: string;
 }
