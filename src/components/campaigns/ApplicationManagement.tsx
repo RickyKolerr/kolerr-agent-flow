@@ -180,28 +180,25 @@ export const ApplicationManagement = () => {
     return followers.toString();
   };
 
-  // Status badge component with improved styling
+  // Status badge component
   const StatusBadge = ({ status }: { status: ApplicationStatus }) => {
     switch (status) {
       case "approved":
         return (
-          <Badge className="flex items-center gap-1 bg-green-500/20 text-green-500 hover:bg-green-500/30 border-none px-2.5 py-1 rounded-full">
-            <CheckCircle className="h-3.5 w-3.5" /> 
-            <span className="font-medium">Approved</span>
+          <Badge className="bg-green-500/20 text-green-500 hover:bg-green-500/30 border-none">
+            <CheckCircle className="mr-1 h-3 w-3" /> Approved
           </Badge>
         );
       case "rejected":
         return (
-          <Badge variant="outline" className="flex items-center gap-1 bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/30 px-2.5 py-1 rounded-full">
-            <XCircle className="h-3.5 w-3.5" /> 
-            <span className="font-medium">Rejected</span>
+          <Badge variant="outline" className="bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/30">
+            <XCircle className="mr-1 h-3 w-3" /> Rejected
           </Badge>
         );
       default:
         return (
-          <Badge variant="outline" className="flex items-center gap-1 bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/30 px-2.5 py-1 rounded-full">
-            <AlertTriangle className="h-3.5 w-3.5" /> 
-            <span className="font-medium">Pending</span>
+          <Badge variant="outline" className="bg-yellow-500/10 text-yellow-500 hover:bg-yellow-500/20 border-yellow-500/30">
+            <AlertTriangle className="mr-1 h-3 w-3" /> Pending
           </Badge>
         );
     }
@@ -253,130 +250,127 @@ export const ApplicationManagement = () => {
             </DropdownMenu>
           </div>
           
-          <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full mb-4">
-              <TabsTrigger value="all" className="text-xs sm:text-sm">
+          <Tabs defaultValue="all">
+            <TabsList className="grid grid-cols-4 w-full">
+              <TabsTrigger value="all">
                 All ({filteredApplications.length})
               </TabsTrigger>
-              <TabsTrigger value="pending" className="text-xs sm:text-sm">
+              <TabsTrigger value="pending">
                 Pending ({applicationsByStatus.pending.length})
               </TabsTrigger>
-              <TabsTrigger value="approved" className="text-xs sm:text-sm">
+              <TabsTrigger value="approved">
                 Approved ({applicationsByStatus.approved.length})
               </TabsTrigger>
-              <TabsTrigger value="rejected" className="text-xs sm:text-sm">
+              <TabsTrigger value="rejected">
                 Rejected ({applicationsByStatus.rejected.length})
               </TabsTrigger>
             </TabsList>
             
             {["all", "pending", "approved", "rejected"].map((tab) => (
-              <TabsContent key={tab} value={tab} className="pt-2">
-                <div className="rounded-md border overflow-hidden">
-                  <Table>
-                    <TableHeader>
+              <TabsContent key={tab} value={tab} className="pt-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Creator</TableHead>
+                      <TableHead>Campaign</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Date Applied</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {(tab === "all" ? filteredApplications : applicationsByStatus[tab as keyof typeof applicationsByStatus]).length === 0 ? (
                       <TableRow>
-                        <TableHead className="w-[250px]">Creator</TableHead>
-                        <TableHead className="hidden md:table-cell">Campaign</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead className="hidden sm:table-cell">Date Applied</TableHead>
-                        <TableHead className="text-right">Actions</TableHead>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                          No applications found.
+                        </TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {(tab === "all" ? filteredApplications : applicationsByStatus[tab as keyof typeof applicationsByStatus]).length === 0 ? (
-                        <TableRow>
-                          <TableCell colSpan={5} className="h-24 text-center">
-                            No applications found.
-                          </TableCell>
-                        </TableRow>
-                      ) : (
-                        (tab === "all" ? filteredApplications : applicationsByStatus[tab as keyof typeof applicationsByStatus]).map((application) => {
-                          const creator = getCreatorById(application.kolId);
-                          return (
-                            <TableRow key={application.id}>
-                              <TableCell>
-                                <div className="flex items-center space-x-3">
-                                  <Avatar>
-                                    <AvatarImage
-                                      src={creator.avatar} 
-                                      alt={creator.fullName}
-                                      onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(creator.fullName) + "&background=0D8ABC&color=fff";
-                                      }}
-                                    />
-                                    <AvatarFallback>{creator.fullName.substring(0, 2)}</AvatarFallback>
-                                  </Avatar>
-                                  <div>
-                                    <div className="font-medium">{creator.fullName}</div>
-                                    <div className="text-sm text-muted-foreground">@{creator.username}</div>
-                                  </div>
+                    ) : (
+                      (tab === "all" ? filteredApplications : applicationsByStatus[tab as keyof typeof applicationsByStatus]).map((application) => {
+                        const creator = getCreatorById(application.kolId);
+                        return (
+                          <TableRow key={application.id}>
+                            <TableCell>
+                              <div className="flex items-center space-x-3">
+                                <Avatar>
+                                  <AvatarImage src={creator.avatar} alt={creator.fullName} />
+                                  <AvatarFallback>{creator.fullName.substring(0, 2)}</AvatarFallback>
+                                </Avatar>
+                                <div>
+                                  <div className="font-medium">{creator.fullName}</div>
+                                  <div className="text-sm text-muted-foreground">@{creator.username}</div>
                                 </div>
-                              </TableCell>
-                              <TableCell className="hidden md:table-cell">{application.campaignName}</TableCell>
-                              <TableCell>
-                                <StatusBadge status={application.status} />
-                              </TableCell>
-                              <TableCell className="hidden sm:table-cell">{application.dateApplied}</TableCell>
-                              <TableCell className="text-right">
-                                <div className="flex justify-end space-x-2">
+                              </div>
+                            </TableCell>
+                            <TableCell>{application.campaignName}</TableCell>
+                            <TableCell>
+                              <StatusBadge status={application.status} />
+                            </TableCell>
+                            <TableCell>{application.dateApplied}</TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex justify-end space-x-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => {
+                                    setCurrentApplicationId(application.id);
+                                    setViewDialogOpen(true);
+                                  }}
+                                >
+                                  <Eye className="h-4 w-4 mr-2" /> View Details
+                                </Button>
+                                {application.status === "pending" && (
+                                  <DropdownMenu>
+                                    <DropdownMenuTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                      >
+                                        Update Status
+                                      </Button>
+                                    </DropdownMenuTrigger>
+                                    <DropdownMenuContent align="end">
+                                      <DropdownMenuItem 
+                                        onClick={() => updateApplicationStatus(application.id, "approved")}
+                                        className="text-green-600 focus:text-green-600"
+                                      >
+                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                        Approve
+                                      </DropdownMenuItem>
+                                      <DropdownMenuItem 
+                                        onClick={() => updateApplicationStatus(application.id, "rejected")}
+                                        className="text-red-600 focus:text-red-600"
+                                      >
+                                        <XCircle className="mr-2 h-4 w-4" />
+                                        Reject
+                                      </DropdownMenuItem>
+                                    </DropdownMenuContent>
+                                  </DropdownMenu>
+                                )}
+                                {application.status !== "pending" && (
                                   <Button
-                                    variant="ghost"
+                                    variant="outline"
                                     size="sm"
-                                    onClick={() => {
-                                      setCurrentApplicationId(application.id);
-                                      setViewDialogOpen(true);
-                                    }}
+                                    onClick={() => updateApplicationStatus(application.id, "pending")}
                                   >
-                                    <Eye className="h-4 w-4 mr-2" /> 
-                                    <span className="hidden sm:inline">View Details</span>
+                                    Reset Status
                                   </Button>
-                                  {application.status === "pending" && (
-                                    <div className="hidden sm:block">
-                                      <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                          <Button
-                                            variant="outline"
-                                            size="sm"
-                                          >
-                                            Update Status
-                                          </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                          <DropdownMenuItem 
-                                            onClick={() => updateApplicationStatus(application.id, "approved")}
-                                            className="text-green-600 focus:text-green-600"
-                                          >
-                                            <CheckCircle className="mr-2 h-4 w-4" />
-                                            Approve
-                                          </DropdownMenuItem>
-                                          <DropdownMenuItem 
-                                            onClick={() => updateApplicationStatus(application.id, "rejected")}
-                                            className="text-red-600 focus:text-red-600"
-                                          >
-                                            <XCircle className="mr-2 h-4 w-4" />
-                                            Reject
-                                          </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                      </DropdownMenu>
-                                    </div>
-                                  )}
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })
+                    )}
+                  </TableBody>
+                </Table>
               </TabsContent>
             ))}
           </Tabs>
         </div>
       </CardContent>
       
-      {/* Application Details Dialog with enhanced status badges */}
+      {/* Application Details Dialog */}
       {currentCreator && currentApplication && (
         <Dialog open={viewDialogOpen} onOpenChange={setViewDialogOpen}>
           <DialogContent className="sm:max-w-[600px]">
@@ -393,14 +387,7 @@ export const ApplicationManagement = () => {
                   <h3 className="text-lg font-medium">Creator Information</h3>
                   <div className="flex items-center space-x-3 mt-2">
                     <Avatar className="h-16 w-16">
-                      <AvatarImage 
-                        src={currentCreator.avatar} 
-                        alt={currentCreator.fullName} 
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(currentCreator.fullName) + "&background=0D8ABC&color=fff";
-                        }}
-                      />
+                      <AvatarImage src={currentCreator.avatar} alt={currentCreator.fullName} />
                       <AvatarFallback>{currentCreator.fullName.substring(0, 2)}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -437,7 +424,7 @@ export const ApplicationManagement = () => {
                 <div>
                   <h3 className="text-lg font-medium">Application Information</h3>
                   <div className="mt-2">
-                    <div className="text-sm text-muted-foreground mb-1">Status</div>
+                    <div className="text-sm text-muted-foreground">Status</div>
                     <StatusBadge status={currentApplication.status} />
                   </div>
                 </div>
