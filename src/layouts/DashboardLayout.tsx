@@ -1,11 +1,11 @@
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation, Outlet } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, LogOut, Menu, X, Languages,
   Star, Link, BadgePercent, TrendingUp, MessageCircle, FileSearch, FileText,
-  UsersIcon, UserCog
+  UsersIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -91,12 +91,11 @@ const DashboardLayout = () => {
       description: t('dashboard.contracts')
     },
     { 
-      icon: UserCog, 
-      name: "Team Management", 
-      path: "/dashboard/team-management",
-      description: "Manage your team members"
+      icon: UsersIcon, 
+      name: "Creator Hub", 
+      path: "/dashboard/creator-hub",
+      description: "Collaborate with creators"
     },
-    // Removed Creator Hub from Brand menu
   ];
 
   const getKolMenuItems = () => [

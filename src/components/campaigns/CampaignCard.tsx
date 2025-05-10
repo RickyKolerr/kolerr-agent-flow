@@ -4,8 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Clock, Users, ChevronRight, DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 
 interface CampaignProps {
   id: string;
@@ -35,12 +33,7 @@ interface CampaignCardProps {
 }
 
 export const CampaignCard = ({ campaign, onApply, disableApply = false }: CampaignCardProps) => {
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const isKol = user?.role === "kol";
-  
   const {
-    id,
     title,
     brand,
     brandLogo,
@@ -67,15 +60,6 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
     if (compatibility >= 90) return "text-green-500";
     if (compatibility >= 70) return "text-amber-500";
     return "text-red-500";
-  };
-
-  const handleViewDetails = () => {
-    // Navigate to different details pages based on user role
-    if (isKol) {
-      navigate(`/dashboard/kol/campaigns/${id}`);
-    } else {
-      navigate(`/campaigns/${id}`);
-    }
   };
 
   return (
@@ -144,13 +128,13 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
           )}
           
           <div className="flex justify-between mt-6">
-            {!disableApply && isKol ? (
+            {!disableApply ? (
               <>
                 <Button 
                   variant="outline" 
                   size="sm" 
                   className="flex-1 mr-2"
-                  onClick={handleViewDetails}
+                  onClick={() => window.location.href = `/campaigns/${campaign.id}`}
                 >
                   Details
                 </Button>
@@ -168,7 +152,7 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                 variant="default" 
                 size="sm" 
                 className="w-full"
-                onClick={handleViewDetails}
+                onClick={() => window.location.href = `/campaigns/${campaign.id}`}
               >
                 View Details
                 <ChevronRight className="h-4 w-4 ml-1" />
