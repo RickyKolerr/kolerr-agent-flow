@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { CampaignCard } from "@/components/campaigns/CampaignCard";
 import { CampaignFilters } from "@/components/campaigns/CampaignFilters";
+import { CampaignStatusBadge } from "@/components/campaigns/CampaignStatusBadge";
 import { PlusCircle, Filter } from "lucide-react";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { ApplicationManagement } from "@/components/campaigns/ApplicationManagement";
