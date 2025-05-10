@@ -9,6 +9,8 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    cors: true,
+    origin: "https://371e620a-e1ce-42d2-857f-77b09d64aff4.lovableproject.com",
   },
   plugins: [
     react(),
