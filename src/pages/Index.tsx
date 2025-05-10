@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, lazy, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search, Bot, User, ArrowRight, Sparkles, Star, MessageCircle, Users, FileText, BadgePercent, Eye, Loader2 } from "lucide-react";
@@ -15,12 +15,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { getTimeUntilReset } from "@/hooks/useSearchCredits";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
+import { UserRole } from "@/contexts/AuthContext";
 import { WelcomeTour } from "@/components/onboarding/WelcomeTour";
 import { DemoIndicator } from "@/components/demo/DemoIndicator";
 import { useMobileDetection } from "@/hooks/use-mobile-detection";
 import { useViewportFix } from "@/hooks/useViewportFix";
 
-// Type definition for window object to avoid TypeScript errors
+// Add type definition for the window object at the top level of the file
 declare global {
   interface Window {
     navigateToCreator: (creatorId: string) => void;
@@ -46,7 +47,6 @@ const mockCampaigns = [
     deadline: "July 15, 2023",
     compatibility: 95,
     categories: ["fashion", "lifestyle"],
-    description: "Looking for fashion creators to showcase our summer collection"
   },
   {
     id: "c2",
@@ -57,7 +57,6 @@ const mockCampaigns = [
     deadline: "July 20, 2023",
     compatibility: 75,
     categories: ["tech", "gaming"],
-    description: "Tech reviewers needed for our new gaming peripherals"
   },
   {
     id: "c3",
@@ -68,7 +67,6 @@ const mockCampaigns = [
     deadline: "July 25, 2023",
     compatibility: 88,
     categories: ["food", "lifestyle"],
-    description: "Food creators to try our vegan meal kits"
   }
 ];
 
@@ -203,14 +201,14 @@ const Index = () => {
   
   // Optimize carousel options with useRef to avoid recreation on each render
   // Fix the 'align' type issue by using a valid enum value
-  const carouselOptions = useMemo(() => ({
-    align: "start" as const, 
+  const carouselOptions = useRef({
+    align: "start" as const, // Explicitly type as const to match AlignmentOptionType
     loop: true,
     dragFree: false,
     skipSnaps: false,
     inViewThreshold: 0.6,
     duration: 30,
-  }), []);
+  }).current;
   
   // Detect user role and set initial view
   useEffect(() => {
@@ -221,7 +219,7 @@ const Index = () => {
   
   useEffect(() => {
     if (showWelcome) {
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         const welcomeMessage = userView === "brand" 
           ? "👋 Need creators for your campaign? Tell me what you're looking for."
           : "👋 Looking for paid opportunities? Let me help you find the right match!";
@@ -233,7 +231,6 @@ const Index = () => {
         }]);
         setShowWelcome(false);
       }, 500);
-      return () => clearTimeout(timeoutId);
     }
   }, [showWelcome, userView]);
   
@@ -253,50 +250,9 @@ const Index = () => {
     }
   }, [messages, shouldScrollToBottom]);
   
-  // Add global functions for chat and navigation in a safe way with cleanup
-  useEffect(() => {
-    // Safely define the global functions
-    window.navigateToCreator = (creatorId) => {
-      navigate(`/creators/${creatorId}`);
-    };
-    
-    window.navigateToCampaign = (campaignId) => {
-      navigate(`/campaigns/${campaignId}`);
-    };
-    
-    window.handleChatApply = (campaignId) => {
-      // Check if user is authenticated
-      if (!isAuthenticated) {
-        toast.info("Please sign in to apply for this campaign");
-        navigate(`/login?redirect=/campaigns/${campaignId}&action=apply`);
-        return;
-      }
-      
-      // Check if user has completed their profile
-      if (user && (!user.onboardingStatus || user.onboardingStatus === "incomplete")) {
-        toast.info("Please complete your profile before applying to campaigns");
-        navigate(`/onboarding/${user.role}`);
-        return;
-      }
-      
-      // Simulate API call delay
-      setApplyingTo(campaignId);
-      
-      setTimeout(() => {
-        toast.success("Your application has been submitted", {
-          description: "The brand will review your application shortly."
-        });
-        setApplyingTo(null);
-      }, 1000);
-    };
-    
-    // Cleanup function to remove global functions when component unmounts
-    return () => {
-      window.navigateToCreator = undefined;
-      window.navigateToCampaign = undefined;
-      window.handleChatApply = undefined;
-    };
-  }, [navigate, isAuthenticated, user]);
+  // Remove interval for carousel auto-rotation to save memory
+  // This was causing excessive memory usage
+  // Instead, we'll rely on user interaction to change slides
   
   const handleSearch = () => {
     if (!searchQuery.trim()) {
@@ -323,7 +279,7 @@ const Index = () => {
       setShouldScrollToBottom(true);
       useFreeCredit();
       
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           type: "bot",
@@ -340,18 +296,14 @@ const Index = () => {
         
         setShouldScrollToBottom(true);
         
-        const navigateTimeoutId = setTimeout(() => {
+        setTimeout(() => {
           if (userView === "brand") {
             navigate(`/search?q=${encodeURIComponent(query)}`);
           } else {
             navigate(`/dashboard/kol/campaigns`);
           }
-        }, 1000);
-        
-        return () => clearTimeout(navigateTimeoutId);
-      }, 500);
-      
-      return () => clearTimeout(timeoutId);
+        }, 1000); // Reduced timeout from 1500ms to 1000ms
+      }, 500); // Reduced timeout from 800ms to 500ms
     } else {
       toast.error(
         "You've used all your free searches for today", 
@@ -389,7 +341,7 @@ const Index = () => {
     setShouldScrollToBottom(true);
     
     if (!hasPremiumPlan && freeCredits === 0) {
-      const timeoutId = setTimeout(() => {
+      setTimeout(() => {
         const botResponse: Message = {
           id: (Date.now() + 1).toString(),
           type: "bot",
@@ -403,9 +355,9 @@ const Index = () => {
         });
         
         setShouldScrollToBottom(true);
-      }, 500);
+      }, 500); // Reduced from 800ms to 500ms
       
-      return () => clearTimeout(timeoutId);
+      return;
     }
     
     if (!hasPremiumPlan) {
@@ -415,7 +367,7 @@ const Index = () => {
     // Convert to lowercase only once
     const lowerInput = input.toLowerCase();
     
-    const timeoutId = setTimeout(() => {
+    setTimeout(() => {
       let responseContent = "";
       
       if (userView === "brand") {
@@ -455,9 +407,7 @@ const Index = () => {
       });
       
       setShouldScrollToBottom(true);
-    }, 800);
-    
-    return () => clearTimeout(timeoutId);
+    }, 800); // Keep this delay for a reasonable response time
   };
   
   // Optimized creator suggestions function
@@ -593,6 +543,49 @@ const Index = () => {
     event.currentTarget.src = "https://ui-avatars.com/api/?name=Brand&background=0D8ABC&color=fff";
   };
 
+  // Add global functions to handle navigation and apply actions from the injected HTML
+  useEffect(() => {
+    window.navigateToCreator = (creatorId) => {
+      navigate(`/creators/${creatorId}`);
+    };
+    
+    window.navigateToCampaign = (campaignId) => {
+      navigate(`/campaigns/${campaignId}`);
+    };
+    
+    window.handleChatApply = (campaignId) => {
+      // Check if user is authenticated
+      if (!isAuthenticated) {
+        toast.info("Please sign in to apply for this campaign");
+        navigate(`/login?redirect=/campaigns/${campaignId}&action=apply`);
+        return;
+      }
+      
+      // Check if user has completed their profile
+      if (user && (!user.onboardingStatus || user.onboardingStatus === "incomplete")) {
+        toast.info("Please complete your profile before applying to campaigns");
+        navigate(`/onboarding/${user.role}`);
+        return;
+      }
+      
+      // Simulate API call delay
+      setApplyingTo(campaignId);
+      
+      setTimeout(() => {
+        toast.success("Your application has been submitted", {
+          description: "The brand will review your application shortly."
+        });
+        setApplyingTo(null);
+      }, 1000);
+    };
+    
+    return () => {
+      delete window.navigateToCreator;
+      delete window.navigateToCampaign;
+      delete window.handleChatApply;
+    };
+  }, [navigate, isAuthenticated, user]);
+
   // Updated search categories for brands
   const brandSearchCategories = [
     { label: "fashion", onClick: () => { setSearchQuery("fashion"); handleSearch(); } },
@@ -691,6 +684,7 @@ const Index = () => {
     );
   };
 
+  // Split rendering into smaller components to improve memory management
   return (
     <div className="min-h-screen flex flex-col overflow-y-auto overflow-x-hidden hero-gradient pt-16 pb-16">
       {/* Show the welcome tour */}

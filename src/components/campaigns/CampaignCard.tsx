@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Clock, Users, ChevronRight, DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface CampaignProps {
   id: string;
@@ -34,9 +33,7 @@ interface CampaignCardProps {
 }
 
 export const CampaignCard = ({ campaign, onApply, disableApply = false }: CampaignCardProps) => {
-  const navigate = useNavigate();
   const {
-    id,
     title,
     brand,
     brandLogo,
@@ -65,12 +62,6 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
     return "text-red-500";
   };
 
-  // Navigate to campaign details page
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click event
-    navigate(`/campaigns/${id}`);
-  };
-
   return (
     <Card className="overflow-hidden">
       <CardContent className="p-0">
@@ -80,9 +71,6 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
               src={brandLogo} 
               alt={brand} 
               className="h-10 w-10 rounded-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(brand) + "&background=0D8ABC&color=fff";
-              }}
             />
             <div>
               <h3 className="font-bold text-lg">{title}</h3>
@@ -146,7 +134,7 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                   variant="outline" 
                   size="sm" 
                   className="flex-1 mr-2"
-                  onClick={handleViewDetails}
+                  onClick={() => window.location.href = `/campaigns/${campaign.id}`}
                 >
                   Details
                 </Button>
@@ -164,7 +152,7 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                 variant="default" 
                 size="sm" 
                 className="w-full"
-                onClick={handleViewDetails}
+                onClick={() => window.location.href = `/campaigns/${campaign.id}`}
               >
                 View Details
                 <ChevronRight className="h-4 w-4 ml-1" />
