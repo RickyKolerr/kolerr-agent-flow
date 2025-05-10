@@ -1,6 +1,6 @@
 
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, Outlet } from "react-router-dom";
 import { 
   LayoutDashboard, Users, Calendar, CreditCard, 
   Settings, LogOut, Menu, X, Languages,
