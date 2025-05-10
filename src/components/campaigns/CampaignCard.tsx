@@ -80,6 +80,9 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
               src={brandLogo} 
               alt={brand} 
               className="h-10 w-10 rounded-full object-cover"
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(brand) + "&background=0D8ABC&color=fff";
+              }}
             />
             <div>
               <h3 className="font-bold text-lg">{title}</h3>
