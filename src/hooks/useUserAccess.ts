@@ -10,7 +10,7 @@ export const useUserAccess = () => {
   // Integrate the intelligent credits system for more accurate credit management
   const { freeCredits, isKOLSpecificQuery } = useIntelligentCredits(originalCredits, hasPremiumPlan);
 
-  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "creator_hub" | "messages" | "available_campaigns" | "apply_campaigns") => {
+  const canAccessFeature = (feature: "search" | "campaigns" | "analytics" | "contracts" | "creator_hub" | "messages" | "available_campaigns" | "apply_campaigns" | "team_management") => {
     if (!isAuthenticated) return false;
     
     // Basic checks for free users
@@ -18,9 +18,19 @@ export const useUserAccess = () => {
       return freeCredits > 0 || hasPremiumPlan;
     }
 
-    // All authenticated users can access messages and creator hub
-    if (feature === "messages" || feature === "creator_hub") {
+    // All authenticated users can access messages
+    if (feature === "messages") {
       return true;
+    }
+
+    // Creator Hub is accessible to all authenticated users
+    if (feature === "creator_hub") {
+      return true;
+    }
+
+    // Team Management is only accessible to brands
+    if (feature === "team_management") {
+      return user?.role === "brand" || user?.role === "admin";
     }
 
     // Role-based feature access and premium plan checks
