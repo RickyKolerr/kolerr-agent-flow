@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -67,6 +66,7 @@ import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
 import CreatorHub from "@/pages/dashboard/CreatorHub";
+import TeamManagement from "@/pages/dashboard/TeamManagement"; // Import TeamManagement
 
 // KOL dashboard pages
 import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
@@ -275,6 +275,13 @@ const App = () => {
                       <Route path="kol/creator-hub" element={
                         <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
                           <KolCreatorHub />
+                        </RoleProtectedRoute>
+                      } />
+                      
+                      {/* Team management route */}
+                      <Route path="team" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <TeamManagement />
                         </RoleProtectedRoute>
                       } />
                       

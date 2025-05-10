@@ -9,7 +9,7 @@ const KolCreatorHub: React.FC = () => {
   const { user } = useAuth();
   const { canAccessFeature } = useUserAccess();
 
-  // If not authenticated, redirect to login
+  // If not authorized to access creator hub, redirect to login
   if (!canAccessFeature("creator_hub")) {
     return <Navigate to="/login" replace />;
   }

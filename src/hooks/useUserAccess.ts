@@ -18,7 +18,7 @@ export const useUserAccess = () => {
       return freeCredits > 0 || hasPremiumPlan;
     }
 
-    // All authenticated users can access messages and creator hub
+    // All authenticated users can access messages
     if (feature === "messages") {
       return true;
     }
