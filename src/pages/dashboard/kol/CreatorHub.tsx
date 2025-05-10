@@ -5,23 +5,33 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
 import { CreatorsTab } from "@/components/community/CreatorsTab";
 
-// Mock data for creators
+// Mock data for creators that matches the Creator interface
 const mockCreators = [
   {
     id: "1",
     name: "Alex Johnson",
+    username: "alexcreates",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&auto=format&fit=crop",
-    categories: ["Fashion", "Lifestyle"],
     followers: 125000,
-    engagement: 3.2,
+    niche: ["Fashion", "Lifestyle"],
+    tier: "Premium",
+    bio: "Fashion and lifestyle content creator based in NYC.",
+    compatibility: 85,
+    platforms: ["instagram", "tiktok"],
+    connected: false
   },
   {
     id: "2",
     name: "Sam Wong",
+    username: "samtech",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&h=150&auto=format&fit=crop",
-    categories: ["Tech", "Gaming"],
     followers: 98000,
-    engagement: 4.5,
+    niche: ["Tech", "Gaming"],
+    tier: "Standard",
+    bio: "Tech enthusiast and gaming content creator.",
+    compatibility: 75,
+    platforms: ["youtube", "twitch"],
+    connected: false
   }
 ];
 
