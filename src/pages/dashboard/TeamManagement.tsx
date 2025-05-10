@@ -9,9 +9,9 @@ const TeamManagement: React.FC = () => {
   const { user } = useAuth();
   const { canAccessFeature } = useUserAccess();
 
-  // Redirect to dashboard if not authenticated or if not a brand
-  if (!canAccessFeature("team_management")) {
-    // This checks if the user is a brand or admin since only they can access team management
+  // Redirect to login if not authenticated or to dashboard if not a brand
+  if (!canAccessFeature("campaigns")) {
+    // This checks if the user is a brand or admin since only they can access campaigns
     return <Navigate to="/dashboard" replace />;
   }
 

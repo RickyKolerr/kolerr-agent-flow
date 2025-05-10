@@ -18,14 +18,14 @@ export const useUserAccess = () => {
       return freeCredits > 0 || hasPremiumPlan;
     }
 
-    // All authenticated users can access messages
+    // All authenticated users can access messages and creator hub
     if (feature === "messages") {
       return true;
     }
 
-    // Creator Hub is accessible to all authenticated users
+    // Creator Hub is only accessible to KOLs, not brands
     if (feature === "creator_hub") {
-      return true;
+      return user?.role === "kol" || user?.role === "admin";
     }
 
     // Team Management is only accessible to brands
