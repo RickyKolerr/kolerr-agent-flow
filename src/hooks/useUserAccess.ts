@@ -19,16 +19,11 @@ export const useUserAccess = () => {
     }
 
     // All authenticated users can access messages and creator hub
-    if (feature === "messages") {
+    if (feature === "messages" || feature === "creator_hub") {
       return true;
     }
 
-    // Creator Hub is only accessible to KOLs, not brands
-    if (feature === "creator_hub") {
-      return user?.role === "kol" || user?.role === "admin";
-    }
-
-    // Team Management is only accessible to brands
+    // Team Management is only accessible to brands and admins
     if (feature === "team_management") {
       return user?.role === "brand" || user?.role === "admin";
     }

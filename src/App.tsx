@@ -67,6 +67,7 @@ import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
 import CreatorHub from "@/pages/dashboard/CreatorHub";
+import TeamManagement from "@/pages/dashboard/TeamManagement";
 
 // KOL dashboard pages
 import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
@@ -237,6 +238,11 @@ const App = () => {
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
                       <Route path="creator-hub" element={<CreatorHub />} />
+                      <Route path="team" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <TeamManagement />
+                        </RoleProtectedRoute>
+                      } />
                       
                       {/* Booking routes */}
                       <Route path="booking-success" element={<BookingSuccess />} />
