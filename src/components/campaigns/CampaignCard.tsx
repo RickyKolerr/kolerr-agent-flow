@@ -4,7 +4,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Calendar, Clock, Users, ChevronRight, DollarSign } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 interface CampaignProps {
   id: string;
@@ -34,9 +33,7 @@ interface CampaignCardProps {
 }
 
 export const CampaignCard = ({ campaign, onApply, disableApply = false }: CampaignCardProps) => {
-  const navigate = useNavigate();
   const {
-    id,
     title,
     brand,
     brandLogo,
@@ -63,12 +60,6 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
     if (compatibility >= 90) return "text-green-500";
     if (compatibility >= 70) return "text-amber-500";
     return "text-red-500";
-  };
-
-  // Navigate to campaign details page
-  const handleViewDetails = (e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent card click event
-    navigate(`/campaigns/${id}`);
   };
 
   return (
@@ -143,7 +134,7 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                   variant="outline" 
                   size="sm" 
                   className="flex-1 mr-2"
-                  onClick={handleViewDetails}
+                  onClick={() => window.location.href = `/campaigns/${campaign.id}`}
                 >
                   Details
                 </Button>
@@ -161,7 +152,7 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                 variant="default" 
                 size="sm" 
                 className="w-full"
-                onClick={handleViewDetails}
+                onClick={() => window.location.href = `/campaigns/${campaign.id}`}
               >
                 View Details
                 <ChevronRight className="h-4 w-4 ml-1" />
