@@ -191,7 +191,15 @@ const CreatorCard = ({ creator, isSelected, onSelect }: CreatorCardProps) => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Avatar className="h-12 w-12 border-2 border-white/10">
-            <img src={creator.avatar} alt={creator.name} className="object-cover" />
+            <img 
+              src={creator.avatar} 
+              alt={creator.name} 
+              className="object-cover"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(creator.name) + "&background=9C27B0&color=fff";
+              }}
+            />
           </Avatar>
           
           <div>

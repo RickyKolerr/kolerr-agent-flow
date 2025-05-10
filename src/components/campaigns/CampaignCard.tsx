@@ -81,7 +81,8 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
               alt={brand} 
               className="h-10 w-10 rounded-full object-cover"
               onError={(e) => {
-                (e.target as HTMLImageElement).src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(brand) + "&background=0D8ABC&color=fff";
+                const target = e.target as HTMLImageElement;
+                target.src = "https://ui-avatars.com/api/?name=" + encodeURIComponent(brand) + "&background=0D8ABC&color=fff";
               }}
             />
             <div>
@@ -153,7 +154,10 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                 <Button 
                   size="sm" 
                   className="flex-1 bg-brand-pink hover:bg-brand-pink/90"
-                  onClick={() => onApply(campaign)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onApply(campaign);
+                  }}
                 >
                   Apply Now
                 </Button>

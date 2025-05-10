@@ -126,10 +126,12 @@ const CreateContract: React.FC = () => {
             ← Back to Templates
           </Button>
 
-          <CreatorSelector 
-            contractType={selectedTemplate || ''} 
-            onCreatorSelect={handleCreatorSelect}
-          />
+          {selectedTemplate && (
+            <CreatorSelector 
+              contractType={selectedTemplate} 
+              onCreatorSelect={handleCreatorSelect}
+            />
+          )}
 
           <div className="flex justify-end mt-6">
             <Button
