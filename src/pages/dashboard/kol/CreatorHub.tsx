@@ -3,7 +3,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
-import CreatorHubComponent from "@/pages/dashboard/CreatorHub";
+import CreatorHubComponent from "@/components/community/CreatorsTab";
 
 const KolCreatorHub: React.FC = () => {
   const { user } = useAuth();
@@ -11,11 +11,15 @@ const KolCreatorHub: React.FC = () => {
 
   // If not authorized to access creator hub, redirect to login
   if (!canAccessFeature("creator_hub")) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/dashboard" replace />;
   }
 
-  // Use the same CreatorHub component for KOL users
-  return <CreatorHubComponent />;
+  return (
+    <div className="space-y-6">
+      <h1 className="text-2xl font-bold tracking-tight">Creator Hub</h1>
+      <CreatorHubComponent />
+    </div>
+  );
 };
 
 export default KolCreatorHub;
