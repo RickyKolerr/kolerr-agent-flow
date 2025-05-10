@@ -92,9 +92,9 @@ const DashboardLayout = () => {
     },
     { 
       icon: UsersIcon, 
-      name: "Team Management", 
-      path: "/dashboard/team",
-      description: "Manage your team members"
+      name: "Creator Hub", 
+      path: "/dashboard/creator-hub",
+      description: "Collaborate with creators"
     },
   ];
 
