@@ -23,9 +23,9 @@ export const useUserAccess = () => {
       return true;
     }
 
-    // Creator Hub is only accessible to KOLs, not brands
+    // Creator Hub is accessible to all authenticated users
     if (feature === "creator_hub") {
-      return user?.role === "kol" || user?.role === "admin";
+      return true;
     }
 
     // Team Management is only accessible to brands
