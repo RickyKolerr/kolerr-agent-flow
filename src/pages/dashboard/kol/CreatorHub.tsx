@@ -3,7 +3,7 @@ import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUserAccess } from "@/hooks/useUserAccess";
-import CreatorHubComponent from "@/components/community/CreatorsTab";
+import { CreatorsTab } from "@/components/community/CreatorsTab";
 
 const KolCreatorHub: React.FC = () => {
   const { user } = useAuth();
@@ -17,7 +17,12 @@ const KolCreatorHub: React.FC = () => {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold tracking-tight">Creator Hub</h1>
-      <CreatorHubComponent />
+      <CreatorsTab 
+        creators={[]} 
+        onConnectCreator={(creator) => {
+          console.log("Connect to creator:", creator);
+        }} 
+      />
     </div>
   );
 };
