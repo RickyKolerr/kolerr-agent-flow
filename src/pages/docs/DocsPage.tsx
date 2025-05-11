@@ -5,6 +5,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { SearchTips } from "@/components/docs/SearchTips";
+import { CreditFAQ } from "@/components/docs/CreditFAQ";
+import { SearchTutorial } from "@/components/docs/SearchTutorial";
+import { FeatureComparison } from "@/components/docs/FeatureComparison";
 
 const DocsPage = () => {
   const { t } = useLanguage();
@@ -35,42 +39,6 @@ const DocsPage = () => {
       timeToRead: "7 min read"
     }
   ];
-  
-  const videoTutorials = [
-    {
-      title: "Getting Started with Kolerr",
-      duration: "4:32",
-      thumbnail: "/lovable-uploads/24be9cce-35ba-4568-9efb-436abe513e26.png"
-    },
-    {
-      title: "Advanced KOL Filtering",
-      duration: "6:15",
-      thumbnail: "/lovable-uploads/7532d8a9-3b4e-447b-a5b9-b44a86b7dfbf.png"
-    },
-    {
-      title: "Campaign Analytics Deep Dive",
-      duration: "8:47",
-      thumbnail: "/lovable-uploads/d4572dc9-629c-46f5-9256-41590c40e030.png"
-    }
-  ];
-  
-  const apiEndpoints = [
-    {
-      name: "Creators",
-      endpoint: "/api/v1/creators",
-      description: "Query and filter creators by demographics, engagement, and niche"
-    },
-    {
-      name: "Campaigns",
-      endpoint: "/api/v1/campaigns",
-      description: "Create, update, and manage influencer marketing campaigns"
-    },
-    {
-      name: "Analytics",
-      endpoint: "/api/v1/analytics",
-      description: "Retrieve performance metrics and ROI data for campaigns"
-    }
-  ];
 
   return (
     <div className="container mx-auto py-12">
@@ -91,16 +59,25 @@ const DocsPage = () => {
         </div>
 
         <Tabs defaultValue="guides" className="mb-12">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
+          <TabsList className="grid w-full grid-cols-4 mb-8">
             <TabsTrigger value="guides">Getting Started</TabsTrigger>
             <TabsTrigger value="tutorials">Tutorials</TabsTrigger>
+            <TabsTrigger value="bestpractices">Best Practices</TabsTrigger>
             <TabsTrigger value="reference">API Reference</TabsTrigger>
           </TabsList>
           
           <TabsContent value="guides">
+            <div className="mb-8">
+              <img 
+                src="https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=1200&h=400" 
+                alt="Documentation" 
+                className="w-full h-64 object-cover rounded-lg mb-8"
+              />
+            </div>
+            
             <div className="grid md:grid-cols-2 gap-6">
               {gettingStartedGuides.map((guide, index) => (
-                <Card key={index} className="hover:border-brand-pink/50 transition-colors">
+                <Card key={index} className="hover:shadow-md transition-shadow">
                   <CardHeader>
                     <div className="flex items-center gap-3 mb-3">
                       <div className="p-2 rounded-lg bg-brand-pink/10">
@@ -141,67 +118,62 @@ const DocsPage = () => {
           </TabsContent>
           
           <TabsContent value="tutorials">
-            <div className="space-y-8">
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
               <div>
-                <h2 className="text-2xl font-semibold mb-6">Video Tutorials</h2>
-                <div className="grid md:grid-cols-3 gap-6">
-                  {videoTutorials.map((video, index) => (
-                    <Card key={index} className="overflow-hidden hover-scale">
-                      <div className="aspect-video relative">
-                        <img 
-                          src={video.thumbnail} 
-                          alt={video.title}
-                          className="object-cover w-full h-full"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center bg-black/50 hover:bg-black/30 transition-colors">
-                          <div className="bg-white/90 rounded-full p-3">
-                            <Play className="w-6 h-6 text-brand-pink" />
-                          </div>
-                        </div>
-                        <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
-                          {video.duration}
-                        </div>
-                      </div>
-                      <CardContent className="py-4">
-                        <h3 className="font-medium">{video.title}</h3>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
+                <img 
+                  src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=600&h=400" 
+                  alt="Tutorials" 
+                  className="w-full h-64 object-cover rounded-lg mb-6"
+                />
+                <h2 className="text-2xl font-semibold mb-2">Video Tutorials</h2>
+                <p className="text-muted-foreground mb-6">
+                  Watch step-by-step video guides to get the most out of Kolerr's platform features.
+                </p>
+                <SearchTutorial />
               </div>
               
               <div>
-                <h2 className="text-2xl font-semibold mb-6">Step-by-step Guides</h2>
-                <Card>
-                  <CardContent className="pt-6">
-                    <div className="prose prose-gray max-w-none">
-                      <h3 className="text-xl font-semibold mb-4">Interactive Walkthroughs</h3>
-                      <p className="text-muted-foreground">
-                        Follow our interactive guides to master key platform features:
-                      </p>
-                      <ul className="mt-4 space-y-3">
-                        <li className="flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-brand-pink" />
-                          <span className="text-muted-foreground">Setting up your first campaign</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-brand-pink" />
-                          <span className="text-muted-foreground">Advanced KOL filtering techniques</span>
-                        </li>
-                        <li className="flex items-center gap-2">
-                          <FileText className="w-5 h-5 text-brand-pink" />
-                          <span className="text-muted-foreground">Analytics and reporting deep dive</span>
-                        </li>
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
+                <img 
+                  src="https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=600&h=400" 
+                  alt="Guides" 
+                  className="w-full h-64 object-cover rounded-lg mb-6"
+                />
+                <h2 className="text-2xl font-semibold mb-2">Interactive Guides</h2>
+                <p className="text-muted-foreground mb-6">
+                  Learn how to maximize your influencer marketing results with our interactive tutorials.
+                </p>
+                <CreditFAQ />
+              </div>
+            </div>
+          </TabsContent>
+          
+          <TabsContent value="bestpractices">
+            <div className="mb-8">
+              <img 
+                src="https://images.unsplash.com/photo-1500673922987-e212871fec22?auto=format&fit=crop&q=80&w=1200&h=400" 
+                alt="Best Practices" 
+                className="w-full h-64 object-cover rounded-lg mb-8"
+              />
+              <h2 className="text-2xl font-semibold mb-4">Best Practices</h2>
+              <p className="text-muted-foreground mb-8">
+                Optimize your influencer marketing strategy with our proven best practices and expert recommendations.
+              </p>
+              
+              <div className="grid md:grid-cols-2 gap-8">
+                <SearchTips />
+                <FeatureComparison />
               </div>
             </div>
           </TabsContent>
           
           <TabsContent value="reference">
-            <div className="space-y-8">
+            <div className="mb-8">
+              <img 
+                src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&q=80&w=1200&h=400" 
+                alt="API Reference" 
+                className="w-full h-64 object-cover rounded-lg mb-8"
+              />
+              
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -214,32 +186,47 @@ const DocsPage = () => {
                     Comprehensive API reference for integrating Kolerr into your applications and workflows.
                   </p>
                   
-                  <div className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <h3 className="text-lg font-medium mb-3">Authentication</h3>
-                      <div className="bg-black/20 p-4 rounded-md">
-                        <p className="text-sm font-mono mb-1">Bearer Token Authentication</p>
-                        <code className="text-xs bg-black/30 p-1 rounded">
-                          Authorization: Bearer YOUR_API_KEY
-                        </code>
+                      <h3 className="text-lg font-medium mb-3">Available Endpoints</h3>
+                      <div className="space-y-3">
+                        <div className="border border-muted rounded-md p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium">Creators</h4>
+                              <p className="text-muted-foreground text-sm mt-1">Query and filter creators by demographics, engagement, and niche</p>
+                            </div>
+                            <code className="text-xs bg-black/30 p-1 rounded text-brand-pink">
+                              /api/v1/creators
+                            </code>
+                          </div>
+                        </div>
+                        <div className="border border-muted rounded-md p-4">
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <h4 className="font-medium">Campaigns</h4>
+                              <p className="text-muted-foreground text-sm mt-1">Create, update, and manage influencer marketing campaigns</p>
+                            </div>
+                            <code className="text-xs bg-black/30 p-1 rounded text-brand-pink">
+                              /api/v1/campaigns
+                            </code>
+                          </div>
+                        </div>
                       </div>
                     </div>
                     
                     <div>
-                      <h3 className="text-lg font-medium mb-3">Available Endpoints</h3>
-                      {apiEndpoints.map((endpoint, index) => (
-                        <div key={index} className="border border-muted rounded-md p-4 mb-3">
-                          <div className="flex justify-between items-start">
-                            <div>
-                              <h4 className="font-medium">{endpoint.name}</h4>
-                              <p className="text-muted-foreground text-sm mt-1">{endpoint.description}</p>
-                            </div>
-                            <code className="text-xs bg-black/30 p-1 rounded text-brand-pink">
-                              {endpoint.endpoint}
-                            </code>
-                          </div>
+                      <h3 className="text-lg font-medium mb-3">SDKs & Libraries</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="border border-muted rounded-md p-4 text-center">
+                          <div className="font-medium">JavaScript</div>
+                          <p className="text-xs text-muted-foreground mt-1">npm install kolerr-js</p>
                         </div>
-                      ))}
+                        <div className="border border-muted rounded-md p-4 text-center">
+                          <div className="font-medium">Python</div>
+                          <p className="text-xs text-muted-foreground mt-1">pip install kolerr</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
                   
@@ -248,32 +235,6 @@ const DocsPage = () => {
                       View full API documentation
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                     </a>
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card>
-                <CardHeader>
-                  <CardTitle>SDKs & Libraries</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="border border-muted rounded-md p-4 text-center">
-                      <div className="font-medium">JavaScript</div>
-                      <p className="text-xs text-muted-foreground mt-1">npm install kolerr-js</p>
-                    </div>
-                    <div className="border border-muted rounded-md p-4 text-center">
-                      <div className="font-medium">Python</div>
-                      <p className="text-xs text-muted-foreground mt-1">pip install kolerr</p>
-                    </div>
-                    <div className="border border-muted rounded-md p-4 text-center">
-                      <div className="font-medium">Ruby</div>
-                      <p className="text-xs text-muted-foreground mt-1">gem install kolerr</p>
-                    </div>
-                    <div className="border border-muted rounded-md p-4 text-center">
-                      <div className="font-medium">PHP</div>
-                      <p className="text-xs text-muted-foreground mt-1">composer require kolerr</p>
-                    </div>
                   </div>
                 </CardContent>
               </Card>
