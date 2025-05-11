@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useCallback } from "react";
-import { Paperclip, Image, Send, Smile } from "lucide-react";
+import { Paperclip, Send, Smile } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { AttachmentPreview } from "./AttachmentPreview";
@@ -91,7 +91,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
   };
 
   return (
-    <div className={`border-t border-white/10 p-3 bg-black/20 ${hasTouch ? 'pb-safe' : ''}`}>
+    <div className="p-4 bg-black/30 backdrop-blur-md">
       {attachments.length > 0 && (
         <div className="mb-3 flex flex-wrap gap-2 max-h-24 overflow-y-auto">
           {attachments.map((attachment) => (
@@ -121,7 +121,7 @@ export const MessageInput: React.FC<MessageInputProps> = ({
             disabled={disabled}
           />
           
-          {/* Attachment buttons */}
+          {/* Attachment button */}
           <div className="absolute bottom-2.5 left-3 flex gap-1">
             <Button
               type="button"

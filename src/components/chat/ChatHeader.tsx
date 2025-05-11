@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ChevronLeft, Home, LayoutDashboard, Phone, Video, MoreVertical } from "lucide-react";
+import { ChevronLeft, Home, LayoutDashboard, MoreVertical } from "lucide-react";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { OnlineIndicator } from "./OnlineIndicator";
@@ -34,7 +34,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
   };
   
   return (
-    <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
+    <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between bg-black/30 backdrop-blur-md">
       <div className="flex items-center gap-3">
         {onBackClick && (
           <Button
@@ -71,7 +71,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
       </div>
       
       <div className="flex items-center gap-2">
-        {/* Navigation buttons */}
+        {/* Only Navigation buttons - Call/Video buttons removed */}
         <NavButton 
           icon={<LayoutDashboard className="h-5 w-5" />} 
           label="Dashboard" 
@@ -86,11 +86,7 @@ export const ChatHeader: React.FC<ChatHeaderProps> = ({
         />
         
         {participant && (
-          <>
-            <NavButton icon={<Phone className="h-5 w-5" />} label="Call" hasTouch={hasTouch} />
-            <NavButton icon={<Video className="h-5 w-5" />} label="Video call" hasTouch={hasTouch} />
-            <NavButton icon={<MoreVertical className="h-5 w-5" />} label="More options" hasTouch={hasTouch} />
-          </>
+          <NavButton icon={<MoreVertical className="h-5 w-5" />} label="More options" hasTouch={hasTouch} />
         )}
       </div>
     </div>

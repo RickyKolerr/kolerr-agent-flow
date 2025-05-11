@@ -42,11 +42,9 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   useEffect(() => {
     setIsLoading(true);
     
-    // If we don't have a conversation ID but have recipient info from URL params,
-    // we should create a new conversation or find an existing one
+    // Handle recipient info from URL params when no conversation ID exists
     if (!conversationId && recipientId && recipientName) {
-      // For demo purposes, just navigate to the first conversation
-      // In a real app, you would create or find the conversation with this recipient
+      // For demo purposes, navigate to first conversation
       if (mockConversations.length > 0) {
         navigate(`/chat/${mockConversations[0].id}${location.search}`);
       }
@@ -69,7 +67,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       // Only set scroll flag when messages are loaded
       setShouldScrollToBottom(true);
     } else if (conversationId) {
-      // If we have an ID but no conversation, redirect somewhere appropriate
+      // Redirect if ID exists but conversation not found
       navigate(isDashboardChat ? getDashboardPath() : "/chat");
     }
     
@@ -79,7 +77,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
   // Optimized scroll to bottom only when needed
   useEffect(() => {
     if (messageContainerRef.current && shouldScrollToBottom) {
-      // Use requestAnimationFrame to ensure DOM is ready
+      // Use requestAnimationFrame for smooth scrolling
       requestAnimationFrame(() => {
         if (messageContainerRef.current) {
           messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
@@ -88,7 +86,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
       // Reset flag after scrolling
       setShouldScrollToBottom(false);
     }
-  }, [shouldScrollToBottom]);
+  }, [shouldScrollToBottom, messages]);
 
   // Handle sending a new message with debounce
   const handleSendMessage = useCallback((content: string) => {
@@ -117,10 +115,10 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     }, 500);
   }, [conversationId]);
 
-  // Handle initial message from URL params with memoization
+  // Handle initial message from URL params
   useEffect(() => {
     if (initialMessage && conversationId && messages.length > 0) {
-      // Only send the initial message if we haven't already (check if it exists)
+      // Only send the initial message if we haven't already
       const messageExists = messages.some(msg => msg.content === initialMessage);
       
       if (!messageExists) {
@@ -133,7 +131,7 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
     }
   }, [initialMessage, conversationId, messages.length, handleSendMessage, location.search, navigate, location.pathname]);
 
-  // If no conversation is selected, show empty state
+  // Loading state
   if (isLoading) {
     return (
       <div className="h-full flex flex-col">
@@ -143,13 +141,14 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           isDashboardChat={isDashboardChat}
           dashboardUrl={getDashboardPath()} 
         />
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center bg-black/10 backdrop-blur-sm">
           <Loader2 className="h-8 w-8 animate-spin text-brand-pink" />
         </div>
       </div>
     );
   }
   
+  // Empty state - no conversation selected
   if (!conversation && !recipientId) {
     return (
       <div className="h-full flex flex-col">
@@ -159,8 +158,8 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
           isDashboardChat={isDashboardChat}
           dashboardUrl={getDashboardPath()} 
         />
-        <div className="flex-1 flex flex-col items-center justify-center p-4">
-          <div className="text-center space-y-3">
+        <div className="flex-1 flex flex-col items-center justify-center p-4 bg-black/10 backdrop-blur-sm">
+          <div className="text-center space-y-3 max-w-md glass-panel rounded-lg p-8">
             <h3 className="text-xl font-medium">No conversation selected</h3>
             <p className="text-muted-foreground">Choose a conversation from the sidebar or start a new one.</p>
           </div>
@@ -187,23 +186,28 @@ export const ChatWindow: React.FC<ChatWindowProps> = ({
         isDashboardChat={isDashboardChat}
         dashboardUrl={getDashboardPath()}
       />
-      <ScrollArea ref={messageContainerRef} className="flex-1">
-        <div className="p-4 space-y-4">
-          {messages.map((message) => (
-            <ChatMessageComponent
-              key={message.id}
-              message={message}
-              isOwnMessage={message.senderId === "current-user"}
-            />
-          ))}
-          {messages.length === 0 && (
-            <div className="text-center py-8">
-              <p className="text-muted-foreground">No messages yet. Start the conversation!</p>
-            </div>
-          )}
-        </div>
-      </ScrollArea>
-      <div className="p-4 border-t border-white/10">
+      
+      <div 
+        ref={messageContainerRef}
+        className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent p-4 space-y-4 bg-gradient-to-b from-black/5 to-black/20"
+      >
+        {messages.map((message) => (
+          <ChatMessageComponent
+            key={message.id}
+            message={message}
+            isOwnMessage={message.senderId === "current-user"}
+          />
+        ))}
+        {messages.length === 0 && (
+          <div className="text-center py-8 h-full flex items-center justify-center">
+            <p className="text-muted-foreground bg-black/10 backdrop-blur-sm px-4 py-2 rounded-full">
+              No messages yet. Start the conversation!
+            </p>
+          </div>
+        )}
+      </div>
+      
+      <div className="border-t border-white/10">
         <MessageInput onSendMessage={handleSendMessage} />
       </div>
     </div>

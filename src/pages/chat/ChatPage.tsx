@@ -22,7 +22,11 @@ const ChatPage: React.FC = () => {
     }
   }
   
-  return <ChatLayout />;
+  return (
+    <div className="h-[calc(100vh-4rem)] w-full">
+      <ChatLayout />
+    </div>
+  );
 };
 
 export default ChatPage;

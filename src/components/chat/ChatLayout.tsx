@@ -54,36 +54,30 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false 
   };
 
   return (
-    <div className="flex h-full w-full overflow-hidden bg-black/10 backdrop-blur-md">
+    <div className="flex h-full w-full overflow-hidden bg-black/20 backdrop-blur-lg rounded-lg shadow-lg">
       <DemoIndicator 
         section="Chat" 
         tooltip="This is a production-ready chat interface for Brand-KOL communication." 
       />
       
-      {/* Sidebar - adapt width based on screen size */}
+      {/* Sidebar - clean transitions and layout */}
       <div 
         className={`
-          ${isSmallScreen ? (showSidebar ? 'block w-full' : 'hidden') : 'block w-80 min-w-80'} 
-          h-full transition-all duration-300 will-change-transform
+          ${isSmallScreen ? (showSidebar ? 'w-full' : 'w-0 opacity-0') : 'w-80 min-w-0 md:min-w-80'} 
+          h-full overflow-hidden transition-all duration-300 ease-in-out border-r border-white/10
         `}
-        style={{ 
-          transform: showSidebar || !isSmallScreen ? 'translateX(0)' : 'translateX(-100%)',
-          opacity: showSidebar || !isSmallScreen ? 1 : 0
-        }}
       >
-        <ChatSidebar 
-          onConversationSelect={isSmallScreen ? toggleSidebar : undefined} 
-          isDashboardChat={isDashboardChat}
-        />
+        {(showSidebar || !isSmallScreen) && (
+          <ChatSidebar 
+            onConversationSelect={isSmallScreen ? toggleSidebar : undefined} 
+            isDashboardChat={isDashboardChat}
+          />
+        )}
       </div>
       
-      {/* Chat window */}
+      {/* Chat window - improved visibility on all screens */}
       <div 
-        className={`flex-1 ${isSmallScreen ? (showSidebar ? 'hidden' : 'block') : 'block'} h-full`}
-        style={{ 
-          opacity: isSmallScreen && showSidebar ? 0 : 1,
-          transition: 'opacity 200ms ease-out'
-        }}
+        className={`flex-1 ${isSmallScreen && showSidebar ? 'hidden' : 'flex'} flex-col h-full`}
       >
         <ChatWindow 
           onBackClick={handleBackToConversations}
@@ -92,15 +86,15 @@ export const ChatLayout: React.FC<ChatLayoutProps> = ({ isDashboardChat = false 
         />
       </div>
       
-      {/* Mobile Toggle Button - only show when in a conversation */}
+      {/* Improved Mobile Toggle Button - only when in a conversation */}
       {isSmallScreen && !showSidebar && conversationId && (
         <Button
-          variant="ghost"
+          variant="default"
           size="icon"
-          className="fixed bottom-20 left-5 h-12 w-12 rounded-full bg-brand-pink/80 shadow-lg z-50 hover:bg-brand-pink"
+          className="fixed bottom-24 left-4 h-12 w-12 rounded-full bg-brand-pink shadow-lg z-50 hover:bg-brand-pink/90 focus:outline-none focus:ring-2 focus:ring-white/20"
           onClick={toggleSidebar}
         >
-          <Menu className="h-6 w-6 text-white" />
+          <Menu className="h-5 w-5 text-white" />
         </Button>
       )}
     </div>
