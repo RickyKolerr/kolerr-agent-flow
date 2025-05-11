@@ -46,7 +46,7 @@ const ContactPage = () => {
                   
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">+1 (850) 555-0123</span>
+                    <span className="text-muted-foreground">+1 (810) 351-7299</span>
                   </div>
                 </CardContent>
               </Card>
@@ -68,7 +68,7 @@ const ContactPage = () => {
                   
                   <div className="flex items-center gap-2">
                     <Phone className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-muted-foreground">+84 28 1234 5678</span>
+                    <span className="text-muted-foreground">+84 938 737-714</span>
                   </div>
                 </CardContent>
               </Card>
@@ -87,17 +87,17 @@ const ContactPage = () => {
                   <div className="grid gap-3">
                     <div>
                       <p className="font-medium">General Inquiries</p>
-                      <a href="mailto:hello@kolerr.ai" className="text-brand-pink hover:underline">hello@kolerr.ai</a>
+                      <a href="mailto:hello@kolerr.com" className="text-brand-pink hover:underline">hello@kolerr.com</a>
                     </div>
                     
                     <div>
                       <p className="font-medium">Technical Support</p>
-                      <a href="mailto:support@kolerr.ai" className="text-brand-pink hover:underline">support@kolerr.ai</a>
+                      <a href="mailto:support@kolerr.com" className="text-brand-pink hover:underline">support@kolerr.com</a>
                     </div>
                     
                     <div>
                       <p className="font-medium">Sales & Partnerships</p>
-                      <a href="mailto:sales@kolerr.ai" className="text-brand-pink hover:underline">sales@kolerr.ai</a>
+                      <a href="mailto:sales@kolerr.com" className="text-brand-pink hover:underline">sales@kolerr.com</a>
                     </div>
                   </div>
                 </CardContent>
@@ -195,7 +195,7 @@ const ContactPage = () => {
           <div className="flex justify-center">
             <Button variant="outline" size="lg" className="flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              +1 (888) 123-4567
+              +84 938 737-714
             </Button>
           </div>
         </div>
