@@ -41,6 +41,12 @@ import EmailVerification from "@/pages/auth/EmailVerification";
 import DashboardLayout from "@/layouts/DashboardLayout";
 import NotFound from "@/pages/NotFound";
 
+// Documentation guide pages
+import PlatformOverviewGuide from "@/pages/docs/guides/PlatformOverview";
+import CampaignCreationGuide from "@/pages/docs/guides/CampaignCreation";
+import KOLDiscoveryGuide from "@/pages/docs/guides/KOLDiscovery";
+import AnalyticsDashboardGuide from "@/pages/docs/guides/AnalyticsDashboard";
+
 // Chat pages
 import ChatPage from "@/pages/chat/ChatPage";
 import MessagesPage from "@/pages/dashboard/Messages";
@@ -160,6 +166,12 @@ const App = () => {
                     <Route path="/help" element={<HelpCenter />} />
                     <Route path="/contact" element={<ContactPage />} />
                     <Route path="/partners" element={<PartnersPage />} />
+                    
+                    {/* Documentation guide pages */}
+                    <Route path="/docs/guides/platform-overview" element={<PlatformOverviewGuide />} />
+                    <Route path="/docs/guides/campaign-creation" element={<CampaignCreationGuide />} />
+                    <Route path="/docs/guides/kol-discovery" element={<KOLDiscoveryGuide />} />
+                    <Route path="/docs/guides/analytics-dashboard" element={<AnalyticsDashboardGuide />} />
                     
                     {/* New company pages */}
                     <Route path="/careers" element={<CareersPage />} />

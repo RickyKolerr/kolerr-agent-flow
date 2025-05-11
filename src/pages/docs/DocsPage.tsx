@@ -9,6 +9,7 @@ import { SearchTips } from "@/components/docs/SearchTips";
 import { CreditFAQ } from "@/components/docs/CreditFAQ";
 import { SearchTutorial } from "@/components/docs/SearchTutorial";
 import { FeatureComparison } from "@/components/docs/FeatureComparison";
+import { Link } from "react-router-dom";
 
 const DocsPage = () => {
   const { t } = useLanguage();
@@ -18,25 +19,29 @@ const DocsPage = () => {
       title: "Platform Overview",
       description: "Learn about Kolerr's core features and capabilities for influencer marketing",
       icon: Book,
-      timeToRead: "5 min read"
+      timeToRead: "5 min read",
+      link: "/docs/guides/platform-overview"
     },
     {
       title: "Campaign Creation",
       description: "Step-by-step guide to launching your first influencer marketing campaign",
       icon: PenTool,
-      timeToRead: "8 min read"
+      timeToRead: "8 min read",
+      link: "/docs/guides/campaign-creation"
     },
     {
       title: "KOL Discovery",
       description: "How to find and connect with the right influencers for your brand",
       icon: Search,
-      timeToRead: "6 min read"
+      timeToRead: "6 min read",
+      link: "/docs/guides/kol-discovery"
     },
     {
       title: "Analytics Dashboard",
       description: "Understanding your campaign performance metrics and ROI tracking",
       icon: Database,
-      timeToRead: "7 min read"
+      timeToRead: "7 min read",
+      link: "/docs/guides/analytics-dashboard"
     }
   ];
 
@@ -88,9 +93,9 @@ const DocsPage = () => {
                     <p className="text-muted-foreground text-sm">{guide.description}</p>
                   </CardHeader>
                   <CardContent className="flex items-center justify-between">
-                    <button className="text-brand-pink hover:text-brand-pink/80 text-sm font-medium">
+                    <Link to={guide.link} className="text-brand-pink hover:text-brand-pink/80 text-sm font-medium">
                       Read documentation →
-                    </button>
+                    </Link>
                     <span className="text-xs text-muted-foreground">{guide.timeToRead}</span>
                   </CardContent>
                 </Card>
@@ -231,10 +236,10 @@ const DocsPage = () => {
                   </div>
                   
                   <div className="mt-8">
-                    <a href="/api" className="text-brand-pink hover:text-brand-pink/80 flex items-center gap-1">
+                    <Link to="/api" className="text-brand-pink hover:text-brand-pink/80 flex items-center gap-1">
                       View full API documentation
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
+                    </Link>
                   </div>
                 </CardContent>
               </Card>
