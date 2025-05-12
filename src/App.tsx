@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -233,7 +234,7 @@ function App() {
                       } />
                       <Route path="campaigns" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <Campaigns />
+                          <CampaignsPage />
                         </RoleProtectedRoute>
                       } />
                       <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
@@ -322,3 +323,4 @@ function App() {
 export default App;
 
 import EditCampaignPage from "./pages/dashboard/EditCampaign";
+

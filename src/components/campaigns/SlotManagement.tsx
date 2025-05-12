@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { Slot } from "@/types/campaign";
-import { PlusCircle, Users, Target, Calendar, DollarSign } from "lucide-react";
+import { PlusCircle, Users, Target, Calendar, DollarSign, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface SlotManagementProps {
@@ -244,3 +244,4 @@ export const SlotManagement = ({
     </div>
   );
 };
+
