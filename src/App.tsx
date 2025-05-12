@@ -238,9 +238,9 @@ function App() {
                         </RoleProtectedRoute>
                       } />
                       <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
-                      <Route path="bookings" element={
+                      <Route path="application-management" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <BookingsPage />
+                          <ApplicationManagementPage />
                         </RoleProtectedRoute>
                       } />
                       <Route path="schedule-booking" element={
@@ -323,4 +323,4 @@ function App() {
 export default App;
 
 import EditCampaignPage from "./pages/dashboard/EditCampaign";
-
+import ApplicationManagementPage from "./pages/dashboard/ApplicationManagement";
