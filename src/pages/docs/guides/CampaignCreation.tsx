@@ -28,7 +28,7 @@ const CampaignCreationGuide = () => {
         </div>
         
         <img 
-          src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=1200&h=500" 
+          src="https://images.unsplash.com/photo-1581090464777-f3220bbe1b8b?auto=format&fit=crop&q=80&w=1200&h=500" 
           alt="Campaign Creation" 
           className="w-full rounded-lg object-cover mb-8"
         />

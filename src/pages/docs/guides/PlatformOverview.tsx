@@ -28,7 +28,7 @@ const PlatformOverviewGuide = () => {
         </div>
         
         <img 
-          src="https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=1200&h=500" 
+          src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?auto=format&fit=crop&q=80&w=1200&h=500" 
           alt="Kolerr Platform" 
           className="w-full rounded-lg object-cover mb-8"
         />
