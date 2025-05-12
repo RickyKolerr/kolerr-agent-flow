@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -60,7 +59,6 @@ import OnboardingKOL from "@/pages/auth/OnboardingKOL";
 import Overview from "@/pages/dashboard/Overview";
 import KOLsPage from "@/pages/dashboard/KOLs";
 import CampaignsPage from "@/pages/dashboard/Campaigns";
-import BookingsPage from "@/pages/dashboard/Bookings";
 import ScheduleBookingPage from "@/pages/dashboard/ScheduleBooking";
 import CreditsPage from "@/pages/dashboard/Credits";
 import ProfilePage from "@/pages/dashboard/Profile";
