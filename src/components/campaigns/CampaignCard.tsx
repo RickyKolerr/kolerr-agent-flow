@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { Calendar, Clock, Users, ChevronRight, DollarSign } from "lucide-react";
+import { Calendar, Clock, Users, ChevronRight, DollarSign, Edit, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface CampaignProps {
@@ -31,9 +31,17 @@ interface CampaignCardProps {
   campaign: CampaignProps;
   onApply: (campaign: CampaignProps) => void;
   disableApply?: boolean;
+  onEdit?: (id: string) => void;
+  onDelete?: (id: string) => void;
 }
 
-export const CampaignCard = ({ campaign, onApply, disableApply = false }: CampaignCardProps) => {
+export const CampaignCard = ({ 
+  campaign, 
+  onApply, 
+  disableApply = false,
+  onEdit,
+  onDelete
+}: CampaignCardProps) => {
   const navigate = useNavigate();
   const {
     id,
@@ -69,6 +77,18 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
   const handleViewDetails = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card click event
     navigate(`/campaigns/${id}`);
+  };
+
+  // Handle edit button click
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onEdit) onEdit(id);
+  };
+
+  // Handle delete button click
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (onDelete) onDelete(id);
   };
 
   return (
@@ -163,16 +183,37 @@ export const CampaignCard = ({ campaign, onApply, disableApply = false }: Campai
                 </Button>
               </>
             ) : (
-              // For brands - only show view details
-              <Button 
-                variant="default" 
-                size="sm" 
-                className="w-full"
-                onClick={handleViewDetails}
-              >
-                View Details
-                <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
+              // For brands - show management buttons
+              <div className="w-full flex gap-2">
+                <Button 
+                  variant="default" 
+                  size="sm"
+                  className="flex-1"
+                  onClick={handleViewDetails}
+                >
+                  View Details
+                </Button>
+                {onEdit && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleEdit}
+                    className="px-3"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                )}
+                {onDelete && (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={handleDelete}
+                    className="px-3 text-red-500 hover:text-red-600"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             )}
           </div>
         </div>

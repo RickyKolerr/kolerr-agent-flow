@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -140,7 +139,7 @@ const Layout = ({ children }) => {
   );
 };
 
-const App = () => {
+function App() {
   const [queryClient] = useState(() => new QueryClient());
   
   return (
@@ -234,9 +233,10 @@ const App = () => {
                       } />
                       <Route path="campaigns" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <CampaignsPage />
+                          <Campaigns />
                         </RoleProtectedRoute>
                       } />
+                      <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
                       <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <BookingsPage />
@@ -317,6 +317,8 @@ const App = () => {
       </HashRouter>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
+
+import EditCampaignPage from "./pages/dashboard/EditCampaign";
