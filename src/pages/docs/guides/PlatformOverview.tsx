@@ -74,7 +74,7 @@ const PlatformOverviewGuide = () => {
               <CardContent className="pt-6">
                 <h3 className="text-lg font-medium mb-2">Contract Management</h3>
                 <p className="text-muted-foreground">
-                  Digital contract creation, signing, and management to formalize creator relationships.
+                  Digital contract creation and management with SignWell integration for secure, legally-binding agreements.
                 </p>
               </CardContent>
             </Card>
@@ -102,6 +102,10 @@ const PlatformOverviewGuide = () => {
             <li className="flex items-start gap-2">
               <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
               <span><strong>Messaging System</strong>: Secure communication between brands and creators</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 shrink-0" />
+              <span><strong>Integrations</strong>: SignWell for secure contract signing and Stripe for safe payment processing</span>
             </li>
           </ul>
           

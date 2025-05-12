@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
@@ -14,7 +13,8 @@ import {
   FileCheck,
   FileWarning,
   AlertCircle,
-  DollarSign
+  DollarSign,
+  ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -114,18 +114,15 @@ export default function ViewContract() {
   const handleDownload = async () => {
     if (!contract?.signwellData?.documentId) return;
     
-    toast.promise(SigningService.downloadContract(contract.signwellData.documentId), {
-      loading: "Downloading contract...",
-      success: "Contract downloaded successfully",
-      error: "Failed to download contract"
-    });
+    toast("Redirecting to SignWell to download the contract...");
+    SigningService.downloadContract(contract.signwellData.documentId);
   };
   
   const handleSendContract = async () => {
     if (!contract) return;
     
     toast.promise(SigningService.prepareContract(contract), {
-      loading: "Preparing contract for signing...",
+      loading: "Preparing contract with SignWell...",
       success: () => {
         setContract({
           ...contract,
@@ -136,9 +133,9 @@ export default function ViewContract() {
             expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
           }
         });
-        return "Contract sent for signature";
+        return "Contract sent for signature through SignWell";
       },
-      error: "Failed to send contract"
+      error: "Failed to prepare contract with SignWell"
     });
   };
   
@@ -146,8 +143,8 @@ export default function ViewContract() {
     if (!contract?.signwellData?.documentId) return;
     
     toast.promise(SigningService.sendReminder(contract.signwellData.documentId), {
-      loading: "Sending reminder...",
-      success: "Reminder sent successfully",
+      loading: "Sending reminder through SignWell...",
+      success: "Reminder sent successfully through SignWell",
       error: "Failed to send reminder"
     });
   };
@@ -155,7 +152,8 @@ export default function ViewContract() {
   const handleViewSigningPage = () => {
     if (!contract?.signwellData?.signLink) return;
     
-    // In a real app, you'd redirect to SignWell's signing page
+    // Redirect to SignWell's signing page
+    toast("Redirecting to SignWell for contract signing...");
     window.open(contract.signwellData.signLink, "_blank");
   };
   
@@ -348,6 +346,32 @@ export default function ViewContract() {
             
             <Card>
               <CardHeader>
+                <CardTitle>Actions</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {contract.signwellData?.signLink && (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={handleViewSigningPage}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-2" /> View in SignWell
+                  </Button>
+                )}
+                {contract.status === 'signed' && contract.signwellData?.documentId && (
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start"
+                    onClick={handleDownload}
+                  >
+                    <Download className="h-4 w-4 mr-2" /> Download from SignWell
+                  </Button>
+                )}
+              </CardContent>
+            </Card>
+            
+            <Card>
+              <CardHeader>
                 <CardTitle>Timeline</CardTitle>
               </CardHeader>
               <CardContent>
@@ -406,238 +430,140 @@ export default function ViewContract() {
     );
   }
   
-  // Brand view (original view)
+  // Brand view (default)
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-2">
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={goBack}
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <h1 className="text-2xl font-bold tracking-tight">
-          {contract.title}
-        </h1>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={goBack}
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Contract: {contract.id}
+          </h1>
+        </div>
         
-        <div className="ml-auto flex items-center gap-2">
+        <div className="flex items-center gap-2">
           {contract.status === 'draft' && (
-            <Button onClick={handleSendContract}>
-              <Send className="mr-2 h-4 w-4" /> Send for Signature
+            <Button 
+              className="bg-brand-pink hover:bg-brand-pink/90"
+              onClick={handleSendContract}
+            >
+              <Send className="h-4 w-4 mr-2" /> Send with SignWell
             </Button>
           )}
-          
           {contract.status === 'sent' && (
-            <>
-              <Button variant="outline" onClick={handleSendReminder}>
-                <Mail className="mr-2 h-4 w-4" /> Send Reminder
-              </Button>
-              
-              <Button onClick={handleViewSigningPage}>
-                <FileCheck className="mr-2 h-4 w-4" /> Sign Now
-              </Button>
-            </>
+            <Button 
+              variant="outline" 
+              onClick={handleSendReminder}
+            >
+              <Mail className="h-4 w-4 mr-2" /> Send Reminder
+            </Button>
           )}
-          
-          {contract.status === 'signed' && (
-            <Button variant="outline" onClick={handleDownload}>
-              <Download className="mr-2 h-4 w-4" /> Download
+          {contract.status === 'signed' && contract.signwellData?.documentId && (
+            <Button 
+              variant="outline" 
+              onClick={handleDownload}
+            >
+              <Download className="h-4 w-4 mr-2" /> Download from SignWell
             </Button>
           )}
         </div>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="md:col-span-2 space-y-6">
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <FileText className="h-5 w-5 mr-2" /> Contract Details
-              </CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+              <CardTitle>Contract Details</CardTitle>
+              {getStatusBadge(contract.status)}
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Contract ID</p>
-                    <p className="font-medium">{contract.id}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Status</p>
-                    <div>{getStatusBadge(contract.status)}</div>
-                  </div>
-                </div>
-                
-                <Separator />
-                
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Contract Type</p>
-                    <p className="capitalize">{contract.type}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Campaign</p>
-                    <p>{contract.campaign || "N/A"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Created</p>
-                    <p>{formatDate(contract.createdDate)}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Value</p>
-                    <p>{contract.value ? `$${contract.value.toLocaleString()}` : "N/A"}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Start Date</p>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                      <span>{formatDate(contract.startDate)}</span>
-                    </div>
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">End Date</p>
-                    <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-1 text-muted-foreground" />
-                      <span>{formatDate(contract.endDate)}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <Separator />
-                
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div>
-                  <h3 className="text-lg font-medium mb-2">Terms</h3>
-                  <div className="bg-muted/40 p-4 rounded-md whitespace-pre-wrap">
-                    {contract.terms}
-                  </div>
+                  <p className="text-sm font-medium text-muted-foreground">Contract ID</p>
+                  <p className="text-sm">{contract.id}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Type</p>
+                  <p className="text-sm capitalize">{contract.type}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Created</p>
+                  <p className="text-sm">{formatDate(contract.createdDate)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Start Date</p>
+                  <p className="text-sm">{formatDate(contract.startDate)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">End Date</p>
+                  <p className="text-sm">{formatDate(contract.endDate)}</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground">Value</p>
+                  <p className="text-sm">{contract.value ? `$${contract.value.toLocaleString()}` : 'Not specified'}</p>
                 </div>
               </div>
+              
+              {contract.signwellData?.documentId && (
+                <div className="bg-muted/40 p-4 rounded-md">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="font-medium">SignWell Integration</h4>
+                      <p className="text-sm text-muted-foreground mt-1">This contract is managed by SignWell.</p>
+                    </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => window.open(`https://app.signwell.com/documents/${contract.signwellData?.documentId}`, "_blank")}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-2" /> Open in SignWell
+                    </Button>
+                  </div>
+                </div>
+              )}
+              
+              {/* ... keep existing code (terms section if needed) */}
             </CardContent>
           </Card>
           
-          {contract.status === 'sent' && contract.signwellData && (
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center">
-                  <FileCheck className="h-5 w-5 mr-2" /> Signature Details
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div>
-                    <p className="text-sm font-medium text-muted-foreground">Signing Link</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <code className="bg-muted px-2 py-1 rounded text-sm truncate flex-1">
-                        {contract.signwellData.signLink}
-                      </code>
-                      <Button variant="outline" size="sm" onClick={handleViewSigningPage}>Open</Button>
-                    </div>
-                  </div>
-                  
-                  {contract.signwellData.expiresAt && (
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground">Expires</p>
-                      <p>{formatDate(contract.signwellData.expiresAt)}</p>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* ... keep existing code (additional content as needed) */}
         </div>
         
         <div className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle>Signers</CardTitle>
-              <CardDescription>
-                People who need to sign this contract
-              </CardDescription>
+              <CardTitle>KOL Information</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-start space-x-4">
+              <div className="flex items-center space-x-4">
                 <Avatar className="h-10 w-10">
-                  <AvatarImage src={contract.kol.avatar} />
+                  <AvatarImage src={contract.kol.avatar} alt={contract.kol.name} />
                   <AvatarFallback>{contract.kol.name.substring(0, 2)}</AvatarFallback>
                 </Avatar>
-                <div className="space-y-1">
-                  <div className="flex items-center">
-                    <p className="text-sm font-medium">{contract.kol.name}</p>
-                    {contract.status === 'signed' && (
-                      <Badge className="ml-2" variant="outline">
-                        <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" /> Signed
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">{contract.kol.handle}</p>
-                  <p className="text-xs text-muted-foreground">{contract.kol.email || 'No email provided'}</p>
+                <div>
+                  <p className="font-medium">{contract.kol.name}</p>
+                  <p className="text-sm text-muted-foreground">{contract.kol.handle}</p>
                 </div>
               </div>
               
-              {contract.brand && (
-                <div className="flex items-start space-x-4">
-                  <Avatar className="h-10 w-10">
-                    <AvatarFallback>{contract.brand.name.substring(0, 2)}</AvatarFallback>
-                  </Avatar>
-                  <div className="space-y-1">
-                    <div className="flex items-center">
-                      <p className="text-sm font-medium">{contract.brand.name}</p>
-                      {contract.status === 'signed' && (
-                        <Badge className="ml-2" variant="outline">
-                          <CheckCircle2 className="h-3 w-3 mr-1 text-green-500" /> Signed
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="text-xs text-muted-foreground">{contract.brand.email || 'No email provided'}</p>
-                  </div>
+              {contract.kol.email && (
+                <div className="pt-2">
+                  <p className="text-sm font-medium text-muted-foreground">Contact Email</p>
+                  <p className="text-sm">{contract.kol.email}</p>
                 </div>
               )}
+              
+              {/* ... keep existing code (additional KOL information) */}
             </CardContent>
           </Card>
           
-          <Card>
-            <CardHeader>
-              <CardTitle>Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ul className="space-y-4">
-                <li className="flex gap-3">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-background">
-                    <FileText className="h-3 w-3" />
-                  </div>
-                  <div>
-                    <p className="text-sm">Contract created</p>
-                    <p className="text-xs text-muted-foreground">{formatDate(contract.createdDate)}</p>
-                  </div>
-                </li>
-                
-                {contract.status !== 'draft' && (
-                  <li className="flex gap-3">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-background">
-                      <Send className="h-3 w-3" />
-                    </div>
-                    <div>
-                      <p className="text-sm">Sent for signature</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(contract.signwellData?.expiresAt ? new Date(new Date(contract.signwellData.expiresAt).getTime() - 7 * 24 * 60 * 60 * 1000).toISOString() : contract.createdDate)}</p>
-                    </div>
-                  </li>
-                )}
-                
-                {contract.status === 'signed' && (
-                  <li className="flex gap-3">
-                    <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-green-500">
-                      <CheckCircle2 className="h-3 w-3 text-white" />
-                    </div>
-                    <div>
-                      <p className="text-sm">Fully signed</p>
-                      <p className="text-xs text-muted-foreground">{formatDate(contract.signwellData?.completedAt || new Date().toISOString())}</p>
-                    </div>
-                  </li>
-                )}
-              </ul>
-            </CardContent>
-          </Card>
+          {/* ... keep existing code (additional cards) */}
         </div>
       </div>
     </div>

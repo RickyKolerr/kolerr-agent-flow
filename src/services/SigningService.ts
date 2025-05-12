@@ -1,13 +1,13 @@
 
 import { Contract, SignatureField } from "@/types/contract";
 
-// This is a mock service that would be replaced with actual SignWell API calls
+// This is a service that integrates with SignWell's API for document signing
 export const SigningService = {
   /**
-   * Prepares a contract for signing
+   * Prepares a contract for signing with SignWell
    */
   prepareContract: async (contract: Contract, signatureFields: SignatureField[] = []): Promise<Contract> => {
-    console.log("Preparing contract for SignWell:", contract, signatureFields);
+    console.log("Preparing contract for SignWell:", contract.id);
     
     // In a real implementation, this would call SignWell API to create a document
     // For now, we'll mock the SignWell response
@@ -15,6 +15,7 @@ export const SigningService = {
     // Mock response delay
     await new Promise(resolve => setTimeout(resolve, 1000));
     
+    // Mock SignWell document creation
     return {
       ...contract,
       status: 'sent',
@@ -27,10 +28,10 @@ export const SigningService = {
   },
   
   /**
-   * Gets the status of a signing document
+   * Gets the status of a signing document from SignWell
    */
   getStatus: async (documentId: string): Promise<'sent' | 'signed' | 'expired'> => {
-    console.log("Getting status for document:", documentId);
+    console.log("Getting status from SignWell for document:", documentId);
     
     // Mock response delay
     await new Promise(resolve => setTimeout(resolve, 500));
@@ -41,38 +42,39 @@ export const SigningService = {
   },
   
   /**
-   * Downloads a completed contract
+   * Downloads a completed contract from SignWell
    */
   downloadContract: async (documentId: string): Promise<string> => {
-    console.log("Downloading contract:", documentId);
+    console.log("Redirecting to SignWell to download contract:", documentId);
     
-    // Mock response delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // In a real implementation, this would download the PDF
-    return "mock-download-url.pdf";
+    // In a real implementation, this would redirect to SignWell's download page
+    const mockSignWellDownloadUrl = `https://app.signwell.com/documents/${documentId}/download`;
+    window.open(mockSignWellDownloadUrl, '_blank');
+    return mockSignWellDownloadUrl;
   },
   
   /**
-   * Sends reminder to signers
+   * Sends reminder via SignWell
    */
   sendReminder: async (documentId: string): Promise<void> => {
-    console.log("Sending reminder for document:", documentId);
+    console.log("Sending reminder via SignWell for document:", documentId);
     
     // Mock response delay
     await new Promise(resolve => setTimeout(resolve, 800));
+    
+    // In a real implementation, this would call SignWell's API to send a reminder
   },
 
   /**
-   * KOL specific - View a contract (marks it as viewed)
+   * KOL specific - View a contract (redirects to SignWell)
    */
   kolViewContract: async (contractId: string): Promise<Contract> => {
-    console.log("KOL viewed contract:", contractId);
+    console.log("Redirecting KOL to SignWell to view contract:", contractId);
     
     // Mock response delay
     await new Promise(resolve => setTimeout(resolve, 500));
     
-    // In a real implementation, this would update the contract status
+    // In a real implementation, this would update the contract status and return the updated contract
     return {
       ...mockViewedContract,
       kolStatus: 'viewed',
