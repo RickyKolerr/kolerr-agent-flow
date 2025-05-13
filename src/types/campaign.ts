@@ -1,6 +1,6 @@
 
 export type CampaignStatus = "draft" | "active" | "paused" | "completed";
-export type ApplicationStatus = "pending" | "approved" | "rejected";
+export type ApplicationStatus = "pending" | "approved" | "hold" | "rejected";
 
 export interface CampaignMetrics {
   views: number;

@@ -8,7 +8,8 @@ import {
   Filter, 
   ChevronDown,
   MessageCircle,
-  Eye
+  Eye,
+  Clock
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,6 +48,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { mockCreatorData } from "@/data/mockCreators";
 import { ApplicationStatus } from "@/types/campaign";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Application {
   id: string;
@@ -56,6 +58,7 @@ interface Application {
   status: ApplicationStatus;
   dateApplied: string;
   message: string;
+  feedback?: string;
 }
 
 export const ApplicationManagement = () => {
@@ -102,7 +105,7 @@ export const ApplicationManagement = () => {
       kolId: "creator5",
       campaignId: "camp3",
       campaignName: "Holiday Special",
-      status: "pending",
+      status: "hold",
       dateApplied: "2023-05-10",
       message: "I'd love to create content featuring your holiday collection. My engagement rates peak during holiday seasons."
     }
@@ -112,6 +115,7 @@ export const ApplicationManagement = () => {
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">("all");
   const [currentApplicationId, setCurrentApplicationId] = useState<string | null>(null);
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
+  const [feedbackMessage, setFeedbackMessage] = useState("");
   
   // Get current application details
   const currentApplication = applications.find(app => app.id === currentApplicationId);
@@ -129,26 +133,31 @@ export const ApplicationManagement = () => {
     return matchesSearch && matchesFilter;
   });
   
-  // Group applications by campaign
+  // Group applications by status
   const applicationsByStatus = {
     pending: filteredApplications.filter(app => app.status === "pending"),
     approved: filteredApplications.filter(app => app.status === "approved"),
+    hold: filteredApplications.filter(app => app.status === "hold"),
     rejected: filteredApplications.filter(app => app.status === "rejected")
   };
   
   // Update application status
-  const updateApplicationStatus = (id: string, status: ApplicationStatus) => {
+  const updateApplicationStatus = (id: string, status: ApplicationStatus, feedback?: string) => {
     setApplications(applications.map(app => 
-      app.id === id ? {...app, status} : app
+      app.id === id ? {...app, status, feedback: feedback || app.feedback} : app
     ));
     
     const statusMessages = {
       approved: "Application approved! The creator has been notified.",
       rejected: "Application rejected. The creator has been notified.",
-      pending: "Application set back to pending status."
+      pending: "Application set back to pending status.",
+      hold: "Application put on hold. The creator has been notified."
     };
     
     toast.success(statusMessages[status]);
+    
+    // Reset feedback message
+    setFeedbackMessage("");
     
     // Close dialog if open
     if (viewDialogOpen) {
@@ -195,6 +204,13 @@ export const ApplicationManagement = () => {
           <Badge variant="outline" className="flex items-center gap-1 bg-red-500/10 text-red-500 hover:bg-red-500/20 border-red-500/30 px-2.5 py-1 rounded-full">
             <XCircle className="h-3.5 w-3.5" /> 
             <span className="font-medium">Rejected</span>
+          </Badge>
+        );
+      case "hold":
+        return (
+          <Badge variant="outline" className="flex items-center gap-1 bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border-blue-500/30 px-2.5 py-1 rounded-full">
+            <Clock className="h-3.5 w-3.5" /> 
+            <span className="font-medium">On Hold</span>
           </Badge>
         );
       default:
@@ -246,6 +262,9 @@ export const ApplicationManagement = () => {
                 <DropdownMenuItem onClick={() => setStatusFilter("approved")}>
                   Approved Applications
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setStatusFilter("hold")}>
+                  On Hold Applications
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setStatusFilter("rejected")}>
                   Rejected Applications
                 </DropdownMenuItem>
@@ -254,7 +273,7 @@ export const ApplicationManagement = () => {
           </div>
           
           <Tabs defaultValue="all" className="w-full">
-            <TabsList className="grid grid-cols-4 w-full mb-4">
+            <TabsList className="grid grid-cols-5 w-full mb-4">
               <TabsTrigger value="all" className="text-xs sm:text-sm">
                 All ({filteredApplications.length})
               </TabsTrigger>
@@ -264,12 +283,15 @@ export const ApplicationManagement = () => {
               <TabsTrigger value="approved" className="text-xs sm:text-sm">
                 Approved ({applicationsByStatus.approved.length})
               </TabsTrigger>
+              <TabsTrigger value="hold" className="text-xs sm:text-sm">
+                On Hold ({applicationsByStatus.hold.length})
+              </TabsTrigger>
               <TabsTrigger value="rejected" className="text-xs sm:text-sm">
                 Rejected ({applicationsByStatus.rejected.length})
               </TabsTrigger>
             </TabsList>
             
-            {["all", "pending", "approved", "rejected"].map((tab) => (
+            {["all", "pending", "approved", "hold", "rejected"].map((tab) => (
               <TabsContent key={tab} value={tab} className="pt-2">
                 <div className="rounded-md border overflow-hidden">
                   <Table>
@@ -349,6 +371,13 @@ export const ApplicationManagement = () => {
                                           >
                                             <CheckCircle className="mr-2 h-4 w-4" />
                                             Approve
+                                          </DropdownMenuItem>
+                                          <DropdownMenuItem 
+                                            onClick={() => updateApplicationStatus(application.id, "hold")}
+                                            className="text-blue-600 focus:text-blue-600"
+                                          >
+                                            <Clock className="mr-2 h-4 w-4" />
+                                            Put On Hold
                                           </DropdownMenuItem>
                                           <DropdownMenuItem 
                                             onClick={() => updateApplicationStatus(application.id, "rejected")}
@@ -453,10 +482,31 @@ export const ApplicationManagement = () => {
                     {currentApplication.message}
                   </div>
                 </div>
+                
+                {currentApplication.feedback && (
+                  <div>
+                    <div className="text-sm text-muted-foreground mb-1">Feedback</div>
+                    <div className="bg-muted/50 p-3 rounded-md text-sm">
+                      {currentApplication.feedback}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
             
-            <DialogFooter className="flex-col sm:flex-row gap-2">
+            {currentApplication.status === "pending" && (
+              <div className="mt-4">
+                <div className="text-sm font-medium mb-2">Add Feedback (optional)</div>
+                <Textarea
+                  placeholder="Add feedback or notes for the creator..."
+                  value={feedbackMessage}
+                  onChange={(e) => setFeedbackMessage(e.target.value)}
+                  className="w-full"
+                />
+              </div>
+            )}
+            
+            <DialogFooter className="flex-col sm:flex-row gap-2 mt-4">
               <Button variant="outline" className="sm:w-auto w-full" onClick={() => setViewDialogOpen(false)}>
                 Close
               </Button>
@@ -473,15 +523,23 @@ export const ApplicationManagement = () => {
                 <>
                   <Button 
                     className="bg-green-600 hover:bg-green-700 sm:w-auto w-full"
-                    onClick={() => updateApplicationStatus(currentApplication.id, "approved")}
+                    onClick={() => updateApplicationStatus(currentApplication.id, "approved", feedbackMessage)}
                   >
                     <CheckCircle className="mr-2 h-4 w-4" />
                     Approve
                   </Button>
                   <Button 
+                    variant="secondary"
+                    className="sm:w-auto w-full"
+                    onClick={() => updateApplicationStatus(currentApplication.id, "hold", feedbackMessage)}
+                  >
+                    <Clock className="mr-2 h-4 w-4" />
+                    Put On Hold
+                  </Button>
+                  <Button 
                     variant="destructive" 
                     className="sm:w-auto w-full"
-                    onClick={() => updateApplicationStatus(currentApplication.id, "rejected")}
+                    onClick={() => updateApplicationStatus(currentApplication.id, "rejected", feedbackMessage)}
                   >
                     <XCircle className="mr-2 h-4 w-4" />
                     Reject
