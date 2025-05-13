@@ -21,7 +21,7 @@ const Billing = () => {
   const [activeTab, setActiveTab] = useState("overview");
   const { hasPremiumPlan, premiumCredits } = useCredits();
 
-  // Mock data for billing plans - matching with Pricing page
+  // Mock data for billing plans - matching with updated Pricing page
   const plans = [
     {
       id: "free",
@@ -30,9 +30,9 @@ const Billing = () => {
       price: "$0",
       period: "forever",
       features: [
-        "5 AI-Matchmaking searches per day",
-        "Basic creator profiles",
-        "Limited analytics",
+        "AI Agent Bot Matchmaking (5 searches/day)",
+        "Basic campaign browsing",
+        "Limited analytics dashboard",
         "Community support",
         "Basic search filters"
       ],
@@ -46,12 +46,12 @@ const Billing = () => {
       period: "per month",
       description: "Perfect for small brands starting with influencer marketing",
       features: [
-        "100 Premium credits per month",
-        "Up to 3 active campaigns",
-        "Basic contract templates",
-        "Email support",
-        "Basic analytics dashboard",
-        "Advanced search filters"
+        "100 Premium AI Matchmaking credits",
+        "Up to 3 active campaign slots",
+        "Basic e-contracts via SignWell",
+        "In-app chat communication",
+        "Basic KOL performance tracking",
+        "Email support"
       ],
       current: hasPremiumPlan && premiumCredits <= 100,
       valuePerCredit: "$1.00"
@@ -63,13 +63,13 @@ const Billing = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "250 Premium credits per month",
-        "Up to 10 active campaigns",
-        "Advanced contract templates",
-        "Priority email support",
-        "Campaign performance tracking",
+        "250 Premium AI Matchmaking credits",
+        "Up to 10 active campaign slots",
+        "Advanced e-contracts with templates",
+        "Smart routing for creator matching",
+        "Comprehensive campaign analytics",
         "Automated outreach tools",
-        "ROI analytics"
+        "Priority support"
       ],
       current: hasPremiumPlan && premiumCredits > 100 && premiumCredits <= 250,
       popular: true,
@@ -82,13 +82,13 @@ const Billing = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "600 Premium credits per month",
-        "Unlimited active campaigns",
-        "Custom contract builder",
-        "24/7 priority support",
-        "Advanced campaign automation",
+        "600 Premium AI Matchmaking credits",
+        "Unlimited campaign slots",
+        "Custom e-contract builder via SignWell",
+        "Advanced KOL performance tracking",
+        "Campaign automation & optimization",
         "Team collaboration tools",
-        "Custom reporting",
+        "24/7 priority support",
         "API access"
       ],
       current: hasPremiumPlan && premiumCredits > 250,
@@ -205,7 +205,7 @@ const Billing = () => {
                 <h4 className="font-medium">Your usage this month</h4>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">AI Search Credits</span>
+                    <span className="text-muted-foreground">AI Matchmaking Credits</span>
                     <span>{hasPremiumPlan ? `${250 - premiumCredits} / 250 used` : `5 daily searches`}</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
@@ -217,7 +217,7 @@ const Billing = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Active campaigns</span>
+                    <span className="text-muted-foreground">Active campaign slots</span>
                     <span>{hasPremiumPlan ? "4 / 10" : "0 / 0"}</span>
                   </div>
                   <div className="h-2 bg-secondary rounded-full">
@@ -316,7 +316,7 @@ const Billing = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="payment" className="space-y-4">
+        <TabsContent value="payment">
           <Card>
             <CardHeader>
               <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-2">
@@ -356,7 +356,7 @@ const Billing = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="history" className="space-y-4">
+        <TabsContent value="history">
           <Card>
             <CardHeader>
               <CardTitle>Billing History</CardTitle>

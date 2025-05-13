@@ -60,7 +60,6 @@ import OnboardingKOL from "@/pages/auth/OnboardingKOL";
 import Overview from "@/pages/dashboard/Overview";
 import KOLsPage from "@/pages/dashboard/KOLs";
 import CampaignsPage from "@/pages/dashboard/Campaigns";
-import BookingsPage from "@/pages/dashboard/Bookings";
 import ScheduleBookingPage from "@/pages/dashboard/ScheduleBooking";
 import CreditsPage from "@/pages/dashboard/Credits";
 import ProfilePage from "@/pages/dashboard/Profile";
@@ -72,7 +71,6 @@ import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
-import CreatorHub from "@/pages/dashboard/CreatorHub";
 import TeamManagement from "@/pages/dashboard/TeamManagement";
 
 // KOL dashboard pages
@@ -80,7 +78,6 @@ import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
 import Applications from "@/pages/dashboard/kol/Applications";
 import Analytics from "@/pages/dashboard/kol/Analytics";
 import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
-import KolCreatorHub from "@/pages/dashboard/kol/CreatorHub";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -140,7 +137,7 @@ const Layout = ({ children }) => {
   );
 };
 
-const App = () => {
+function App() {
   const [queryClient] = useState(() => new QueryClient());
   
   return (
@@ -237,9 +234,10 @@ const App = () => {
                           <CampaignsPage />
                         </RoleProtectedRoute>
                       } />
-                      <Route path="bookings" element={
+                      <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
+                      <Route path="application-management" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <BookingsPage />
+                          <ApplicationManagementPage />
                         </RoleProtectedRoute>
                       } />
                       <Route path="schedule-booking" element={
@@ -249,7 +247,6 @@ const App = () => {
                       } />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
-                      <Route path="creator-hub" element={<CreatorHub />} />
                       <Route path="team" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <TeamManagement />
@@ -290,11 +287,6 @@ const App = () => {
                           <KolMessagesPage />
                         </RoleProtectedRoute>
                       } />
-                      <Route path="kol/creator-hub" element={
-                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
-                          <KolCreatorHub />
-                        </RoleProtectedRoute>
-                      } />
                       
                       {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />
@@ -317,6 +309,9 @@ const App = () => {
       </HashRouter>
     </QueryClientProvider>
   );
-};
+}
 
 export default App;
+
+import EditCampaignPage from "./pages/dashboard/EditCampaign";
+import ApplicationManagementPage from "./pages/dashboard/ApplicationManagement";

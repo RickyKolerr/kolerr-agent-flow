@@ -99,6 +99,11 @@ export const MainNav = () => {
                   <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard">{t('mainNav.dashboard')}</Link>
                   </DropdownMenuItem>
+                  {user?.role === 'brand' && (
+                    <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
+                      <Link to="/dashboard/application-management">Application Management</Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard/profile">{t('mainNav.profile')}</Link>
                   </DropdownMenuItem>
@@ -120,7 +125,7 @@ export const MainNav = () => {
               </>}
           </div>
 
-          {/* Mobile Navigation - also update here to match the desktop nav tabs */}
+          {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
@@ -163,6 +168,11 @@ export const MainNav = () => {
                       <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         {t('mainNav.dashboard')}
                       </Link>
+                      {user?.role === 'brand' && (
+                        <Link to="/dashboard/application-management" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
+                          Application Management
+                        </Link>
+                      )}
                       <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         {t('mainNav.profile')}
                       </Link>
