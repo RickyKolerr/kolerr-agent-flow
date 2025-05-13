@@ -23,9 +23,9 @@ const PricingPage = () => {
       period: "forever",
       description: "Basic access for everyone",
       features: [
-        "AI Agent Bot Matchmaking (5 searches/day)",
-        "Basic campaign browsing",
-        "Limited analytics dashboard",
+        "5 AI-Matchmaking searches per day",
+        "Basic creator profiles",
+        "Limited analytics",
         "Community support",
         "Basic search filters"
       ],
@@ -41,12 +41,12 @@ const PricingPage = () => {
       period: "per month",
       description: "Perfect for small brands starting with influencer marketing",
       features: [
-        "100 Premium AI Matchmaking credits",
-        "Up to 3 active campaign slots",
-        "Basic e-contracts via SignWell",
-        "In-app chat communication",
-        "Basic KOL performance tracking",
-        "Email support"
+        "100 Premium credits per month",
+        "Up to 3 active campaigns",
+        "Basic contract templates",
+        "Email support",
+        "Basic analytics dashboard",
+        "Advanced search filters"
       ],
       highlight: false,
       isEnterprise: false,
@@ -59,13 +59,13 @@ const PricingPage = () => {
       period: "per month",
       description: "For growing brands scaling their influencer programs",
       features: [
-        "250 Premium AI Matchmaking credits",
-        "Up to 10 active campaign slots",
-        "Advanced e-contracts with templates",
-        "Smart routing for creator matching",
-        "Comprehensive campaign analytics",
+        "250 Premium credits per month",
+        "Up to 10 active campaigns",
+        "Advanced contract templates",
+        "Priority email support",
+        "Campaign performance tracking",
         "Automated outreach tools",
-        "Priority support"
+        "ROI analytics"
       ],
       highlight: true,
       isEnterprise: false,
@@ -78,13 +78,13 @@ const PricingPage = () => {
       period: "per month",
       description: "For professional agencies and established brands",
       features: [
-        "600 Premium AI Matchmaking credits",
-        "Unlimited campaign slots",
-        "Custom e-contract builder via SignWell",
-        "Advanced KOL performance tracking",
-        "Campaign automation & optimization",
-        "Team collaboration tools",
+        "600 Premium credits per month",
+        "Unlimited active campaigns",
+        "Custom contract builder",
         "24/7 priority support",
+        "Advanced campaign automation",
+        "Team collaboration tools",
+        "Custom reporting",
         "API access"
       ],
       highlight: false,
@@ -102,7 +102,7 @@ const PricingPage = () => {
         "Dedicated account manager",
         "Custom AI model training",
         "White-label solution",
-        "Custom integrations with your tools",
+        "Custom integrations",
         "SLA guarantees",
         "Onboarding & training",
         "Compliance & security features"
@@ -150,7 +150,7 @@ const PricingPage = () => {
       <div className="max-w-3xl mx-auto text-center mb-12">
         <h1 className="text-4xl font-bold mb-4">Choose Your Plan</h1>
         <p className="text-lg text-muted-foreground">
-          Scale your influencer marketing with AI-powered matchmaking and comprehensive campaign management
+          Scale your influencer marketing with AI-powered tools and comprehensive campaign management
         </p>
         
         {isAuthenticated && (
@@ -240,19 +240,19 @@ const PricingPage = () => {
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 border rounded-lg">
             <h3 className="font-bold mb-2">What are free daily credits?</h3>
-            <p className="text-muted-foreground">All users receive 5 free credits every day that reset at 7:00 AM. These credits can be used for AI matchmaking searches.</p>
+            <p className="text-muted-foreground">All users receive 5 free credits every day that reset at 7:00 AM. These credits can be used for basic searches.</p>
           </div>
           <div className="p-6 border rounded-lg">
             <h3 className="font-bold mb-2">What are premium credits?</h3>
-            <p className="text-muted-foreground">Premium credits are included with paid plans and give you access to advanced AI matchmaking, campaign management, and analytics features.</p>
+            <p className="text-muted-foreground">Premium credits are included with paid plans and can be used for advanced features like campaign management and detailed analytics.</p>
           </div>
           <div className="p-6 border rounded-lg">
-            <h3 className="font-bold mb-2">What is the SignWell e-contract feature?</h3>
-            <p className="text-muted-foreground">Our platform integrates with SignWell to provide legally binding electronic contracts between brands and KOLs, making collaboration agreements secure and professional.</p>
+            <h3 className="font-bold mb-2">Do credits expire?</h3>
+            <p className="text-muted-foreground">Free daily credits reset each day at 7:00 AM. One-time credit packages expire after 60 days from purchase. Subscription credits roll over month to month, up to 50% of your monthly allocation.</p>
           </div>
           <div className="p-6 border rounded-lg">
-            <h3 className="font-bold mb-2">What is AI Agent Bot Matchmaking?</h3>
-            <p className="text-muted-foreground">Our proprietary AI system analyzes brand requirements and KOL profiles to suggest the most compatible matches based on audience demographics, engagement rates, content quality, and past performance.</p>
+            <h3 className="font-bold mb-2">Can KOLs subscribe to monthly plans?</h3>
+            <p className="text-muted-foreground">No, KOL accounts can only purchase one-time credit packages to supplement their free daily credits.</p>
           </div>
         </div>
       </div>
