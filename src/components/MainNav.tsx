@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
+import { useUserAccess } from "@/hooks/useUserAccess";
 
 export const MainNav = () => {
   const {
@@ -16,7 +17,8 @@ export const MainNav = () => {
     isAuthenticated,
     logout
   } = useAuth();
-
+  
+  const { canAccessFeature } = useUserAccess();
   const { t, i18n } = useTranslation();
 
   // Add state for controlling sheet visibility
@@ -99,7 +101,7 @@ export const MainNav = () => {
                   <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard">{t('mainNav.dashboard')}</Link>
                   </DropdownMenuItem>
-                  {user?.role === 'brand' && (
+                  {canAccessFeature('application_management') && (
                     <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                       <Link to="/dashboard/application-management">Application Management</Link>
                     </DropdownMenuItem>
@@ -168,7 +170,7 @@ export const MainNav = () => {
                       <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         {t('mainNav.dashboard')}
                       </Link>
-                      {user?.role === 'brand' && (
+                      {canAccessFeature('application_management') && (
                         <Link to="/dashboard/application-management" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                           Application Management
                         </Link>
