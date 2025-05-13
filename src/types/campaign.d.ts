@@ -1,5 +1,4 @@
 
-
 export interface Campaign {
   id: string;
   title: string;
@@ -31,4 +30,3 @@ export interface Campaign {
 }
 
 export type ApplicationStatus = "pending" | "approved" | "hold" | "rejected";
-
