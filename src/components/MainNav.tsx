@@ -1,3 +1,4 @@
+
 import { Link } from "react-router-dom";
 import React, { useState } from "react";
 import { Menu, User, Languages } from "lucide-react";
@@ -124,7 +125,7 @@ export const MainNav = () => {
               </>}
           </div>
 
-          {/* Mobile Navigation - also update here to match the desktop nav tabs */}
+          {/* Mobile Navigation */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
