@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { toast } from "sonner";
 
-export const DAILY_CREDITS = 3; // Changed from 5 to 3
+export const DAILY_CREDITS = 5;
 export const RESET_HOUR = 7; // 7 AM
 export const CREDIT_PACKAGE_EXPIRY_DAYS = 60;
 
