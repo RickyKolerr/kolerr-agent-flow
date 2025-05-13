@@ -23,7 +23,7 @@ export const useUserAccess = () => {
       return true;
     }
 
-    // Team Management and Application Management are only accessible to brands and admins
+    // Team Management is only accessible to brands and admins
     if (feature === "team_management" || feature === "application_management") {
       return user?.role === "brand" || user?.role === "admin";
     }

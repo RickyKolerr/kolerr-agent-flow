@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -239,6 +240,11 @@ function App() {
                           <ApplicationManagementPage />
                         </RoleProtectedRoute>
                       } />
+                      <Route path="schedule-booking" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <ScheduleBookingPage />
+                        </RoleProtectedRoute>
+                      } />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
                       <Route path="team" element={
@@ -247,14 +253,7 @@ function App() {
                         </RoleProtectedRoute>
                       } />
                       
-                      {/* Booking routes - keeping the route but pointing to Application Management */}
-                      <Route path="schedule-booking" element={
-                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <ApplicationManagementPage />
-                        </RoleProtectedRoute>
-                      } />
-                      
-                      {/* Booking success route */}
+                      {/* Booking routes */}
                       <Route path="booking-success" element={<BookingSuccess />} />
                       
                       {/* Contract routes */}
