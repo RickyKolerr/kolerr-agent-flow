@@ -19,20 +19,6 @@ export interface AssignedKOL {
   };
 }
 
-export interface Slot {
-  id: string;
-  name: string;
-  targetKOLs: number;
-  minEngagement: number;
-  maxBudget: number;
-  targetAudience: string[];
-  startDate: string;
-  endDate: string;
-  requirements: string[];
-  status: "open" | "filled" | "in-progress" | "completed";
-  assignedKols: AssignedKOL[];
-}
-
 export interface Campaign {
   id: string;
   title: string;
@@ -44,7 +30,6 @@ export interface Campaign {
   endDate: string;
   metrics: CampaignMetrics;
   assignedKols: AssignedKOL[];
-  slots?: Slot[];
   createdAt: string;
   updatedAt: string;
 }

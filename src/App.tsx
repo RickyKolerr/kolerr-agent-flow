@@ -140,7 +140,7 @@ const Layout = ({ children }) => {
   );
 };
 
-function App() {
+const App = () => {
   const [queryClient] = useState(() => new QueryClient());
   
   return (
@@ -237,7 +237,6 @@ function App() {
                           <CampaignsPage />
                         </RoleProtectedRoute>
                       } />
-                      <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
                       <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <BookingsPage />
@@ -318,9 +317,6 @@ function App() {
       </HashRouter>
     </QueryClientProvider>
   );
-}
+};
 
 export default App;
-
-import EditCampaignPage from "./pages/dashboard/EditCampaign";
-
