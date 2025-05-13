@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -46,7 +45,6 @@ interface KOL {
   verified: boolean;
   rating: number;
   saved?: boolean;
-  aiMatchScore?: number; // Added AI match score property
 }
 
 const KOLsPage = () => {
@@ -57,9 +55,8 @@ const KOLsPage = () => {
   const [selectedKOL, setSelectedKOL] = useState<KOL | null>(null);
   const [isBookingModalOpen, setIsBookingModalOpen] = useState(false);
   const [savedKOLs, setSavedKOLs] = useState<string[]>([]);
-  const [sortBy, setSortBy] = useState<"aiMatch" | "followers" | "engagement">("aiMatch"); // Default sort by AI Match
 
-  // Mock KOL data with real portrait images from Unsplash and added AI match scores
+  // Mock KOL data with real portrait images from Unsplash
   const mockKOLs: KOL[] = [
     {
       id: "kol1",
@@ -73,8 +70,7 @@ const KOLsPage = () => {
       location: "New York, USA",
       tags: ["fashion", "style", "beauty"],
       verified: true,
-      rating: 4.8,
-      aiMatchScore: 92
+      rating: 4.8
     },
     {
       id: "kol2",
@@ -88,8 +84,7 @@ const KOLsPage = () => {
       location: "Los Angeles, USA",
       tags: ["travel", "adventure", "lifestyle"],
       verified: true,
-      rating: 4.6,
-      aiMatchScore: 87
+      rating: 4.6
     },
     {
       id: "kol3",
@@ -103,8 +98,7 @@ const KOLsPage = () => {
       location: "London, UK",
       tags: ["makeup", "skincare", "tutorials"],
       verified: true,
-      rating: 4.9,
-      aiMatchScore: 95
+      rating: 4.9
     },
     {
       id: "kol4",
@@ -118,8 +112,7 @@ const KOLsPage = () => {
       location: "Miami, USA",
       tags: ["fitness", "health", "nutrition"],
       verified: false,
-      rating: 4.3,
-      aiMatchScore: 76
+      rating: 4.3
     },
     {
       id: "kol5",
@@ -133,8 +126,7 @@ const KOLsPage = () => {
       location: "Toronto, Canada",
       tags: ["recipes", "cooking", "food"],
       verified: true,
-      rating: 4.7,
-      aiMatchScore: 89
+      rating: 4.7
     },
     {
       id: "kol6",
@@ -148,8 +140,7 @@ const KOLsPage = () => {
       location: "Seoul, South Korea",
       tags: ["tech", "gadgets", "reviews"],
       verified: false,
-      rating: 4.2,
-      aiMatchScore: 81
+      rating: 4.2
     },
     {
       id: "kol7",
@@ -163,8 +154,7 @@ const KOLsPage = () => {
       location: "Berlin, Germany",
       tags: ["art", "crafts", "diy"],
       verified: false,
-      rating: 4.4,
-      aiMatchScore: 79
+      rating: 4.4
     },
     {
       id: "kol8",
@@ -178,13 +168,12 @@ const KOLsPage = () => {
       location: "Madrid, Spain",
       tags: ["gaming", "esports", "reviews"],
       verified: true,
-      rating: 4.9,
-      aiMatchScore: 94
+      rating: 4.9
     }
   ];
 
   // Filter based on search query, category and view
-  let filteredKOLs = mockKOLs
+  const filteredKOLs = mockKOLs
     .filter(kol => 
       kol.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       kol.handle.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -201,18 +190,6 @@ const KOLsPage = () => {
       ...kol,
       saved: savedKOLs.includes(kol.id)
     }));
-  
-  // Sort KOLs based on selected criteria
-  filteredKOLs = filteredKOLs.sort((a, b) => {
-    if (sortBy === "aiMatch") {
-      return (b.aiMatchScore || 0) - (a.aiMatchScore || 0); // Default sort by AI match score
-    } else if (sortBy === "followers") {
-      return b.followers - a.followers;
-    } else if (sortBy === "engagement") {
-      return b.engagement - a.engagement;
-    }
-    return 0;
-  });
 
   const formatFollowers = (num: number) => {
     if (num >= 1000000) {
@@ -289,19 +266,6 @@ const KOLsPage = () => {
                   <SelectItem value="Gaming">Gaming</SelectItem>
                 </SelectContent>
               </Select>
-              
-              {/* Added Sort By dropdown */}
-              <Select value={sortBy} onValueChange={(value) => setSortBy(value as "aiMatch" | "followers" | "engagement")}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort By" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="aiMatch">AI Match Score</SelectItem>
-                  <SelectItem value="followers">Followers</SelectItem>
-                  <SelectItem value="engagement">Engagement</SelectItem>
-                </SelectContent>
-              </Select>
-              
               <Button variant="outline" size="icon">
                 <Filter className="h-4 w-4" />
               </Button>
@@ -395,7 +359,6 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
               <TableHead className="hidden md:table-cell"><BarChart3 className="h-4 w-4" /></TableHead>
               <TableHead className="hidden lg:table-cell">Location</TableHead>
               <TableHead className="hidden sm:table-cell">Rating</TableHead>
-              <TableHead className="hidden md:table-cell">AI Match</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -437,12 +400,6 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                       {kol.rating}
                     </div>
                   </TableCell>
-                  {/* New AI Match Score column */}
-                  <TableCell className="hidden md:table-cell">
-                    <Badge className={`${kol.aiMatchScore && kol.aiMatchScore >= 90 ? 'bg-green-500/20 text-green-500' : kol.aiMatchScore && kol.aiMatchScore >= 80 ? 'bg-blue-500/20 text-blue-500' : 'bg-orange-500/20 text-orange-500'}`}>
-                      {kol.aiMatchScore}%
-                    </Badge>
-                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex flex-row justify-end space-x-2">
                       <Button 
@@ -465,17 +422,6 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
                         <span className="hidden md:inline">View</span>
                       </Button>
                       
-                      {/* New Book button */}
-                      <Button 
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onBookSlot(kol)}
-                        className="text-brand-purple hover:text-brand-purple border-brand-purple/30 hover:border-brand-purple/60"
-                      >
-                        <Calendar className="h-4 w-4 md:mr-1" />
-                        <span className="hidden md:inline">Book</span>
-                      </Button>
-                      
                       <Button 
                         size="sm"
                         className="bg-gradient-to-r from-brand-purple to-brand-magenta hover:opacity-90"
@@ -490,7 +436,7 @@ const KOLsTable = ({ kols, formatFollowers, onAddToList, onContactKOL, onBookSlo
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={8} className="text-center py-8">
+                <TableCell colSpan={7} className="text-center py-8">
                   <div className="flex flex-col items-center">
                     <Search className="h-10 w-10 text-muted-foreground mb-2" />
                     <p className="text-muted-foreground">No KOLs found matching your search criteria</p>

@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -59,6 +60,7 @@ import OnboardingKOL from "@/pages/auth/OnboardingKOL";
 import Overview from "@/pages/dashboard/Overview";
 import KOLsPage from "@/pages/dashboard/KOLs";
 import CampaignsPage from "@/pages/dashboard/Campaigns";
+import BookingsPage from "@/pages/dashboard/Bookings";
 import ScheduleBookingPage from "@/pages/dashboard/ScheduleBooking";
 import CreditsPage from "@/pages/dashboard/Credits";
 import ProfilePage from "@/pages/dashboard/Profile";
@@ -70,6 +72,7 @@ import PaymentPage from "@/pages/dashboard/Payment";
 import CreateCampaign from "@/pages/dashboard/CreateCampaign";
 import CreateContract from "@/pages/dashboard/CreateContract";
 import ViewContract from "@/pages/dashboard/ViewContract";
+import CreatorHub from "@/pages/dashboard/CreatorHub";
 import TeamManagement from "@/pages/dashboard/TeamManagement";
 
 // KOL dashboard pages
@@ -77,6 +80,7 @@ import AvailableCampaigns from "@/pages/dashboard/kol/AvailableCampaigns";
 import Applications from "@/pages/dashboard/kol/Applications";
 import Analytics from "@/pages/dashboard/kol/Analytics";
 import KOLContracts from "@/pages/dashboard/kol/KOLContracts";
+import KolCreatorHub from "@/pages/dashboard/kol/CreatorHub";
 
 // Search pages
 import Index from "@/pages/Index";
@@ -234,27 +238,26 @@ function App() {
                         </RoleProtectedRoute>
                       } />
                       <Route path="campaigns/edit/:campaignId" element={<EditCampaignPage />} />
-                      <Route path="application-management" element={
+                      <Route path="bookings" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <ApplicationManagementPage />
+                          <BookingsPage />
+                        </RoleProtectedRoute>
+                      } />
+                      <Route path="schedule-booking" element={
+                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
+                          <ScheduleBookingPage />
                         </RoleProtectedRoute>
                       } />
                       <Route path="credits" element={<CreditsPage />} />
                       <Route path="messages" element={<MessagesPage />} />
+                      <Route path="creator-hub" element={<CreatorHub />} />
                       <Route path="team" element={
                         <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
                           <TeamManagement />
                         </RoleProtectedRoute>
                       } />
                       
-                      {/* Booking routes - keeping the route but pointing to Application Management */}
-                      <Route path="schedule-booking" element={
-                        <RoleProtectedRoute allowedRoles={['brand', 'admin']}>
-                          <ApplicationManagementPage />
-                        </RoleProtectedRoute>
-                      } />
-                      
-                      {/* Booking success route */}
+                      {/* Booking routes */}
                       <Route path="booking-success" element={<BookingSuccess />} />
                       
                       {/* Contract routes */}
@@ -288,6 +291,11 @@ function App() {
                           <KolMessagesPage />
                         </RoleProtectedRoute>
                       } />
+                      <Route path="kol/creator-hub" element={
+                        <RoleProtectedRoute allowedRoles={['kol', 'admin']}>
+                          <KolCreatorHub />
+                        </RoleProtectedRoute>
+                      } />
                       
                       {/* Common routes */}
                       <Route path="profile" element={<ProfilePage />} />
@@ -315,4 +323,4 @@ function App() {
 export default App;
 
 import EditCampaignPage from "./pages/dashboard/EditCampaign";
-import ApplicationManagementPage from "./pages/dashboard/ApplicationManagement";
+

@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { useTranslation } from 'react-i18next';
-import { useUserAccess } from "@/hooks/useUserAccess";
 
 export const MainNav = () => {
   const {
@@ -17,8 +16,7 @@ export const MainNav = () => {
     isAuthenticated,
     logout
   } = useAuth();
-  
-  const { canAccessFeature } = useUserAccess();
+
   const { t, i18n } = useTranslation();
 
   // Add state for controlling sheet visibility
@@ -101,11 +99,6 @@ export const MainNav = () => {
                   <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard">{t('mainNav.dashboard')}</Link>
                   </DropdownMenuItem>
-                  {canAccessFeature('application_management') && (
-                    <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
-                      <Link to="/dashboard/application-management">Application Management</Link>
-                    </DropdownMenuItem>
-                  )}
                   <DropdownMenuItem asChild className="text-white focus:bg-white/10 focus:text-white">
                     <Link to="/dashboard/profile">{t('mainNav.profile')}</Link>
                   </DropdownMenuItem>
@@ -127,7 +120,7 @@ export const MainNav = () => {
               </>}
           </div>
 
-          {/* Mobile Navigation */}
+          {/* Mobile Navigation - also update here to match the desktop nav tabs */}
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon" className="h-9 w-9 text-white">
@@ -170,11 +163,6 @@ export const MainNav = () => {
                       <Link to="/dashboard" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         {t('mainNav.dashboard')}
                       </Link>
-                      {canAccessFeature('application_management') && (
-                        <Link to="/dashboard/application-management" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
-                          Application Management
-                        </Link>
-                      )}
                       <Link to="/dashboard/profile" className="text-lg font-medium hover:text-brand-pink transition-colors" onClick={handleMobileNavClick}>
                         {t('mainNav.profile')}
                       </Link>
